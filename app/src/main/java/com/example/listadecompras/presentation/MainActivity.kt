@@ -24,7 +24,9 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
-            shopListAdapter.shopList = it as ArrayList<ShopItem>
+//            shopListAdapter.shopList = it
+            shopListAdapter.submitList(it)      // Created new flow
+
         }
     }
 
@@ -66,7 +68,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = shopListAdapter.shopList[viewHolder.adapterPosition]     //Getting the element by position in collection
+//                val item = shopListAdapter.shopList[viewHolder.adapterPosition]     //Getting the element by position in collection
+                val item = shopListAdapter.currentList[viewHolder.adapterPosition]
+
                 viewModel.deleteShopItem(item)
             }
         }
