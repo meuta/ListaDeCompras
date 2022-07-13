@@ -3,15 +3,11 @@ package com.example.listadecompras.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
-import com.example.listadecompras.utils.SwipeToDeleteCallback
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,13 +43,7 @@ class MainActivity : AppCompatActivity() {
                 ShopListAdapter.MAX_POOL_SIZE
             )
         }
-/*
-        shopListAdapter.onShopItemLongClickListener = object : ShopListAdapter.OnShopItemLongClickListener{
-            override fun onShopItemLongClick(shopItem: ShopItem) {
-                viewModel.changeEnableState(shopItem)
-            }
-        }
-*/
+
         setupLongClickListener()
 
         setupClickListener()
@@ -61,25 +51,7 @@ class MainActivity : AppCompatActivity() {
         setupSwipeListener(rvShopList)
     }
 
-    /*
-        private fun setupSwipeListener(rvShopList: RecyclerView) {
-            shopListAdapter.onShopItemSwipeListener = object : SwipeToDeleteCallback(this) {
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    shopListAdapter.removeAt(viewHolder.adapterPosition)
-                }
-            }
-            val deleteSwipeHandler = object : SwipeToDeleteCallback(this) {
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val item = shopListAdapter.shopList[viewHolder.adapterPosition]
-                    shopListAdapter.removeAt(viewHolder.adapterPosition)
-                    viewModel.deleteShopItem(item)
-                }
-            }
-            shopListAdapter.onShopItemSwipeListener = deleteSwipeHandler
-            val deleteItemTouchHelper = ItemTouchHelper(deleteSwipeHandler)
-            deleteItemTouchHelper.attachToRecyclerView(rvShopList)
-        }
-    */
+
     private fun setupSwipeListener(rvShopList: RecyclerView) {
         val callback = object : ItemTouchHelper.SimpleCallback(
             0,
