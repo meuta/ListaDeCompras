@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
+import com.example.listadecompras.utils.SwipeToDeleteCallback
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,12 +27,12 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.shopList.observe(this){
-            shopListAdapter.shopList = it
-         }
+        viewModel.shopList.observe(this) {
+            shopListAdapter.shopList = it as ArrayList<ShopItem>
+        }
     }
 
-    private fun setupRecyclerView(){
+    private fun setupRecyclerView() {
         val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
         shopListAdapter = ShopListAdapter()
         with(rvShopList) {
@@ -44,6 +46,71 @@ class MainActivity : AppCompatActivity() {
                 ShopListAdapter.VIEW_TYPE_DISABLED,
                 ShopListAdapter.MAX_POOL_SIZE
             )
+        }
+/*
+        shopListAdapter.onShopItemLongClickListener = object : ShopListAdapter.OnShopItemLongClickListener{
+            override fun onShopItemLongClick(shopItem: ShopItem) {
+                viewModel.changeEnableState(shopItem)
+            }
+        }
+*/
+        setupLongClickListener()
+
+        setupClickListener()
+
+        setupSwipeListener(rvShopList)
+    }
+
+    /*
+        private fun setupSwipeListener(rvShopList: RecyclerView) {
+            shopListAdapter.onShopItemSwipeListener = object : SwipeToDeleteCallback(this) {
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    shopListAdapter.removeAt(viewHolder.adapterPosition)
+                }
+            }
+            val deleteSwipeHandler = object : SwipeToDeleteCallback(this) {
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val item = shopListAdapter.shopList[viewHolder.adapterPosition]
+                    shopListAdapter.removeAt(viewHolder.adapterPosition)
+                    viewModel.deleteShopItem(item)
+                }
+            }
+            shopListAdapter.onShopItemSwipeListener = deleteSwipeHandler
+            val deleteItemTouchHelper = ItemTouchHelper(deleteSwipeHandler)
+            deleteItemTouchHelper.attachToRecyclerView(rvShopList)
+        }
+    */
+    private fun setupSwipeListener(rvShopList: RecyclerView) {
+        val callback = object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val item = shopListAdapter.shopList[viewHolder.adapterPosition]     //Getting the element by position in collection
+                viewModel.deleteShopItem(item)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(rvShopList)
+    }
+
+    private fun setupClickListener() {
+        shopListAdapter.onShopItemClickListener = {
+            Log.d("onShopItemClickListener", it.toString())
+        }
+    }
+
+    private fun setupLongClickListener() {
+        shopListAdapter.onShopItemLongClickListener = {
+            viewModel.changeEnableState(it)
         }
     }
 

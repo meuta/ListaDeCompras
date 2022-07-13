@@ -9,16 +9,24 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
+import com.example.listadecompras.utils.SwipeToDeleteCallback
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
 
-    var shopList = listOf<ShopItem>()
-        set(value) {
+//    var shopList = listOf<ShopItem>()
+    var shopList = ArrayList<ShopItem>()
+
+    set(value) {
             field = value
             notifyDataSetChanged()          // For updating of list when the value is set
         }
 
     var count = 0
+
+//    var onShopItemLongClickListener: OnShopItemLongClickListener? = null
+    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null       //fun. param = ShopItem & return nothing
+    var onShopItemClickListener: ((ShopItem) -> Unit)? = null
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
 
@@ -33,33 +41,25 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
         return ShopItemViewHolder(view)
 
-
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = shopList[position]
 
-        val status = if (shopItem.enabled){
-            "active"
-        } else {
-            "not active"
-        }
-
-        holder.view.setOnClickListener {
+        holder.view.setOnLongClickListener {
+//            onShopItemLongClickListener?.onShopItemLongClick(shopItem)
+            onShopItemLongClickListener?.invoke(shopItem)       // if not null, the function will be called
             true
         }
+        holder.view.setOnClickListener {
+            onShopItemClickListener?.invoke(shopItem)       // if not null, the function will be called
+        }
+
         holder.tvName.text = shopItem.name
         holder.tvCount.text = shopItem.count.toString()
 
     }
-    /*
-        override fun onViewRecycled(holder: ShopItemViewHolder) {
-            super.onViewRecycled(holder)
-            holder.tvName.setTextColor(ContextCompat.getColor(holder.view.context, android.R.color.white))
-            holder.tvName.text = ""
-            holder.tvCount.text = ""
-        }
-    */
+
     override fun getItemCount(): Int {
         return shopList.size
     }
@@ -71,6 +71,11 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     class ShopItemViewHolder(var view: View) : RecyclerView.ViewHolder(view) {
         val tvName = view.findViewById<TextView>(R.id.tv_name)
         val tvCount = view.findViewById<TextView>(R.id.tv_count)
+    }
+
+
+    interface OnShopItemLongClickListener{
+        fun onShopItemLongClick(shopItem: ShopItem)
     }
 
     companion object{
