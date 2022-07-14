@@ -6,18 +6,8 @@ import androidx.recyclerview.widget.ListAdapter
 import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
 
-//class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
-/*
-    var shopList = ArrayList<ShopItem>()
-        set(value) {
-            val callback = ShopListDiffCallback(shopList, value)
-            val diffResult = DiffUtil.calculateDiff(callback)
-            diffResult.dispatchUpdatesTo(this)
-            field = value
-//            notifyDataSetChanged()          // For updating of list when the value is set
-        }
-*/
+
 
     var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null       //fun. param = ShopItem & return nothing
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
@@ -37,7 +27,6 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
 
-//        val shopItem = shopList[position]
         val shopItem = getItem(position)
 
         holder.view.setOnLongClickListener {
@@ -53,12 +42,7 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
 
     }
 
-//    override fun getItemCount(): Int {
-//        return shopList.size
-//    }
-
     override fun getItemViewType(position: Int): Int {
-//        return if (shopList[position].enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
         return if (getItem(position).enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
     }
 
