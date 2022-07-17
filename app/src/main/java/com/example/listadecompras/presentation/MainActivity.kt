@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
 //            shopListAdapter.shopList = it
-            shopListAdapter.submitList(it)      // Created new flow
+            shopListAdapter.submitList(it)      // Created new thread
 
         }
     }
