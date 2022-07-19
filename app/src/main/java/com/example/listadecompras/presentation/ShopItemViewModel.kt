@@ -11,8 +11,7 @@ import com.example.listadecompras.domain.ShopItem
 
 class ShopItemViewModel(itemId: Int) : ViewModel() {
 
-    private val repository =
-        ShopListRepositoryImpl     // Not correct. Need to use Dependency Injection.
+    private val repository = ShopListRepositoryImpl     // Not correct. Need to use Dependency Injection.
 
     private val getShopItemByIdUseCase = GetShopItemByIdUseCase(repository)
     private val addItemToShopListUseCase = AddItemToShopListUseCase(repository)
