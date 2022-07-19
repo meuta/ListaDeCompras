@@ -17,18 +17,6 @@ class ShopItemViewModel(itemId: Int) : ViewModel() {
     private val addItemToShopListUseCase = AddItemToShopListUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
 
-//    var errorInputName = MutableLiveData<Boolean>()
-//        var errorInputName: LiveData<Boolean> = MutableLiveData<Boolean>()
-//    private var errorInputName: LiveData<Boolean> = MutableLiveData<Boolean>()
-
-
-//    private MutableLiveData error = new MutableLiveData()         //Some Java Code
-//    public LiveData getError() {
-//        return error
-//    }
-
-//    fun getErrorInputName(): LiveData<Boolean>{}                  // Can't use, because already is created
-
 
     private var _errorInputName =
         MutableLiveData<Boolean>()        //Can work with this only from ViewModel and can set a value into
@@ -50,7 +38,6 @@ class ShopItemViewModel(itemId: Int) : ViewModel() {
     val errorInputCount: LiveData<Boolean>
         get() = _errorInputCount
 
-    //    private val _closeScreen = MutableLiveData<Boolean>()
     private val _closeScreen =
         MutableLiveData<Unit>()          //Unit because we only set it to true
     val closeScreen: LiveData<Unit>
@@ -72,18 +59,11 @@ class ShopItemViewModel(itemId: Int) : ViewModel() {
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-//            val shopItem = ShopItem(name, count, true)
-
-//            val shopItem = _shopItem.value
-
             _shopItem.value?.let {
                 val item = it.copy(name = name, count = count)
                 editShopItemUseCase.editShopItem(item)
                 finishScreen()
             }
-
-//            editShopItemUseCase.editShopItem(shopItem)
-//            finishScreen()
         }
     }
 
@@ -92,21 +72,11 @@ class ShopItemViewModel(itemId: Int) : ViewModel() {
     }
 
     private fun parseName(inputName: String?): String {
-//        return when (inputName) {
-//            null -> ""
-//            else -> inputName.trim { it <= ' ' }
-//        }
         return inputName?.trim() ?: ""
     }
 
     private fun parseCount(inputCount: String?): Double {
-//        return when (inputName) {
-//            null -> ""
-//            else -> inputName.trim { it <= ' ' }
-//        }
-//        return (inputName?.trim() ?: "").toDouble()
         return try {
-//             (inputCount?.trim() ?: "").toDouble()
             inputCount?.trim()?.toDouble() ?: 0.0
         } catch (e: Exception) {
             0.0
@@ -116,8 +86,7 @@ class ShopItemViewModel(itemId: Int) : ViewModel() {
     private fun validateInput(name: String, count: Double): Boolean {
         var result = true
         if (name.isBlank()) {
-            _errorInputName.value =
-                true     //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
+            _errorInputName.value = true     //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
             result = false
         }
         if (count < 0) {
@@ -128,13 +97,11 @@ class ShopItemViewModel(itemId: Int) : ViewModel() {
     }
 
     fun resetErrorInputName() {
-        _errorInputName.value =
-            false        //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
+        _errorInputName.value = false        //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
     }
 
     fun resetErrorInputCount() {
-        _errorInputCount.value =
-            false        //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
+        _errorInputCount.value = false        //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
     }
 
 }
