@@ -9,7 +9,7 @@ import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemByIdUseCase
 import com.example.listadecompras.domain.ShopItem
 
-class ShopItemViewModel(itemId: Int) : ViewModel() {
+class ShopItemViewModel() : ViewModel() {
 
     private val repository = ShopListRepositoryImpl     // Not correct. Need to use Dependency Injection.
 
@@ -77,9 +77,9 @@ class ShopItemViewModel(itemId: Int) : ViewModel() {
 
     private fun parseCount(inputCount: String?): Double {
         return try {
-            inputCount?.trim()?.toDouble() ?: 0.0
+            inputCount?.trim()?.toDouble() ?: -1.0
         } catch (e: Exception) {
-            0.0
+            -1.0
         }
     }
 
