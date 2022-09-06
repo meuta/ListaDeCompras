@@ -10,7 +10,7 @@ import com.example.listadecompras.domain.ShopItem
 
 class MainViewModel: ViewModel()  {        // If need context => : AndroidViewModel()
 
-    private val repository = ShopListRepositoryImpl     // Not correct. Need to use Dependency Injection.
+    private val repository = ShopListRepositoryImpl     // !!! Not correct. Need to use Dependency Injection.
 
     private val getShopListUseCase = GetShopListUseCase(repository)
     private val deleteShopItemUseCase = DeleteShopItemUseCase(repository)

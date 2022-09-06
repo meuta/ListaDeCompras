@@ -10,7 +10,7 @@ object ShopListRepositoryImpl: ShopListRepository {
 
 //    private val shopList = mutableListOf<ShopItem>()
     private val shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })    // Creating a sorted list
-
+    private val shopList1 = mutableListOf<ShopItem>()
     private var autoIncrementId = 0
 
     private val shopListLD = MutableLiveData<List<ShopItem>>()
@@ -18,7 +18,7 @@ object ShopListRepositoryImpl: ShopListRepository {
     init {
         for (i in 0 until 100){
             val item = ShopItem("Name $i", 0.0, Random.nextBoolean())
-            addItemToShopList(item)
+            addShopItem(item)
         }
     }
 
@@ -28,26 +28,26 @@ object ShopListRepositoryImpl: ShopListRepository {
         return shopListLD
     }
 
-    override fun addItemToShopList(shopItem: ShopItem) {
+    override fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == ShopItem.UNDEFINED_ID) {
-            shopItem.id = autoIncrementId++
+            shopItem.id = autoIncrementId++         //++ executing after assigning to the shopItem.id
         }
         shopList.add(shopItem)
         updateList()
     }
 
     override fun editShopItem(shopItem: ShopItem) {
-        val oldElement = getShopItemById(shopItem.id)
+        val oldElement = getShopItem(shopItem.id)
         shopList.remove(oldElement)
-        addItemToShopList(shopItem)
-        }
+        addShopItem(shopItem)
+    }
 
     override fun deleteShopItem(shopItem: ShopItem) {
         shopList.remove(shopItem)
         updateList()
     }
 
-    override fun getShopItemById(itemId: Int): ShopItem {
+    override fun getShopItem(itemId: Int): ShopItem {
         return shopList.find {
             it.id == itemId
         } ?: throw RuntimeException("Element with ID $itemId not found")
