@@ -18,8 +18,7 @@ class ShopItemViewModel() : ViewModel() {
     private val editShopItemUseCase = EditShopItemUseCase(repository)
 
 
-    private var _errorInputName =
-        MutableLiveData<Boolean>()        //Can work with this only from ViewModel and can set a value into
+    private var _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
         get() = _errorInputName
 
@@ -33,13 +32,11 @@ class ShopItemViewModel() : ViewModel() {
         _shopItem.value = item
     }
 
-    private var _errorInputCount =
-        MutableLiveData<Boolean>()        //Can work with this only from ViewModel and can set a value into
+    private var _errorInputCount = MutableLiveData<Boolean>()
     val errorInputCount: LiveData<Boolean>
         get() = _errorInputCount
 
-    private val _closeScreen =
-        MutableLiveData<Unit>()          //Unit because we only set it to true
+    private val _closeScreen = MutableLiveData<Unit>()
     val closeScreen: LiveData<Unit>
         get() = _closeScreen
 
@@ -86,7 +83,7 @@ class ShopItemViewModel() : ViewModel() {
     private fun validateInput(name: String, count: Double): Boolean {
         var result = true
         if (name.isBlank()) {
-            _errorInputName.value = true     //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
+            _errorInputName.value = true
             result = false
         }
         if (count < 0) {
@@ -97,11 +94,11 @@ class ShopItemViewModel() : ViewModel() {
     }
 
     fun resetErrorInputName() {
-        _errorInputName.value = false        //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
+        _errorInputName.value = false
     }
 
     fun resetErrorInputCount() {
-        _errorInputCount.value = false        //Cannot assign to 'value': the setter is protected/*protected and package*/ for synthetic extension in '<library Gradle: androidx.lifecycle:lifecycle-livedata-core:2.3.1@aar>'
+        _errorInputCount.value = false
     }
 
 }

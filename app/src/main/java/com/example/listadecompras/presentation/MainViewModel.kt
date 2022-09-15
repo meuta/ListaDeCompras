@@ -22,7 +22,6 @@ class MainViewModel: ViewModel()  {        // If need context => : AndroidViewMo
         deleteShopItemUseCase.deleteShopItem(shopItem)
     }
 
-
     fun changeEnableState(shopItem: ShopItem){
         val newItem = shopItem.copy(enabled = !shopItem.enabled)           // Can use copy, because DataClass
         editShopItemUseCase.editShopItem(newItem)

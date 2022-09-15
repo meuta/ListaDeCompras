@@ -25,17 +25,9 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
-//            shopListAdapter.shopList = it
             shopListAdapter.submitList(it)      // Created new thread
             Log.d("TEST_OF_SUBSCRIBE", it.toString())
         }
-
-        val itemToDelete = ShopItem("name 0", 0.0, true, 0)
-        viewModel.deleteShopItem(itemToDelete)
-
-        val itemToEdit = ShopItem("name 2", 0.0, true, 2)
-        viewModel.changeEnableState(itemToEdit)
-
 
         val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
         buttonAddItem.setOnClickListener {
@@ -83,9 +75,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//                val item = shopListAdapter.shopList[viewHolder.adapterPosition]     //Getting the element by position in collection
                 val item = shopListAdapter.currentList[viewHolder.adapterPosition]
-
                 viewModel.deleteShopItem(item)
             }
         }
@@ -95,11 +85,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            Log.d("onShopItemClickListener", it.toString())
-
             val intent = ShopItemActivity.newIntentEditItem(this, it.id)
             startActivity(intent)
-
         }
     }
 
@@ -108,6 +95,5 @@ class MainActivity : AppCompatActivity() {
             viewModel.changeEnableState(it)
         }
     }
-
 
 }
