@@ -17,10 +17,7 @@ import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
 
-class ShopItemFragment(
-//    private val screenMode: String = MODE_UNKNOWN,
-//    private val itemId: Int = ShopItem.UNDEFINED_ID
-) : Fragment() {
+class ShopItemFragment: Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
     private lateinit var tilName: TextInputLayout
@@ -34,6 +31,7 @@ class ShopItemFragment(
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("ShopItemFragment", "onCreate")
         super.onCreate(savedInstanceState)
         parseParams()
     }
@@ -88,8 +86,6 @@ class ShopItemFragment(
         viewModel.closeScreen.observe(viewLifecycleOwner) {
             Log.d("closeScreenSubscribeTest", it.toString())
             activity?.onBackPressed()
-            requireActivity()
-            context
         }
     }
 
@@ -138,32 +134,10 @@ class ShopItemFragment(
 
     private fun parseParams() {
 
-//        if (!intent.hasExtra(SECOND_SCREEN_MODE)){
-//            throw RuntimeException("Param second_screen_mode is absent")
-//        }
-
-//        if (screenMode != MODE_ADD && screenMode != MODE_EDIT){
-//            throw RuntimeException("Param second_screen_mode is absent: ${screenMode?:"null"}")
-//        }
         val args = requireArguments()
         if (!args.containsKey(SECOND_SCREEN_MODE)) {
             throw RuntimeException("Param second_screen_mode is absent")
         }
-
-
-//        val mode = intent.getStringExtra(SECOND_SCREEN_MODE)
-//        if (mode != MODE_EDIT && mode != MODE_ADD){
-//            throw RuntimeException("Unknown second_screen_mode: $mode")
-//        }
-//        screenMode = mode
-
-//        if (screenMode == MODE_EDIT && itemId == ShopItem.UNDEFINED_ID) {
-////            if (!intent.hasExtra(SHOP_ITEM_ID)){
-//            throw RuntimeException("Param shop_item_id is absent")
-////            }
-////            itemId = intent.getIntExtra(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-////            Log.d("ShopItemActivity", "id = $itemId")
-//        }
 
         val mode = args.getString(SECOND_SCREEN_MODE)
         if (mode != MODE_EDIT && mode != MODE_ADD) {
@@ -178,7 +152,6 @@ class ShopItemFragment(
             itemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
             Log.d("ShopItemActivity", "id = $itemId")
         }
-
     }
 
     private fun launchAddMode() {
@@ -206,33 +179,8 @@ class ShopItemFragment(
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_UNKNOWN = ""
 
-//        fun newIntentAddItem(context: Context): Intent {
-//            val intent = Intent(context, ShopItemActivity::class.java)
-//            intent.putExtra(SECOND_SCREEN_MODE, MODE_ADD)
-//            return intent
-//        }
-//
-//        fun newIntentEditItem(context: Context, itemId: Int): Intent {
-//            val intent = Intent(context, ShopItemActivity::class.java)
-//            intent.putExtra(SECOND_SCREEN_MODE, MODE_EDIT)
-//            intent.putExtra(SHOP_ITEM_ID, itemId)
-//            return intent
-//        }
 
         fun newInstanceAddItem(): ShopItemFragment {
-//            val args = Bundle()
-//            args.putString(SECOND_SCREEN_MODE, MODE_ADD)
-//            val fragment = ShopItemFragment()
-//            fragment.arguments = args
-//            return fragment
-
-//            val args = Bundle().apply {
-//                putString(SECOND_SCREEN_MODE, MODE_ADD)
-//            }
-//            return ShopItemFragment().apply {
-//                arguments = args
-//            }
-
             return ShopItemFragment().apply {
                 arguments = Bundle().apply {
                     putString(SECOND_SCREEN_MODE, MODE_ADD)
@@ -241,7 +189,6 @@ class ShopItemFragment(
         }
 
         fun newInstanceEditItem(itemId: Int): ShopItemFragment {
-//            return ShopItemFragment(MODE_EDIT, itemId)
             return ShopItemFragment().apply {
                 arguments = Bundle().apply {
                     putString(SECOND_SCREEN_MODE, MODE_EDIT)
