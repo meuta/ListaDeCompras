@@ -13,10 +13,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
+import java.lang.Exception
 
 class ShopItemActivity : AppCompatActivity() {
 
-//    private lateinit var viewModel: ShopItemViewModel
+    //    private lateinit var viewModel: ShopItemViewModel
 //
 //    private lateinit var tilName: TextInputLayout
 //    private lateinit var tilCount: TextInputLayout
@@ -24,27 +25,27 @@ class ShopItemActivity : AppCompatActivity() {
 //    private lateinit var etCount: EditText
 //    private lateinit var btnSave: Button
 //
-//    private var screenMode = MODE_UNKNOWN
-//    private var itemId = ShopItem.UNDEFINED_ID
+    private var screenMode = MODE_UNKNOWN
+    private var itemId = ShopItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
 
-//        parseIntent()
+        parseIntent()
 //        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]    //initialization
 //
 //        initViews()
 //
 //        addTextChangedListeners()
 //
-//        launchRightMode()
+        launchRightMode()
 //
 //        observeViewModel()
 
     }
 
-//    private fun observeViewModel() {
+    //    private fun observeViewModel() {
 //        viewModel.errorInputName.observe(this) {
 //            Log.d("errorInputNameSubscribeTest", it.toString())
 //            val message = if (it) {
@@ -71,13 +72,25 @@ class ShopItemActivity : AppCompatActivity() {
 //        }
 //    }
 //
-//    private fun launchRightMode() {
+    private fun launchRightMode() {
 //        when (screenMode) {
 //            MODE_ADD -> launchAddMode()
 //            MODE_EDIT -> launchEditMode()
 //        }
-//    }
-//
+
+        val fragment = when (screenMode) {
+            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(itemId)
+            else -> throw RuntimeException("Unknown second_screen_mode: $screenMode")
+
+        }
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.shop_item_container, fragment)    //adding fragment to container
+            .commit()                                   // launch a transaction to execution
+    }
+
+    //
 //    private fun addTextChangedListeners() {
 //        etName.addTextChangedListener(object : TextWatcher {
 //            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -108,24 +121,24 @@ class ShopItemActivity : AppCompatActivity() {
 //        btnSave = findViewById(R.id.btn_save)
 //    }
 //
-//    private fun parseIntent(){
-//        if (!intent.hasExtra(SECOND_SCREEN_MODE)){
-//            throw RuntimeException("Param second_screen_mode is absent")
-//        }
-//        val mode = intent.getStringExtra(SECOND_SCREEN_MODE)
-//        if (mode != MODE_EDIT && mode != MODE_ADD){
-//            throw RuntimeException("Unknown second_screen_mode: $mode")
-//        }
-//        screenMode = mode
-//
-//        if (screenMode == MODE_EDIT) {
-//            if (!intent.hasExtra(SHOP_ITEM_ID)){
-//                throw RuntimeException("Param shop_item_id is absent")
-//            }
-//            itemId = intent.getIntExtra(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-//            Log.d("ShopItemActivity", "id = $itemId")
-//        }
-//    }
+    private fun parseIntent() {
+        if (!intent.hasExtra(SECOND_SCREEN_MODE)) {
+            throw RuntimeException("Param second_screen_mode is absent")
+        }
+        val mode = intent.getStringExtra(SECOND_SCREEN_MODE)
+        if (mode != MODE_EDIT && mode != MODE_ADD) {
+            throw RuntimeException("Unknown second_screen_mode: $mode")
+        }
+        screenMode = mode
+
+        if (screenMode == MODE_EDIT) {
+            if (!intent.hasExtra(SHOP_ITEM_ID)) {
+                throw RuntimeException("Param shop_item_id is absent")
+            }
+            itemId = intent.getIntExtra(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
+            Log.d("ShopItemActivity", "id = $itemId")
+        }
+    }
 //
 //    private fun launchAddMode(){
 //        btnSave.setOnClickListener {
