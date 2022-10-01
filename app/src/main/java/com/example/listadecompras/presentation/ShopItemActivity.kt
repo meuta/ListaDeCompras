@@ -15,7 +15,7 @@ import com.example.listadecompras.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.Exception
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
@@ -26,10 +26,14 @@ class ShopItemActivity : AppCompatActivity() {
 
         parseIntent()
 
-        if (savedInstanceState == null){            //Means that the Activity was not recreated
+        if (savedInstanceState == null) {            //Means that the Activity was not recreated
             launchRightMode()
         }
 
+    }
+
+    override fun onEditingFinished() {
+        finish()
     }
 
     private fun launchRightMode() {
@@ -87,4 +91,5 @@ class ShopItemActivity : AppCompatActivity() {
             return intent
         }
     }
+
 }

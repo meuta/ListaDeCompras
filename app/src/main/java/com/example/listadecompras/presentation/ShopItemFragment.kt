@@ -20,6 +20,9 @@ import com.google.android.material.textfield.TextInputLayout
 class ShopItemFragment: Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
+
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
+
     private lateinit var tilName: TextInputLayout
     private lateinit var tilCount: TextInputLayout
     private lateinit var etName: EditText
@@ -29,6 +32,14 @@ class ShopItemFragment: Fragment() {
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener){
+            onEditingFinishedListener = context
+        } else {
+            throw java.lang.RuntimeException("Activity must implement OnEditingFinishedListener")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("ShopItemFragment", "onCreate")
@@ -171,6 +182,12 @@ class ShopItemFragment: Fragment() {
             viewModel.editShopItem(etName.text?.toString(), etCount.text?.toString())
         }
     }
+
+
+    interface OnEditingFinishedListener{
+        fun onEditingFinished()
+    }
+
 
     companion object {
         private const val SECOND_SCREEN_MODE = "second_screen_mode"

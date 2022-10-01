@@ -2,6 +2,7 @@ package com.example.listadecompras.presentation
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -12,7 +13,7 @@ import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private lateinit var viewModel: MainViewModel
 
@@ -45,6 +46,12 @@ class MainActivity : AppCompatActivity() {
                 launchFragment(fragment)
             }
         }
+    }
+
+
+    override fun onEditingFinished() {
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
     }
 
     private fun isOnePaneMode(): Boolean {
@@ -127,5 +134,6 @@ class MainActivity : AppCompatActivity() {
             viewModel.changeEnableState(it)
         }
     }
+
 
 }
