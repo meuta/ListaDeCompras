@@ -1,11 +1,14 @@
 package com.example.listadecompras.presentation
 
-import android.view.View
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-import com.example.listadecompras.R
 
-class ShopItemViewHolder(var view: View) : RecyclerView.ViewHolder(view) {
-    val tvName = view.findViewById<TextView>(R.id.tv_name)
-    val tvCount = view.findViewById<TextView>(R.id.tv_count)
-}
+import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.RecyclerView
+
+//class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+class ShopItemViewHolder(
+//    val binding: ItemShopDisabledBinding
+    val binding: ViewDataBinding                //parent class for both
+) : RecyclerView.ViewHolder(binding.root) //{
+//    val tvName = view.findViewById<TextView>(R.id.tv_name)
+//    val tvCount = view.findViewById<TextView>(R.id.tv_count)
+//}
