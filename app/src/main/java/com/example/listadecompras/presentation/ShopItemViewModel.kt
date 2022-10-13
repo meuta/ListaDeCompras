@@ -9,7 +9,7 @@ import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
 import com.example.listadecompras.domain.ShopItem
 
-class ShopItemViewModel() : ViewModel() {
+class ShopItemViewModel : ViewModel() {
 
     private val repository = ShopListRepositoryImpl     // Not correct. Need to use Dependency Injection.
 

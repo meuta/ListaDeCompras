@@ -23,13 +23,6 @@ class ShopItemFragment : Fragment() {
     private val binding: FragmentShopItemBinding      //We can use it just between onCreateView and onDestroyView not inclusive.
         get() = _binding ?: throw RuntimeException("FragmentShopItemBinding == null")
 
-
-//    private lateinit var tilName: TextInputLayout
-//    private lateinit var tilCount: TextInputLayout
-//    private lateinit var etName: EditText
-//    private lateinit var etCount: EditText
-//    private lateinit var btnSave: Button
-
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
 
@@ -54,7 +47,6 @@ class ShopItemFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        return inflater.inflate(R.layout.fragment_shop_item, container, false)
         _binding = FragmentShopItemBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -64,7 +56,6 @@ class ShopItemFragment : Fragment() {
 
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]    //initialization
 
-//        initViews(view)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
@@ -78,29 +69,6 @@ class ShopItemFragment : Fragment() {
 
 
     private fun observeViewModel() {
-//        viewModel.errorInputName.observe(viewLifecycleOwner) {
-//            Log.d("errorInputNameSubscribeTest", it.toString())
-//            val message = if (it) {
-//                getString(R.string.error_input_name)
-//            } else {
-//                null
-//            }
-////            tilName.error = message
-//            binding.tilName.error = message
-//
-//        }
-
-//        viewModel.errorInputCount.observe(viewLifecycleOwner) {
-//            Log.d("errorInputCountSubscribeTest", it.toString())
-//            val message = if (it) {
-//                getString((R.string.error_input_count))
-//            } else {
-//                null
-//            }
-////            tilCount.error = message
-//            binding.tilCount.error = message
-//        }
-
         viewModel.closeScreen.observe(viewLifecycleOwner) {
             Log.d("closeScreenSubscribeTest", it.toString())
             activity?.onBackPressed()
@@ -115,7 +83,6 @@ class ShopItemFragment : Fragment() {
     }
 
     private fun addTextChangedListeners() {
-//        etName.addTextChangedListener(object : TextWatcher {
         binding.etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -128,7 +95,6 @@ class ShopItemFragment : Fragment() {
             }
         })
 
-//        etCount.addTextChangedListener(object : TextWatcher {
         binding.etCount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -142,15 +108,6 @@ class ShopItemFragment : Fragment() {
         })
     }
 
-//    private fun initViews(view: View) {
-//        with(view) {
-//            tilName = findViewById(R.id.til_name)
-//            tilCount = findViewById(R.id.til_count)
-//            etName = findViewById(R.id.et_name)
-//            etCount = findViewById(R.id.et_count)
-//            btnSave = findViewById(R.id.btn_save)
-//        }
-//    }
 
     private fun parseParams() {
 
@@ -183,11 +140,6 @@ class ShopItemFragment : Fragment() {
 
     private fun launchEditMode() {
         viewModel.getShopItem(itemId)
-//        viewModel.shopItem.observe(viewLifecycleOwner) {
-//            Log.d("shopItemSubscribeTest", it.toString())
-////            binding.etName.setText(it.name)
-////            binding.etCount.setText(it.count.toString())
-//        }
         binding.btnSave.setOnClickListener {
             viewModel.editShopItem(
                 binding.etName.text?.toString(),

@@ -23,19 +23,12 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
             else -> throw RuntimeException("Unknown viewType: $viewType")       // May become useful for developers
         }
-//        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-//        val binding = ItemShopDisabledBinding.inflate(
-//            LayoutInflater.from(parent.context),
-//            parent,
-//            false
-//        )
         val binding = DataBindingUtil.inflate<ViewDataBinding>(     // Specify parent type, cause different viewTypes
             LayoutInflater.from(parent.context),
             layout,
             parent,
             false
         )
-//        return ShopItemViewHolder(view)
         return ShopItemViewHolder(binding)
 
     }
@@ -46,21 +39,13 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
 
         val binding = holder.binding
 
-//        holder.view.setOnLongClickListener {
         binding.root.setOnLongClickListener {
             onShopItemLongClickListener?.invoke(shopItem)       // if not null, the function will be called
             true
         }
-//        holder.view.setOnClickListener {
         binding.root.setOnClickListener {
             onShopItemClickListener?.invoke(shopItem)       // if not null, the function will be called
         }
-
-//        holder.tvName.text = shopItem.name
-//        holder.tvCount.text = shopItem.count.toString()
-
-//        binding.tvName.text = shopItem.name
-//        binding.tvCount.text = shopItem.count.toString()
 
         when (binding){
             is ItemShopDisabledBinding -> {
@@ -76,7 +61,6 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
     override fun getItemViewType(position: Int): Int {
         return if (getItem(position).enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
     }
-
 
 
     companion object {

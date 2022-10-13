@@ -20,8 +20,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
     private lateinit var shopListAdapter: ShopListAdapter
 
-//    private var shopItemContainer: FragmentContainerView? = null
-
     private lateinit var binding: ActivityMainBinding
 
 
@@ -29,26 +27,17 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(R.layout.activity_main)
         setContentView(binding.root)
-
-//        shopItemContainer = findViewById(R.id.shop_item_container)
 
         setupRecyclerView()
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-//        viewModel = ViewModelProvider(
-//            this,
-//            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-//        )[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)      // Created new thread
             Log.d("TEST_OF_SUBSCRIBE", it.toString())
         }
 
-//        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
-//        buttonAddItem.setOnClickListener {
         binding.buttonAddShopItem.setOnClickListener {
             if (isOnePaneMode()) {
                 val intent = ShopItemActivity.newIntentAddItem(this)
@@ -74,7 +63,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         with(supportFragmentManager) {
             popBackStack()
             beginTransaction()
-//                .add(R.id.shop_item_container, fragment)    //adding fragment to container
                 .replace(R.id.shop_item_container, fragment)    //adding fragment to container
                 .addToBackStack(null)
                 .commit()
@@ -82,7 +70,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun setupRecyclerView() {
-//        val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
         shopListAdapter = ShopListAdapter()
         with(binding.rvShopList) {
             adapter = shopListAdapter
@@ -128,8 +115,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun setupClickListener() {
-
-
         shopListAdapter.onShopItemClickListener = {
             if (isOnePaneMode()) {
                 val intent = ShopItemActivity.newIntentEditItem(this, it.id)

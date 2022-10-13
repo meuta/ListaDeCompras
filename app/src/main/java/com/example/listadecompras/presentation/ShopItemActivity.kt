@@ -46,7 +46,6 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         }
 
         supportFragmentManager.beginTransaction()
-//            .add(R.id.shop_item_container, fragment)    //adding fragment to container
             .replace(R.id.shop_item_container, fragment)
             .commit()                                   // launch a transaction to execution
     }
