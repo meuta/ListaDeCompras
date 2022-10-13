@@ -10,7 +10,7 @@ interface ShopListDao {
     @Query("SELECT * FROM shop_items")
     fun getShopList(): LiveData<List<ShopItemBbModel>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)        //If we add an item with existed ID, it will be replace, so we can use it also in the edit case
     fun addShopItem(shopItemBbModel: ShopItemBbModel)
 
     @Query("DELETE FROM shop_items WHERE id=:shopItemId")
