@@ -1,17 +1,20 @@
 package com.example.listadecompras.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.listadecompras.data.ShopListRepositoryImpl
 import com.example.listadecompras.domain.AddShopItemUseCase
 import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
 import com.example.listadecompras.domain.ShopItem
 
-class ShopItemViewModel : ViewModel() {
+//class ShopItemViewModel : ViewModel() {
+class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = ShopListRepositoryImpl     // Not correct. Need to use Dependency Injection.
+//    private val repository = ShopListRepositoryImpl     // Not correct. Need to use Dependency Injection.
+    private val repository = ShopListRepositoryImpl(application)     // Not correct. Need to use Dependency Injection.
 
     private val getShopItemByIdUseCase = GetShopItemUseCase(repository)
     private val addItemToShopListUseCase = AddShopItemUseCase(repository)
