@@ -2,6 +2,7 @@ package com.example.listadecompras.presentation
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.listadecompras.data.ShopListRepositoryImpl
 import com.example.listadecompras.domain.DeleteShopItemUseCase
 import com.example.listadecompras.domain.EditShopItemUseCase
@@ -16,7 +17,8 @@ class MainViewModel(application: Application): AndroidViewModel(application)  {
 
     private val repository = ShopListRepositoryImpl(application)     // !!! Not correct. Need to use Dependency Injection.
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+//    private val scope = CoroutineScope(Dispatchers.IO)
+//    private val scope = CoroutineScope(Dispatchers.Main)
 
     private val getShopListUseCase = GetShopListUseCase(repository)
     private val deleteShopItemUseCase = DeleteShopItemUseCase(repository)
@@ -25,24 +27,23 @@ class MainViewModel(application: Application): AndroidViewModel(application)  {
     val shopList = getShopListUseCase.getShopList()
 
     fun deleteShopItem(shopItem: ShopItem) {
-//        deleteShopItemUseCase.deleteShopItem(shopItem)
-        scope.launch {
+//        scope.launch {
+        viewModelScope.launch {
             deleteShopItemUseCase.deleteShopItem(shopItem)
         }
     }
 
     fun changeEnableState(shopItem: ShopItem){
-//        val newItem = shopItem.copy(enabled = !shopItem.enabled)           // Can use copy, because DataClass
-//        editShopItemUseCase.editShopItem(newItem)
-        scope.launch {
+//        scope.launch {
+        viewModelScope.launch {
             val newItem = shopItem.copy(enabled = !shopItem.enabled)
             editShopItemUseCase.editShopItem(newItem)
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        scope.cancel()
-    }
+//    override fun onCleared() {
+//        super.onCleared()
+//        scope.cancel()
+//    }
 
 }
