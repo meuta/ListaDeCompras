@@ -56,8 +56,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/count_hint"
-                android:text="@{String.valueOf(viewModel.shopItem.count)}"
                 android:inputType="numberDecimal"
+                app:itemId="@{viewModel.shopItem.id}"
+                app:setCount="@{viewModel.shopItem.count}"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -69,7 +70,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
