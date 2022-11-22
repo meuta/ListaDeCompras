@@ -13,6 +13,7 @@ import com.example.listadecompras.R
 import com.example.listadecompras.databinding.ActivityMainBinding
 import com.example.listadecompras.domain.ShopItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.*
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
@@ -84,7 +85,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             )
         }
 
-        setupLongClickListener()
+//        setupLongClickListener()
 
         setupClickListener()
 
@@ -94,15 +95,34 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
     private fun setupSwipeListener(rvShopList: RecyclerView) {
         val callback = object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+//            0,
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
         ) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                return false
+
+//                return false
+
+                //getting the adapter
+//                val adapter = recyclerView.adapter as ShopListAdapter
+
+ //               viewHolder.itemViewType
+                //the position from where item has been moved
+                val from = viewHolder.adapterPosition
+
+                //the position where the item is moved
+                val to = target.adapterPosition
+
+                //telling the adapter to move the item
+//                adapter.notifyItemMoved(from, to)
+                shopListAdapter.notifyItemMoved(from, to)
+
+                return true
+
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -113,6 +133,19 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(rvShopList)
     }
+
+//    private fun moveItem(fromPosition: Int, toPosition: Int) {
+//        val list = differ.currentList.toMutableList()
+//        val fromItem = list[fromPosition]
+//        list.removeAt(fromPosition)
+//        if (toPosition < fromPosition) {
+//            list.add(toPosition + 1 , fromItem)
+//        } else {
+//            list.add(toPosition - 1, fromItem)
+//        }
+//        differ.submitList(list)
+//    }
+
 
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
@@ -126,11 +159,11 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         }
     }
 
-    private fun setupLongClickListener() {
-        shopListAdapter.onShopItemLongClickListener = {
-            viewModel.changeEnableState(it)
-        }
-    }
+//    private fun setupLongClickListener() {
+//        shopListAdapter.onShopItemLongClickListener = {
+//            viewModel.changeEnableState(it)
+//        }
+//    }
 
 
 }

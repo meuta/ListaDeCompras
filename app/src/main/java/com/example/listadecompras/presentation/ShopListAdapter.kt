@@ -9,11 +9,12 @@ import com.example.listadecompras.R
 import com.example.listadecompras.databinding.ItemShopDisabledBinding
 import com.example.listadecompras.databinding.ItemShopEnabledBinding
 import com.example.listadecompras.domain.ShopItem
+import java.util.*
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 
 
-    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null       //fun. param = ShopItem & return nothing
+//    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null       //fun. param = ShopItem & return nothing
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
 
@@ -33,16 +34,16 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
 
     }
 
-    override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
 
         val shopItem = getItem(position)
 
         val binding = holder.binding
 
-        binding.root.setOnLongClickListener {
-            onShopItemLongClickListener?.invoke(shopItem)       // if not null, the function will be called
-            true
-        }
+//        binding.root.setOnLongClickListener {
+//            onShopItemLongClickListener?.invoke(shopItem)       // if not null, the function will be called
+//            true
+//        }
         binding.root.setOnClickListener {
             onShopItemClickListener?.invoke(shopItem)       // if not null, the function will be called
         }
@@ -62,6 +63,10 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
         return if (getItem(position).enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
     }
 
+//    fun itemMoved(from: Int, to: Int) {
+//        Collections.swap(list, from, to)
+//        notifyItemMoved(from, to)
+//    }
 
     companion object {
         const val VIEW_TYPE_ENABLED = 1
