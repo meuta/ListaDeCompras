@@ -5,12 +5,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.domain.ShopListRepository
+import javax.inject.Inject
 
-class ShopListRepositoryImpl(application: Application): ShopListRepository {
+//class ShopListRepositoryImpl(application: Application): ShopListRepository {
 
-    private val shopListDao = AppDatabase.getInstance(application).shopListDao()
+class ShopListRepositoryImpl @Inject constructor(
+    private val shopListDao: ShopListDao,
+    private val mapper: ShopListMapper
+    ): ShopListRepository {
 
-    private val mapper = ShopListMapper()
+//    private val shopListDao = AppDatabase.getInstance(application).shopListDao()
+//    private val mapper = ShopListMapper()
 
     override fun getShopList(): LiveData<List<ShopItem>> {
 
