@@ -10,19 +10,11 @@ import com.example.listadecompras.domain.AddShopItemUseCase
 import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
 import com.example.listadecompras.domain.ShopItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-//class ShopItemViewModel : ViewModel() {
 class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
-//    private val repository = ShopListRepositoryImpl     // Not correct. Need to use Dependency Injection.
     private val repository = ShopListRepositoryImpl(application)     // Not correct. Need to use Dependency Injection.
-
-//    private val scope = CoroutineScope(Dispatchers.IO)
-//    private val scope = CoroutineScope(Dispatchers.Main)
 
     private val getShopItemByIdUseCase = GetShopItemUseCase(repository)
     private val addItemToShopListUseCase = AddShopItemUseCase(repository)
@@ -38,11 +30,8 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         get() = _shopItem
 
     fun getShopItem(itemId: Int) {
-//        scope.launch {
         viewModelScope.launch {
             val item = getShopItemByIdUseCase.getShopItemById(itemId)
-//            _shopItem.value = item
-//            _shopItem.postValue(item)
             _shopItem.value = item
         }
     }
@@ -60,7 +49,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-//        scope.launch {
+
             viewModelScope.launch {
                 val shopItem = ShopItem(name, count, true)
                 addItemToShopListUseCase.addItemToShopList(shopItem)
@@ -76,7 +65,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
             _shopItem.value?.let {
-//                scope.launch {
+
                 viewModelScope.launch {
                     val item = it.copy(name = name, count = count)
                     editShopItemUseCase.editShopItem(item)
@@ -88,8 +77,6 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun finishScreen() {
-//        _closeScreen.value = Unit
-//        _closeScreen.postValue(Unit)
         _closeScreen.value = Unit
 
     }
@@ -126,10 +113,5 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     fun resetErrorInputCount() {
         _errorInputCount.value = false
     }
-
-//    override fun onCleared() {
-//        super.onCleared()
-//        scope.cancel()
-//    }
 
 }

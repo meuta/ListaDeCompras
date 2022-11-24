@@ -33,7 +33,6 @@ abstract class AppDatabase: RoomDatabase() {
                     AppDatabase::class.java,
                     DB_NAME
                 )
-//                    .allowMainThreadQueries()       //permitted queries in the main thread
                     .build()
                 INSTANCE = db
                 return db       //Because INSTANCE is a nullable
