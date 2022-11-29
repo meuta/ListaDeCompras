@@ -1,8 +1,9 @@
 package com.example.listadecompras.presentation
 
-import android.app.Application
-import androidx.lifecycle.*
-import com.example.listadecompras.data.ShopListRepositoryImpl
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.listadecompras.domain.AddShopItemUseCase
 import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
@@ -10,18 +11,11 @@ import com.example.listadecompras.domain.ShopItem
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-//class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 class ShopItemViewModel @Inject constructor(
     private val getShopItemByIdUseCase: GetShopItemUseCase,
     private val addItemToShopListUseCase: AddShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase
 ) : ViewModel() {
-
-//    private val repository = ShopListRepositoryImpl(application)     // Not correct. Need to use Dependency Injection.
-//
-//    private val getShopItemByIdUseCase = GetShopItemUseCase(repository)
-//    private val addItemToShopListUseCase = AddShopItemUseCase(repository)
-//    private val editShopItemUseCase = EditShopItemUseCase(repository)
 
     private var _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>

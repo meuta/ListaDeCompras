@@ -3,7 +3,6 @@ package com.example.listadecompras.data
 import com.example.listadecompras.domain.ShopItem
 import javax.inject.Inject
 
-//class ShopListMapper {
 class ShopListMapper @Inject constructor() {
     fun mapEntityToDbModel(shopItem: ShopItem) = ShopItemBbModel(
         id = shopItem.id,

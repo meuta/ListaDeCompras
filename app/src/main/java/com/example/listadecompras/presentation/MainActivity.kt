@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
         setupRecyclerView()
 
-//        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         viewModel.shopList.observe(this) {
