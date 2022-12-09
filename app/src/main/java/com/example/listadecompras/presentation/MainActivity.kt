@@ -89,30 +89,50 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             )
         }
 
-        setupLongClickListener()
+//        setupLongClickListener()
 
         setupClickListener()
 
-        setupSwipeListener(binding.rvShopList)
+        setupSwipeAndDragListener(binding.rvShopList)
     }
 
 
-    private fun setupSwipeListener(rvShopList: RecyclerView) {
+    private fun setupSwipeAndDragListener(rvShopList: RecyclerView) {
         val callback = object : ItemTouchHelper.SimpleCallback(
-            0,
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
+            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                return 0.7f
+            }
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                return false
+//                return false
+
+                //the position from where item has been moved
+                val from = viewHolder.adapterPosition
+                val item = shopListAdapter.currentList[from]
+
+                //the position where the item is moved
+                val to = target.adapterPosition
+
+                viewModel.dragShopItem(item, from, to)
+
+                return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.adapterPosition]
-                viewModel.deleteShopItem(item)
+//                viewModel.deleteShopItem(item)
+                if (direction == ItemTouchHelper.RIGHT) {
+                    viewModel.deleteShopItem(item)
+
+                }else{
+                    viewModel.changeEnableState(item)
+                }
             }
         }
         val itemTouchHelper = ItemTouchHelper(callback)
@@ -131,11 +151,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         }
     }
 
-    private fun setupLongClickListener() {
-        shopListAdapter.onShopItemLongClickListener = {
-            viewModel.changeEnableState(it)
-        }
-    }
-
+//    private fun setupLongClickListener() {
+//        shopListAdapter.onShopItemLongClickListener = {
+//            viewModel.changeEnableState(it)
+//        }
+//    }
 
 }

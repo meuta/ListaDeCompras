@@ -2,10 +2,7 @@ package com.example.listadecompras.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.listadecompras.domain.DeleteShopItemUseCase
-import com.example.listadecompras.domain.EditShopItemUseCase
-import com.example.listadecompras.domain.GetShopListUseCase
-import com.example.listadecompras.domain.ShopItem
+import com.example.listadecompras.domain.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,6 +10,7 @@ class MainViewModel @Inject constructor(
     private val getShopListUseCase: GetShopListUseCase,
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
+    private val dragShopItemUseCase: DragShopItemUseCase
 ) : ViewModel() {
 
 
@@ -31,4 +29,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun dragShopItem(shopItem: ShopItem, from: Int, to: Int){
+        viewModelScope.launch {
+            dragShopItemUseCase.dragShopItem(shopItem, from, to)
+        }
+    }
 }

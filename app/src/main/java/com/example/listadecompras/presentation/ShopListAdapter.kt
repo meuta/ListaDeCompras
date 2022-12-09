@@ -13,7 +13,7 @@ import com.example.listadecompras.domain.ShopItem
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 
 
-    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null       //fun. param = ShopItem & return nothing
+//    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null       //fun. param = ShopItem & return nothing
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
 
@@ -39,10 +39,10 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
 
         val binding = holder.binding
 
-        binding.root.setOnLongClickListener {
-            onShopItemLongClickListener?.invoke(shopItem)       // if not null, the function will be called
-            true
-        }
+//        binding.root.setOnLongClickListener {
+//            onShopItemLongClickListener?.invoke(shopItem)       // if not null, the function will be called
+//            true
+//        }
         binding.root.setOnClickListener {
             onShopItemClickListener?.invoke(shopItem)       // if not null, the function will be called
         }

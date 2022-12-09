@@ -1,15 +1,13 @@
 package com.example.listadecompras.data
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
+
 
 @Dao
 interface ShopListDao {
 
-    @Query("SELECT * FROM shop_items")
+    @Query("SELECT * FROM shop_items ORDER BY shop_item_order ASC")
     fun getShopList(): LiveData<List<ShopItemBbModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)        //If we add an item with existed ID, it will be replace, so we can use it also in the edit case
@@ -20,4 +18,10 @@ interface ShopListDao {
 
     @Query("SELECT * FROM shop_items WHERE id=:shopItemId LIMIT 1")
     suspend fun getShopItem(shopItemId: Int): ShopItemBbModel
+
+    @Query("SELECT MAX(shop_item_order) FROM shop_items")
+    suspend fun getLargestOrder(): Int?
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun update(shopListBbModel: List<ShopItemBbModel?>?)
 }
