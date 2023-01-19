@@ -29,9 +29,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun dragShopItem(shopItem: ShopItem, from: Int, to: Int){
+    fun dragShopItem(from: Int, to: Int){
         viewModelScope.launch {
-            dragShopItemUseCase.dragShopItem(shopItem, from, to)
+            dragShopItemUseCase.dragShopItem(from, to)
         }
     }
 }

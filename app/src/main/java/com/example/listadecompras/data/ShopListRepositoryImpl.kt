@@ -15,6 +15,7 @@ class ShopListRepositoryImpl @Inject constructor(
     ): ShopListRepository {
 
     private lateinit var shopListDbModel: List<ShopItemBbModel>
+//    private var shopListDbModel = List<ShopItemBbModel>()
 
     override fun getShopList(): LiveData<List<ShopItem>> {
 
@@ -53,7 +54,8 @@ class ShopListRepositoryImpl @Inject constructor(
         return mapper.mapDbModelToEntity(dbModel)
     }
 
-    override suspend fun dragShopItem(shopItem: ShopItem, from: Int, to: Int) {
+    override suspend fun dragShopItem(from: Int, to: Int) {
+
         if (from < to) {
             for (i in from until to) {
                 Log.d("dragShopItem", "$from $to")
@@ -63,14 +65,16 @@ class ShopListRepositoryImpl @Inject constructor(
                 Log.d("dragShopItem", "name ${shopListDbModel[i + 1].name}, order $order2")
                 shopListDbModel[i].mOrder = order2
                 shopListDbModel[i + 1].mOrder = order1
+//            shopListDbModel[i].mOrder = shopListDbModel[i+1].mOrder.also { shopListDbModel[i+1].mOrder = shopListDbModel[i].mOrder }
+
                 Log.d("dragShopItem", "name ${shopListDbModel[i].name}, order ${shopListDbModel[i].mOrder}")
                 Log.d("dragShopItem", "name ${shopListDbModel[i + 1].name}, order ${shopListDbModel[i + 1].mOrder}")
 
             }
-
+//            shopListDbModel[from].mOrder = shopListDbModel[to].mOrder.also { shopListDbModel[to].mOrder = shopListDbModel[from].mOrder }
         } else {
             for (i in from downTo to + 1) {
-                Collections.swap(shopListDbModel, i, i - 1)
+//                Collections.swap(shopListDbModel, i, i - 1)
                 val order1: Int = shopListDbModel[i].mOrder
                 val order2: Int = shopListDbModel[i - 1].mOrder
                 shopListDbModel[i].mOrder = order2

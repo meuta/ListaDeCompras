@@ -14,6 +14,6 @@ interface ShopListRepository {
 
     suspend fun getShopItem(itemId: Int): ShopItem
 
-    suspend fun dragShopItem(shopItem: ShopItem, from:Int, to: Int)
+    suspend fun dragShopItem(from:Int, to: Int)
 
 }

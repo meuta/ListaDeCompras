@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
 import com.example.listadecompras.ShopApplication
@@ -39,8 +40,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         viewModel.shopList.observe(this) {
-            shopListAdapter.submitList(it)      // Created new thread
-            Log.d("TEST_OF_SUBSCRIBE", it.toString())
+//            if (shopListAdapter.onS) {
+                shopListAdapter.submitList(it)      // Created new thread
+                Log.d("TEST_OF_SUBSCRIBE", it.toString())
+//            }
         }
 
         binding.buttonAddShopItem.setOnClickListener {
@@ -114,15 +117,26 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
                 //the position from where item has been moved
                 val from = viewHolder.adapterPosition
-                val item = shopListAdapter.currentList[from]
 
                 //the position where the item is moved
                 val to = target.adapterPosition
 
-                viewModel.dragShopItem(item, from, to)
-
+                viewModel.dragShopItem(from, to)
                 return true
             }
+
+//            override fun onMoved(
+//                recyclerView: RecyclerView,
+//                viewHolder: RecyclerView.ViewHolder,
+//                fromPos: Int,
+//                target: RecyclerView.ViewHolder,
+//                toPos: Int,
+//                x: Int,
+//                y: Int
+//            ) {
+//                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
+//                Log.d("onMoved", "$fromPos, $toPos")
+//            }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.adapterPosition]
