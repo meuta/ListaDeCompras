@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var binding: ActivityMainBinding
 
+    var isDragged = false
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -41,7 +43,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
         viewModel.shopList.observe(this) {
 //            if (shopListAdapter.onS) {
+            if (!isDragged) {
                 shopListAdapter.submitList(it)      // Created new thread
+
+            }
                 Log.d("TEST_OF_SUBSCRIBE", it.toString())
 //            }
         }
@@ -121,11 +126,22 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 //the position where the item is moved
                 val to = target.adapterPosition
 
-                viewModel.dragShopItem(from, to)
+                Log.d("setupSwipeAndDragListener", "onMove   from, to = $from, $to")
+
+                shopListAdapter.notifyItemMoved(from, to)
+//                if (!isDragged) {
+                    viewModel.dragShopItem(from, to)
+
+//                }
                 return true
             }
 
-//            override fun onMoved(
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                isDragged = actionState == ACTION_STATE_DRAG
+                Log.d("setupSwipeAndDragListener", "onSelectedChanged   isDragged = $isDragged")
+                super.onSelectedChanged(viewHolder, actionState)
+            }
+            //            override fun onMoved(
 //                recyclerView: RecyclerView,
 //                viewHolder: RecyclerView.ViewHolder,
 //                fromPos: Int,
