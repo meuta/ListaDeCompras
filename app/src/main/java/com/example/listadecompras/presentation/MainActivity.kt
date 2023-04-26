@@ -7,8 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG
-import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_IDLE
+import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
 import com.example.listadecompras.ShopApplication
@@ -106,8 +105,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
     private fun setupSwipeAndDragListener(rvShopList: RecyclerView) {
         val callback = object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            UP or DOWN,
+            LEFT or RIGHT
         ) {
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
                 return 0.7f
@@ -144,6 +143,9 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                         fromGlobal = viewHolder?.adapterPosition
                         Log.d("setupSwipeAndDragListener", "Item is dragging. $fromGlobal")
                     }
+                    ACTION_STATE_SWIPE -> {
+                        fromGlobal = null
+                    }
                     ACTION_STATE_IDLE -> {
                         Log.d("setupSwipeAndDragListener", "Item is dropped. $fromGlobal $toGlobal")
                         fromGlobal?.let { from ->
@@ -168,7 +170,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.adapterPosition]
-                if (direction == ItemTouchHelper.RIGHT) {
+                if (direction == RIGHT) {
                     viewModel.deleteShopItem(item)
 
                 } else {
