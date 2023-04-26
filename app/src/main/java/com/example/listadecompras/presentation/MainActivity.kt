@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var binding: ActivityMainBinding
 
-    var fromGlobal : Int? = null
-    var toGlobal : Int? = null
+    private var fromGlobal : Int? = null
+    private var toGlobal : Int? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -143,15 +143,14 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                         fromGlobal = viewHolder?.adapterPosition
                         Log.d("setupSwipeAndDragListener", "Item is dragging. $fromGlobal")
                     }
-                    ACTION_STATE_SWIPE -> {
-                        fromGlobal = null
-                    }
                     ACTION_STATE_IDLE -> {
                         Log.d("setupSwipeAndDragListener", "Item is dropped. $fromGlobal $toGlobal")
                         fromGlobal?.let { from ->
                             toGlobal?.let { to ->
                                 if (fromGlobal != toGlobal) {
                                     viewModel.dragShopItem(from, to)
+                                    fromGlobal = null
+                                    toGlobal = null
                                 }
                             }
                         }
