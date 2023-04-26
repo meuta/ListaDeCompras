@@ -98,8 +98,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             )
         }
 
-//        setupLongClickListener()
-
         setupClickListener()
 
         setupSwipeAndDragListener(binding.rvShopList)
@@ -123,17 +121,11 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
                 //the position from where item has been moved
                 val from = viewHolder.adapterPosition
-                val viewTypeFrom = viewHolder.itemViewType
 
                 //the position where the item is moved
                 val to = target.adapterPosition
                 toGlobal = to
-                val viewTypeTo = target.itemViewType
 
-                Log.d(
-                    "setupSwipeAndDragListener",
-                    "onMove   from, to = $from $viewTypeFrom, $to $viewTypeTo"
-                )
                 val list = shopListAdapter.currentList.toMutableList()
                 val item = list[from]
                 list.removeAt(from)
@@ -146,18 +138,19 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
                 Log.d("setupSwipeAndDragListener", "onSelectedChanged   actionState = $actionState")
                 super.onSelectedChanged(viewHolder, actionState)
-                if (actionState == ACTION_STATE_DRAG) {
-                    viewHolder?.itemView?.alpha = 0.8f
-                    fromGlobal = viewHolder?.adapterPosition
-                    Log.d("setupSwipeAndDragListener", "Item is dragging. $fromGlobal")
-                }
                 when (actionState) {
-                    // when the item is dropped
+                    ACTION_STATE_DRAG -> {
+                        viewHolder?.itemView?.alpha = 0.7f
+                        fromGlobal = viewHolder?.adapterPosition
+                        Log.d("setupSwipeAndDragListener", "Item is dragging. $fromGlobal")
+                    }
                     ACTION_STATE_IDLE -> {
                         Log.d("setupSwipeAndDragListener", "Item is dropped. $fromGlobal $toGlobal")
                         fromGlobal?.let { from ->
                             toGlobal?.let { to ->
-                                viewModel.dragShopItem(from, to)
+                                if (fromGlobal != toGlobal) {
+                                    viewModel.dragShopItem(from, to)
+                                }
                             }
                         }
                     }
@@ -172,23 +165,9 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 viewHolder.itemView.alpha = 1.0f
             }
 
-            override fun onMoved(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                fromPos: Int,
-                target: RecyclerView.ViewHolder,
-                toPos: Int,
-                x: Int,
-                y: Int
-            ) {
-                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
-                Log.d("setupSwipeAndDragListener", "onMoved $fromPos, $toPos")
-
-            }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.adapterPosition]
-//                viewModel.deleteShopItem(item)
                 if (direction == ItemTouchHelper.RIGHT) {
                     viewModel.deleteShopItem(item)
 
@@ -213,10 +192,5 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         }
     }
 
-//    private fun setupLongClickListener() {
-//        shopListAdapter.onShopItemLongClickListener = {
-//            viewModel.changeEnableState(it)
-//        }
-//    }
 
 }

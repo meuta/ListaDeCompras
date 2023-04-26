@@ -13,7 +13,6 @@ import com.example.listadecompras.domain.ShopItem
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 
 
-//    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null       //fun. param = ShopItem & return nothing
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
 
@@ -21,7 +20,7 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
         val layout = when (viewType) {
             VIEW_TYPE_ENABLED -> R.layout.item_shop_enabled
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
-            else -> throw RuntimeException("Unknown viewType: $viewType")       // May become useful for developers
+            else -> throw RuntimeException("Unknown viewType: $viewType")
         }
         val binding = DataBindingUtil.inflate<ViewDataBinding>(     // Specify parent type, cause different viewTypes
             LayoutInflater.from(parent.context),
@@ -39,12 +38,8 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
 
         val binding = holder.binding
 
-//        binding.root.setOnLongClickListener {
-//            onShopItemLongClickListener?.invoke(shopItem)       // if not null, the function will be called
-//            true
-//        }
         binding.root.setOnClickListener {
-            onShopItemClickListener?.invoke(shopItem)       // if not null, the function will be called
+            onShopItemClickListener?.invoke(shopItem)
         }
 
         when (binding){

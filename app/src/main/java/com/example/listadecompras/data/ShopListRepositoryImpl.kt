@@ -14,12 +14,10 @@ class ShopListRepositoryImpl @Inject constructor(
     ): ShopListRepository {
 
     private lateinit var shopListDbModel: List<ShopItemBbModel>
-//    private var shopListDbModel = List<ShopItemBbModel>()
 
     override fun getShopList(): LiveData<List<ShopItem>> {
 
         return Transformations.map(shopListDao.getShopList()) {
-//            mapper.mapListDbModelToEntity(it)
             mapper.mapListDbModelToEntity(it).apply {
                 shopListDbModel = it
                 for (i in it ) {
@@ -30,7 +28,6 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addShopItem(shopItem: ShopItem) {
-//        shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
         val dbModel = mapper.mapEntityToDbModel(shopItem)
         dbModel.mOrder = (shopListDao.getLargestOrder() ?: 0) + 1
         shopListDao.addShopItem(dbModel)
@@ -38,7 +35,6 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun editShopItem(shopItem: ShopItem) {
-//        shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
         val dbModel = mapper.mapEntityToDbModel(shopItem)
         val item = shopListDao.getShopItem(shopItem.id)
         dbModel.mOrder = item.mOrder
@@ -60,11 +56,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
         if (from < to) {
             Log.d("dragShopItem", "$from $to")
-            val firstOrder = shopListDbModel[from].mOrder
-            val firstName = shopListDbModel[from].name
             val lastOrder = shopListDbModel[to].mOrder
-            val lastName = shopListDbModel[to].name
-            Log.d("dragShopItem", "firstOrder = $firstName $firstOrder lastOrder = $lastName $lastOrder")
             for (i in to downTo from + 1) {
                 Log.d("dragShopItem", "name ${shopListDbModel[i].name}, order ${shopListDbModel[i].mOrder}")
                 Log.d("dragShopItem", "name ${shopListDbModel[i-1].name}, order ${shopListDbModel[i-1].mOrder}")
@@ -74,7 +66,7 @@ class ShopListRepositoryImpl @Inject constructor(
             shopListDbModel[from].mOrder = lastOrder
 
 
-        } else  if (from > to) {
+        } else if (from > to) {
             Log.d("dragShopItem", "$from $to")
             val lastOrder = shopListDbModel[to].mOrder
             for (i in to until from) {
