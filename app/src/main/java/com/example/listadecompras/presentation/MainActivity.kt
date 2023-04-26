@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG
+import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_IDLE
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
 import com.example.listadecompras.ShopApplication
@@ -20,7 +21,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var binding: ActivityMainBinding
 
-    var isDragged = false
+    var fromGlobal : Int? = null
+    var toGlobal : Int? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -42,13 +44,12 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         viewModel.shopList.observe(this) {
-//            if (shopListAdapter.onS) {
-            if (!isDragged) {
-                shopListAdapter.submitList(it)      // Created new thread
+            Log.d("TEST_OF_SUBSCRIBE", it.toString())
 
-            }
-                Log.d("TEST_OF_SUBSCRIBE", it.toString())
-//            }
+            shopListAdapter.submitList(it)      // Created new thread
+            Log.d("TEST_OF_SUBSCRIBE", "submitList")
+
+
         }
 
         binding.buttonAddShopItem.setOnClickListener {
@@ -113,46 +114,77 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
                 return 0.7f
             }
+
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-//                return false
 
                 //the position from where item has been moved
                 val from = viewHolder.adapterPosition
+                val viewTypeFrom = viewHolder.itemViewType
 
                 //the position where the item is moved
                 val to = target.adapterPosition
+                toGlobal = to
+                val viewTypeTo = target.itemViewType
 
-                Log.d("setupSwipeAndDragListener", "onMove   from, to = $from, $to")
+                Log.d(
+                    "setupSwipeAndDragListener",
+                    "onMove   from, to = $from $viewTypeFrom, $to $viewTypeTo"
+                )
+                val list = shopListAdapter.currentList.toMutableList()
+                val item = list[from]
+                list.removeAt(from)
+                list.add(to, item)
 
-                shopListAdapter.notifyItemMoved(from, to)
-//                if (!isDragged) {
-                    viewModel.dragShopItem(from, to)
-
-//                }
+                shopListAdapter.submitList(list)
                 return true
             }
 
             override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-                isDragged = actionState == ACTION_STATE_DRAG
-                Log.d("setupSwipeAndDragListener", "onSelectedChanged   isDragged = $isDragged")
+                Log.d("setupSwipeAndDragListener", "onSelectedChanged   actionState = $actionState")
                 super.onSelectedChanged(viewHolder, actionState)
+                if (actionState == ACTION_STATE_DRAG) {
+                    viewHolder?.itemView?.alpha = 0.8f
+                    fromGlobal = viewHolder?.adapterPosition
+                    Log.d("setupSwipeAndDragListener", "Item is dragging. $fromGlobal")
+                }
+                when (actionState) {
+                    // when the item is dropped
+                    ACTION_STATE_IDLE -> {
+                        Log.d("setupSwipeAndDragListener", "Item is dropped. $fromGlobal $toGlobal")
+                        fromGlobal?.let { from ->
+                            toGlobal?.let { to ->
+                                viewModel.dragShopItem(from, to)
+                            }
+                        }
+                    }
+                }
             }
-            //            override fun onMoved(
-//                recyclerView: RecyclerView,
-//                viewHolder: RecyclerView.ViewHolder,
-//                fromPos: Int,
-//                target: RecyclerView.ViewHolder,
-//                toPos: Int,
-//                x: Int,
-//                y: Int
-//            ) {
-//                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
-//                Log.d("onMoved", "$fromPos, $toPos")
-//            }
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+                super.clearView(recyclerView, viewHolder)
+                viewHolder.itemView.alpha = 1.0f
+            }
+
+            override fun onMoved(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                fromPos: Int,
+                target: RecyclerView.ViewHolder,
+                toPos: Int,
+                x: Int,
+                y: Int
+            ) {
+                super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
+                Log.d("setupSwipeAndDragListener", "onMoved $fromPos, $toPos")
+
+            }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.adapterPosition]
@@ -160,7 +192,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 if (direction == ItemTouchHelper.RIGHT) {
                     viewModel.deleteShopItem(item)
 
-                }else{
+                } else {
                     viewModel.changeEnableState(item)
                 }
             }
