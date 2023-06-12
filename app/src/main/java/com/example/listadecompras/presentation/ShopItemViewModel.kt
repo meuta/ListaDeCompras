@@ -28,7 +28,7 @@ class ShopItemViewModel @Inject constructor(
 
     fun getShopItem(itemId: Int) {
         viewModelScope.launch {
-            val item = getShopItemByIdUseCase.getShopItemById(itemId)
+            val item = getShopItemByIdUseCase(itemId)
             _shopItem.value = item
         }
     }
@@ -49,7 +49,7 @@ class ShopItemViewModel @Inject constructor(
 
             viewModelScope.launch {
                 val shopItem = ShopItem(name, count, true)
-                addItemToShopListUseCase.addItemToShopList(shopItem)
+                addItemToShopListUseCase(shopItem)
                 finishScreen()
             }
 
@@ -65,7 +65,7 @@ class ShopItemViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     val item = it.copy(name = name, count = count)
-                    editShopItemUseCase.editShopItem(item)
+                    editShopItemUseCase(item)
                     finishScreen()
                 }
 

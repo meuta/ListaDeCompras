@@ -14,24 +14,24 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val shopList = getShopListUseCase.getShopList()
+    val shopList = getShopListUseCase()
 
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {
-            deleteShopItemUseCase.deleteShopItem(shopItem)
+            deleteShopItemUseCase(shopItem)
         }
     }
 
     fun changeEnableState(shopItem: ShopItem){
         viewModelScope.launch {
             val newItem = shopItem.copy(enabled = !shopItem.enabled)
-            editShopItemUseCase.editShopItem(newItem)
+            editShopItemUseCase(newItem)
         }
     }
 
     fun dragShopItem(from: Int, to: Int){
         viewModelScope.launch {
-            dragShopItemUseCase.dragShopItem(from, to)
+            dragShopItemUseCase(from, to)
         }
     }
 }

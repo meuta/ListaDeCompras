@@ -4,8 +4,6 @@ import javax.inject.Inject
 
 class AddShopItemUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
-    suspend fun addItemToShopList(shopItem: ShopItem){
-        shopListRepository.addShopItem(shopItem)
-    }
+    suspend operator fun invoke(shopItem: ShopItem) = shopListRepository.addShopItem(shopItem)
 
 }
