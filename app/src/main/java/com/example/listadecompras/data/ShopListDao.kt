@@ -1,14 +1,13 @@
 package com.example.listadecompras.data
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ShopListDao {
 
     @Query("SELECT * FROM shop_items ORDER BY shop_item_order ASC")
-    fun getShopList(): LiveData<List<ShopItemBbModel>>
+    fun getShopList(): Flow<List<ShopItemBbModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)        //If we add an item with existed ID, it will be replace, so we can use it also in the edit case
     suspend fun addShopItem(shopItemBbModel: ShopItemBbModel)

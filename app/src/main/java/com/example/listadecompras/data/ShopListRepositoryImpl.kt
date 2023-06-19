@@ -1,10 +1,10 @@
 package com.example.listadecompras.data
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.domain.ShopListRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
@@ -15,9 +15,9 @@ class ShopListRepositoryImpl @Inject constructor(
 
     private lateinit var shopListDbModel: List<ShopItemBbModel>
 
-    override fun getShopList(): LiveData<List<ShopItem>> {
+    override fun getShopList(): Flow<List<ShopItem>> {
 
-        return Transformations.map(shopListDao.getShopList()) {
+        return shopListDao.getShopList().map {
             mapper.mapListDbModelToEntity(it).apply {
                 shopListDbModel = it
                 for (i in it ) {

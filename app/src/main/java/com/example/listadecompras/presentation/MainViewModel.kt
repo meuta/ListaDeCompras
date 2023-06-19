@@ -1,6 +1,7 @@
 package com.example.listadecompras.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.listadecompras.domain.*
 import kotlinx.coroutines.launch
@@ -14,7 +15,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val shopList = getShopListUseCase()
+    val shopList = getShopListUseCase().asLiveData()
 
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {

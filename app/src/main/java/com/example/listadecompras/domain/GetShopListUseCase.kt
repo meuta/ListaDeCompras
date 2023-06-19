@@ -1,10 +1,10 @@
 package com.example.listadecompras.domain
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetShopListUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
-    operator fun invoke(): LiveData<List<ShopItem>> = shopListRepository.getShopList()
+    operator fun invoke(): Flow<List<ShopItem>> = shopListRepository.getShopList()
 
 }
