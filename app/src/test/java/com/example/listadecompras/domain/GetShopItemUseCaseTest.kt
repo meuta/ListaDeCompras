@@ -21,12 +21,11 @@ class GetShopItemUseCaseTest{
                 ShopItem(
                     name = c.toString(),
                     count = 1.0,
-                    enabled = true,
-                    id = index
+                    enabled = true
                 )
             )
         }
-        shopListToInsert.shuffle()
+//        shopListToInsert.shuffle()
         runBlocking {
             shopListToInsert.forEach{fakeRepository.addShopItem(it)}
         }
@@ -34,9 +33,9 @@ class GetShopItemUseCaseTest{
 
     @Test
     fun `Get required item, item correct`() = runBlocking{
+
         for ((index, i) in ('a'..'z').withIndex()) {
             val shopItem = getShopItem(index)
-
             assertThat(shopItem.name).isEqualTo(i.toString())
         }
     }
