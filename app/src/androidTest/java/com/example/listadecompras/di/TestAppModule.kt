@@ -18,15 +18,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object TestAppModule {
 
-    @Singleton
-    @Provides
-    fun provideShopListDao(@ApplicationContext context: Context): ShopListDao {
-        return Room.inMemoryDatabaseBuilder(
-            context.applicationContext,
-            AppDatabase::class.java
-        ).build().shopListDao()
-    }
-
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
@@ -38,8 +29,14 @@ object TestAppModule {
 
     @Singleton
     @Provides
-    fun provideRepository(db: AppDatabase, mapper: ShopListMapper): ShopListRepository {
-        return ShopListRepositoryImpl(db.shopListDao(), mapper)
+    fun provideShopListDao(db: AppDatabase): ShopListDao {
+        return db.shopListDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRepository(dao: ShopListDao, mapper: ShopListMapper): ShopListRepository {
+        return ShopListRepositoryImpl(dao, mapper)
     }
 
     @Singleton
