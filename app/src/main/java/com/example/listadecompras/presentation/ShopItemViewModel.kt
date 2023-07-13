@@ -8,9 +8,11 @@ import com.example.listadecompras.domain.AddShopItemUseCase
 import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
 import com.example.listadecompras.domain.ShopItem
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class ShopItemViewModel @Inject constructor(
     private val getShopItemByIdUseCase: GetShopItemUseCase,
     private val addItemToShopListUseCase: AddShopItemUseCase,

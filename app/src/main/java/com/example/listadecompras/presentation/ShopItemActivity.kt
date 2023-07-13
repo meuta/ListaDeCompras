@@ -7,7 +7,9 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private var screenMode = MODE_UNKNOWN

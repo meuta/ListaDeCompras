@@ -1,11 +1,7 @@
 package com.example.listadecompras
 
 import android.app.Application
-import com.example.listadecompras.di.DaggerApplicationComponent
+import dagger.hilt.android.HiltAndroidApp
 
-class ShopApplication : Application() {
-
-    val component by lazy {
-        DaggerApplicationComponent.factory().create(this)
-    }
-}
+@HiltAndroidApp
+class  ShopApplication : Application()

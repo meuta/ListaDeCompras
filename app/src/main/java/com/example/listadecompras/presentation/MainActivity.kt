@@ -3,44 +3,35 @@ package com.example.listadecompras.presentation
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
-import com.example.listadecompras.ShopApplication
 import com.example.listadecompras.databinding.ActivityMainBinding
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
+
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var binding: ActivityMainBinding
 
     private var fromGlobal : Int? = null
     private var toGlobal : Int? = null
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory
-
-    private val component by lazy {
-        (application as ShopApplication).component
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        component.inject(this)
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupRecyclerView()
-
-        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         viewModel.shopList.observe(this) {
             Log.d("TEST_OF_SUBSCRIBE", it.toString())
@@ -119,10 +110,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             ): Boolean {
 
                 //the position from where item has been moved
-                val from = viewHolder.adapterPosition
+                val from = viewHolder.bindingAdapterPosition
 
                 //the position where the item is moved
-                val to = target.adapterPosition
+                val to = target.bindingAdapterPosition
                 toGlobal = to
 
                 val list = shopListAdapter.currentList.toMutableList()
@@ -140,7 +131,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 when (actionState) {
                     ACTION_STATE_DRAG -> {
                         viewHolder?.itemView?.alpha = 0.7f
-                        fromGlobal = viewHolder?.adapterPosition
+                        fromGlobal = viewHolder?.bindingAdapterPosition
                         Log.d("setupSwipeAndDragListener", "Item is dragging. $fromGlobal")
                     }
                     ACTION_STATE_IDLE -> {
@@ -168,7 +159,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = shopListAdapter.currentList[viewHolder.adapterPosition]
+                val item = shopListAdapter.currentList[viewHolder.bindingAdapterPosition]
                 if (direction == RIGHT) {
                     viewModel.deleteShopItem(item)
 
@@ -192,6 +183,5 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             }
         }
     }
-
 
 }
