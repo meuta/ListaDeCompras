@@ -1,6 +1,7 @@
 package com.example.listadecompras.di
 
 import android.content.Context
+import androidx.work.WorkManager
 import com.example.listadecompras.data.AppDatabase
 import com.example.listadecompras.data.ShopListDao
 import com.example.listadecompras.data.ShopListMapper
@@ -31,7 +32,9 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRepository(dao: ShopListDao, mapper: ShopListMapper): ShopListRepository {
+    fun provideRepository(
+        dao: ShopListDao, mapper: ShopListMapper
+    ): ShopListRepository {
         return ShopListRepositoryImpl(dao, mapper)
     }
 
@@ -39,6 +42,13 @@ object AppModule {
     @Provides
     fun provideMapper(): ShopListMapper {
         return ShopListMapper()
+    }
+
+    @Provides
+    fun provideWorkManager(
+        @ApplicationContext context: Context
+    ): WorkManager {
+        return WorkManager.getInstance(context)
     }
 
 }
