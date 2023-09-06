@@ -15,25 +15,27 @@ class ShopItemViewModel @Inject constructor(
     private val getShopItemByIdUseCase: GetShopItemUseCase,
     private val addItemToShopListUseCase: AddShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
-    private val workManager: WorkManager
+//    private val workManager: WorkManager
 ) : ViewModel() {
 
-    init {
-        workManager.enqueueUniqueWork(
-            SimpleWorker.WORK_NAME,
-            ExistingWorkPolicy.REPLACE,
-            SimpleWorker.makeRequest()
-        )
-    }
+//    init {
+//        workManager.enqueueUniqueWork(
+//            SimpleWorker.WORK_NAME,
+//            ExistingWorkPolicy.REPLACE,
+//            SimpleWorker.makeRequest()
+//        )
+//    }
 
     private var _errorInputName = MutableLiveData<Boolean>()
-    val errorInputName: LiveData<Boolean>
-        get() = _errorInputName
+//    val errorInputName: LiveData<Boolean>
+//        get() = _errorInputName
+    val errorInputName: LiveData<Boolean> = _errorInputName
 
 
     private val _shopItem = MutableLiveData<ShopItem>()
-    val shopItem: LiveData<ShopItem>
-        get() = _shopItem
+//    val shopItem: LiveData<ShopItem>
+//        get() = _shopItem
+    val shopItem: LiveData<ShopItem> = _shopItem
 
     fun getShopItem(itemId: Int) {
         viewModelScope.launch {
