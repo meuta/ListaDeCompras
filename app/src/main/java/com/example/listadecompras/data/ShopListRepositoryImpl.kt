@@ -12,7 +12,7 @@ import javax.inject.Singleton
 class ShopListRepositoryImpl @Inject constructor(
     private val shopListDao: ShopListDao,
     private val mapper: ShopListMapper
-    ): ShopListRepository {
+) : ShopListRepository {
 
     private lateinit var shopListDbModel: List<ShopItemBbModel>
 
@@ -21,7 +21,7 @@ class ShopListRepositoryImpl @Inject constructor(
         return shopListDao.getShopList().map {
             mapper.mapListDbModelToEntity(it).apply {
                 shopListDbModel = it
-                for (i in it ) {
+                for (i in it) {
                     Log.d("shopListDbModel", "${i.name} ${i.mOrder}")
                 }
             }
@@ -40,7 +40,6 @@ class ShopListRepositoryImpl @Inject constructor(
         val item = shopListDao.getShopItem(shopItem.id)
         dbModel.mOrder = item.mOrder
         shopListDao.addShopItem(dbModel)
-
     }
 
     override suspend fun deleteShopItem(shopItem: ShopItem) {
@@ -59,9 +58,15 @@ class ShopListRepositoryImpl @Inject constructor(
             Log.d("dragShopItem", "$from $to")
             val lastOrder = shopListDbModel[to].mOrder
             for (i in to downTo from + 1) {
-                Log.d("dragShopItem", "name ${shopListDbModel[i].name}, order ${shopListDbModel[i].mOrder}")
-                Log.d("dragShopItem", "name ${shopListDbModel[i-1].name}, order ${shopListDbModel[i-1].mOrder}")
-                shopListDbModel[i].mOrder = shopListDbModel[i-1].mOrder
+                Log.d(
+                    "dragShopItem",
+                    "name ${shopListDbModel[i].name}, order ${shopListDbModel[i].mOrder}"
+                )
+                Log.d(
+                    "dragShopItem",
+                    "name ${shopListDbModel[i - 1].name}, order ${shopListDbModel[i - 1].mOrder}"
+                )
+                shopListDbModel[i].mOrder = shopListDbModel[i - 1].mOrder
 
             }
             shopListDbModel[from].mOrder = lastOrder
@@ -71,9 +76,15 @@ class ShopListRepositoryImpl @Inject constructor(
             Log.d("dragShopItem", "$from $to")
             val lastOrder = shopListDbModel[to].mOrder
             for (i in to until from) {
-                Log.d("dragShopItem", "name ${shopListDbModel[i].name}, order ${shopListDbModel[i].mOrder}")
-                Log.d("dragShopItem", "name ${shopListDbModel[i+1].name}, order ${shopListDbModel[i+1].mOrder}")
-                shopListDbModel[i].mOrder = shopListDbModel[i+1].mOrder
+                Log.d(
+                    "dragShopItem",
+                    "name ${shopListDbModel[i].name}, order ${shopListDbModel[i].mOrder}"
+                )
+                Log.d(
+                    "dragShopItem",
+                    "name ${shopListDbModel[i + 1].name}, order ${shopListDbModel[i + 1].mOrder}"
+                )
+                shopListDbModel[i].mOrder = shopListDbModel[i + 1].mOrder
             }
             shopListDbModel[from].mOrder = lastOrder
         }

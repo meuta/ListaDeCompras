@@ -135,9 +135,11 @@ class ShopItemFragment : Fragment() {
 
     private fun launchAddMode() {
         binding.btnSave.setOnClickListener {
-            viewModel.addShopItem(binding.etName.text?.toString(), binding.etCount.text?.toString())
+            viewModel.addShopItem(
+                binding.etName.text?.toString(),
+                binding.etCount.text?.toString()
+            )
         }
-
     }
 
     private fun launchEditMode() {
@@ -148,7 +150,6 @@ class ShopItemFragment : Fragment() {
                 binding.etCount.text?.toString()
             )
         }
-
     }
 
 
@@ -183,5 +184,4 @@ class ShopItemFragment : Fragment() {
             }
         }
     }
-
 }

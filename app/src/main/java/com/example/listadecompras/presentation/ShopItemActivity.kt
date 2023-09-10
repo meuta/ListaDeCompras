@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
+//class ShopItemActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditingFinishedListener {
 
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
@@ -36,6 +37,8 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         val fragment = when (screenMode) {
             MODE_ADD -> ShopItemFragment.newInstanceAddItem()
             MODE_EDIT -> ShopItemFragment.newInstanceEditItem(itemId)
+//            MODE_ADD -> ShopItemComposeFragment.newInstanceAddItem()
+//            MODE_EDIT -> ShopItemComposeFragment.newInstanceEditItem(itemId)
             else -> throw RuntimeException("Unknown second_screen_mode: $screenMode")
 
         }

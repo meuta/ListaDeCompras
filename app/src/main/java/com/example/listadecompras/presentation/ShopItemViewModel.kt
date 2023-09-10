@@ -59,11 +59,10 @@ class ShopItemViewModel @Inject constructor(
         if (fieldsValid) {
 
             viewModelScope.launch {
-                val shopItem = ShopItem(name, count, true)
-                addItemToShopListUseCase(shopItem)
+                val item = ShopItem(name, count, true)
+                addItemToShopListUseCase(item)
                 finishScreen()
             }
-
         }
     }
 
@@ -79,14 +78,12 @@ class ShopItemViewModel @Inject constructor(
                     editShopItemUseCase(item)
                     finishScreen()
                 }
-
             }
         }
     }
 
     private fun finishScreen() {
         _closeScreen.value = Unit
-
     }
 
     private fun parseName(inputName: String?): String {
@@ -121,5 +118,4 @@ class ShopItemViewModel @Inject constructor(
     fun resetErrorInputCount() {
         _errorInputCount.value = false
     }
-
 }
