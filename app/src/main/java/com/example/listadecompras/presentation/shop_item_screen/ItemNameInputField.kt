@@ -17,7 +17,10 @@ import androidx.compose.ui.unit.dp
 fun ItemInputField(
     modifier: Modifier = Modifier,
     text: String,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Text,
+    ),
+    errorText: @Composable (() -> Unit)? = null,
     showError: Boolean,
     label: @Composable (() -> Unit)? = null,
     onTextChange: (String) -> Unit
@@ -31,28 +34,31 @@ fun ItemInputField(
             value = text,
             keyboardOptions = keyboardOptions,
             onValueChange = onTextChange,
+            supportingText = errorText,
             isError = showError
         )
     }
 }
 
-@Composable
-fun ItemErrorText(showErrorName: Boolean, showErrorCount: Boolean, ){
-    Text(
-        text = if (showErrorName) "Invalid name" else if (showErrorCount) "Invalid count" else "",
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.error,
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
+//fun PreviewItemNameInputField(isError : Boolean = true) {
 fun PreviewItemNameInputField() {
+    val isError = true
     ItemInputField(
         modifier = Modifier.padding(all = 16.dp),
         label = { Text(text = "Name") },
         onTextChange = {},
         text = "",
-        showError = false
+        errorText = {
+            if (isError) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "please enter a name",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        },
+        showError = isError
     )
 }

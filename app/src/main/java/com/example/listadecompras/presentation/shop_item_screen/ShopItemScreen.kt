@@ -2,6 +2,7 @@ package com.example.listadecompras.presentation.shop_item_screen
 
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -15,8 +16,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun ShopItemScreen(shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()) {
 //    val itemPaneState by shopItemViewModel.uiState.collectAsState()
 
-    Scaffold() { padding ->
-        Box(modifier = Modifier.padding(padding)) {
+    Scaffold(Modifier.fillMaxSize()) { padding ->
+        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             ShopItemEditPane(
                 itemName = shopItemViewModel.shopItemEditName,
                 itemCount = shopItemViewModel.shopItemEditCount,
@@ -33,9 +34,10 @@ fun ShopItemScreen(shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewShopItemScreen() {
+fun PreviewShopItemScreen(shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()) {
 //    ShopItemScreen(shopItemViewModel = ShopItemViewModel(
-//        GetShopItemUseCase(ShopListRepositoryImpl()),
-//        AddShopItemUseCase(),
-//    EditShopItemUseCase()))
+////        GetShopItemUseCase(ShopListRepositoryImpl(, ShopListMapper())),
+////        AddShopItemUseCase(ShopListRepositoryImpl(),
+////    EditShopItemUseCase(ShopListRepositoryImpl()
+//    )
 }
