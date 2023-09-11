@@ -13,19 +13,23 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun ShopItemScreen(shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()) {
-    val itemPaneState by shopItemViewModel.uiState.collectAsState()
+//    val itemPaneState by shopItemViewModel.uiState.collectAsState()
 
     Scaffold() { padding ->
         Box(modifier = Modifier.padding(padding)) {
             ShopItemEditPane(
                 itemName = shopItemViewModel.shopItemEditName,
-                showError = itemPaneState.showError,
+                itemCount = shopItemViewModel.shopItemEditCount,
+                showErrorName = shopItemViewModel.showErrorName,
+                showErrorCount = shopItemViewModel.showErrorCount,
                 onNameChange = { name -> shopItemViewModel.onNameChanged(name) },
+                onCountChange = { count -> shopItemViewModel.onCountChanged(count) },
                 onClick = { shopItemViewModel.onSaveClick() }
             )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

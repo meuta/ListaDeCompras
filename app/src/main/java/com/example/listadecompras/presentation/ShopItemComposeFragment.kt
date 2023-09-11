@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -98,8 +97,6 @@ class ShopItemComposeFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-//        addTextChangedListeners()
-
         launchRightMode()
 
         observeViewModel()
@@ -127,32 +124,6 @@ class ShopItemComposeFragment : Fragment() {
         }
     }
 
-    private fun addTextChangedListeners() {
-//        binding.etName.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//            }
-//
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                viewModel.resetErrorInputName()
-//            }
-//
-//            override fun afterTextChanged(s: Editable?) {
-//            }
-//        })
-//
-//        binding.etCount.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//            }
-//
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                viewModel.resetErrorInputCount()
-//            }
-//
-//            override fun afterTextChanged(s: Editable?) {
-//            }
-//        })
-    }
-
 
     private fun parseParams() {
 
@@ -176,7 +147,8 @@ class ShopItemComposeFragment : Fragment() {
         }
     }
 
-   private fun launchAddMode() {
+    private fun launchAddMode() {
+        viewModel.getZeroItem()
         viewModel.saveClick = { viewModel.addShopItem() }
     }
 

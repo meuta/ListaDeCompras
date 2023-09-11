@@ -3,21 +3,24 @@ package com.example.listadecompras.presentation.shop_item_screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ItemNameInputField(
+fun ItemInputField(
     modifier: Modifier = Modifier,
-    name: String,
+    text: String,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
     showError: Boolean,
     label: @Composable (() -> Unit)? = null,
-    onNameChange: (String) -> Unit
+    onTextChange: (String) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -25,18 +28,18 @@ fun ItemNameInputField(
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             label = label,
-            value = name,
-            onValueChange = onNameChange,
+            value = text,
+            keyboardOptions = keyboardOptions,
+            onValueChange = onTextChange,
             isError = showError
         )
-        ItemNameErrorText(showError)
     }
 }
 
 @Composable
-fun ItemNameErrorText(showError: Boolean){
+fun ItemErrorText(showErrorName: Boolean, showErrorCount: Boolean, ){
     Text(
-        text = if (showError) "Invalid name" else "",
+        text = if (showErrorName) "Invalid name" else if (showErrorCount) "Invalid count" else "",
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.error,
     )
@@ -45,11 +48,11 @@ fun ItemNameErrorText(showError: Boolean){
 @Preview(showBackground = true)
 @Composable
 fun PreviewItemNameInputField() {
-    ItemNameInputField(
+    ItemInputField(
         modifier = Modifier.padding(all = 16.dp),
         label = { Text(text = "Name") },
-        onNameChange = {},
-        name = "",
+        onTextChange = {},
+        text = "",
         showError = false
     )
 }

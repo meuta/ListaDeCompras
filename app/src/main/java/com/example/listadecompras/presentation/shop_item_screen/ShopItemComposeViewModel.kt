@@ -12,6 +12,7 @@ import com.example.listadecompras.domain.AddShopItemUseCase
 import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
 import com.example.listadecompras.domain.ShopItem
+import com.example.listadecompras.domain.ShopItem.Companion.UNDEFINED_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,60 +28,83 @@ class ShopItemComposeViewModel @Inject constructor(
     private val editShopItemUseCase: EditShopItemUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ItemPaneState())
-    val uiState: StateFlow<ItemPaneState> = _uiState.asStateFlow()
+//    private val _uiState = MutableStateFlow(ItemPaneState())
+//    val uiState: StateFlow<ItemPaneState> = _uiState.asStateFlow()
 
-    var screenMode by mutableStateOf("")
-        private set
+//    var screenMode by mutableStateOf("")
+//        private set
 
     var shopItemEditName by mutableStateOf("")
         private set
+    var shopItemEditCount by mutableStateOf("")
+        private set
 
-    var showError by mutableStateOf(false)
+    var itemId: Int = UNDEFINED_ID
+
+    var showErrorName by mutableStateOf(false)
+        private set
+    var showErrorCount by mutableStateOf(false)
         private set
 
     private val _shopItem = MutableLiveData<ShopItem>()
     val shopItem: LiveData<ShopItem> = _shopItem
 
-    var saveClick : () -> Unit = {}
+    var saveClick: () -> Unit = {}
 
-//    fun screenModeUpdate(mode: String) {
-//        _uiState.update { currentState ->
-//            currentState.copy(screenMode = mode)
-//        }
-//    }
-
-    fun getShopItem(itemId: Int) {
+    fun getShopItem(id: Int) {
         viewModelScope.launch {
-            val item = getShopItemByIdUseCase(itemId)
+            val item = getShopItemByIdUseCase(id)
             _shopItem.value = item
             shopItemEditName = item.name
+            shopItemEditCount = item.count.toString()
+
+            itemId = id
+//            _uiState.update { currentState ->
+//                currentState.copy(name = shopItemEditName, count = shopItemEditCount)
+//            }
         }
+    }
+
+    fun getZeroItem() {
+        shopItemEditCount = "1.0"
+        shopItemEditName = ""
+//        _uiState.update { currentState ->
+//            currentState.copy(name = shopItemEditName, count = shopItemEditCount)
+//        }
     }
 
     fun onNameChanged(newName: String) {
         Log.d("ShopItemViewModel", "shopItemName.value = $newName")
 
         shopItemEditName = newName
-        showError = false
-        _uiState.update { currentState ->
-            currentState.copy(name = shopItemEditName, showError = showError)
-        }
+//        showErrorName = false
+        resetErrorInputName()
+//        _uiState.update { currentState ->
+//            currentState.copy(name = shopItemEditName, showErrorName = false)
+//        }
+    }
+
+    fun onCountChanged(newCount: String) {
+        Log.d("ShopItemViewModel", "shopItemCount.value = $newCount")
+
+        shopItemEditCount = newCount
+//        showErrorCount = false
+        resetErrorInputCount()
+//        _uiState.update { currentState ->
+//            currentState.copy(count = newCount, showErrorCount = false)
+//        }
     }
 
     fun onSaveClick() {
         saveClick()
-        showError = !_uiState.value.isValidName
-        _uiState.update { currentState ->
-            currentState.copy(showError = showError)
-        }
     }
 
     fun addShopItem() {
         val name = parseName(shopItemEditName)
-        val fieldsValid = validateInput(name)
+        val count = parseCount(shopItemEditCount)
+        val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-            val item = ShopItem(name, 4.2, true)
+            val item = ShopItem(name, count, true)
 
             viewModelScope.launch {
                 addItemToShopListUseCase(item)
@@ -89,14 +113,15 @@ class ShopItemComposeViewModel @Inject constructor(
         }
     }
 
-        fun editShopItem() {
+    fun editShopItem() {
         val name = parseName(shopItemEditName)
-        val fieldsValid = validateInput(name)
+        val count = parseCount(shopItemEditCount)
+        val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
             _shopItem.value?.let {
 
                 viewModelScope.launch {
-                    val item = it.copy(name = name)
+                    val item = it.copy(name = name, count = count)
                     editShopItemUseCase(item)
                     finishScreen()
                 }
@@ -104,10 +129,14 @@ class ShopItemComposeViewModel @Inject constructor(
         }
     }
 
-    private fun validateInput(name: String): Boolean {
+    private fun validateInput(name: String, count: Double): Boolean {
         var result = true
         if (name.isBlank()) {
-            showError = true
+            showErrorName = true
+            result = false
+        }
+        if (count < 0) {
+            showErrorCount = true
             result = false
         }
         return result
@@ -117,6 +146,21 @@ class ShopItemComposeViewModel @Inject constructor(
         return inputName?.trim() ?: ""
     }
 
+    private fun parseCount(inputCount: String?): Double {
+        return try {
+            inputCount?.trim()?.toDouble() ?: -1.0
+        } catch (e: Exception) {
+            -1.0
+        }
+    }
+
+    fun resetErrorInputName() {
+        showErrorName = false
+    }
+
+    fun resetErrorInputCount() {
+        showErrorCount = false
+    }
 
     private val _closeScreen = MutableLiveData<Unit>()
     val closeScreen: LiveData<Unit>
