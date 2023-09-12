@@ -1,6 +1,5 @@
 package com.example.listadecompras.presentation.shop_item_screen
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,11 +24,8 @@ fun ItemInputField(
     label: @Composable (() -> Unit)? = null,
     onTextChange: (String) -> Unit
 ) {
-    Column(
-        modifier = modifier
-    ) {
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             label = label,
             value = text,
             keyboardOptions = keyboardOptions,
@@ -37,7 +33,6 @@ fun ItemInputField(
             supportingText = errorText,
             isError = showError
         )
-    }
 }
 
 @Preview(showBackground = true)

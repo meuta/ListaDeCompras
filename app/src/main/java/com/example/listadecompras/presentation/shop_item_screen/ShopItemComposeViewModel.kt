@@ -39,7 +39,7 @@ class ShopItemComposeViewModel @Inject constructor(
     var shopItemEditCount by mutableStateOf("")
         private set
 
-    var itemId: Int = UNDEFINED_ID
+    var itemId: Int? = null
 
     var showErrorName by mutableStateOf(false)
         private set
@@ -53,24 +53,30 @@ class ShopItemComposeViewModel @Inject constructor(
 
     fun getShopItem(id: Int) {
         viewModelScope.launch {
-            val item = getShopItemByIdUseCase(id)
-            _shopItem.value = item
-            shopItemEditName = item.name
-            shopItemEditCount = item.count.toString()
+            if (id != itemId) {
+                val item = getShopItemByIdUseCase(id)
+                _shopItem.value = item
+                shopItemEditName = item.name
+                shopItemEditCount = item.count.toString()
 
-            itemId = id
+                itemId = id
 //            _uiState.update { currentState ->
 //                currentState.copy(name = shopItemEditName, count = shopItemEditCount)
 //            }
+            }
         }
     }
 
     fun getZeroItem() {
-        shopItemEditCount = "1.0"
-        shopItemEditName = ""
+
+        if (itemId == null){
+            itemId = UNDEFINED_ID
+            shopItemEditName = ""
+            shopItemEditCount = "1.0"
 //        _uiState.update { currentState ->
 //            currentState.copy(name = shopItemEditName, count = shopItemEditCount)
 //        }
+        }
     }
 
     fun onNameChanged(newName: String) {
@@ -154,11 +160,11 @@ class ShopItemComposeViewModel @Inject constructor(
         }
     }
 
-    fun resetErrorInputName() {
+    private fun resetErrorInputName() {
         showErrorName = false
     }
 
-    fun resetErrorInputCount() {
+    private fun resetErrorInputCount() {
         showErrorCount = false
     }
 

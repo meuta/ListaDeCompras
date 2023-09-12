@@ -14,7 +14,8 @@ import com.example.listadecompras.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
+//class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
+class MainActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditingFinishedListener {
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -47,7 +48,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 val intent = ShopItemActivity.newIntentAddItem(this)
                 startActivity(intent)
             } else {
-                val fragment = ShopItemFragment.newInstanceAddItem()
+//                val fragment = ShopItemFragment.newInstanceAddItem()
+                val fragment = ShopItemComposeFragment.newInstanceAddItem()
                 launchFragment(fragment)
             }
         }
@@ -178,7 +180,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 val intent = ShopItemActivity.newIntentEditItem(this, it.id)
                 startActivity(intent)
             } else {
-                val fragment = ShopItemFragment.newInstanceEditItem(it.id)
+//                val fragment = ShopItemFragment.newInstanceEditItem(it.id)
+                val fragment = ShopItemComposeFragment.newInstanceEditItem(it.id)
                 launchFragment(fragment)
             }
         }
