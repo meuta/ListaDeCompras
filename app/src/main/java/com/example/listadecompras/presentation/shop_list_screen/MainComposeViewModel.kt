@@ -46,7 +46,8 @@ class MainComposeViewModel @Inject constructor(
             .onEach {shopList ->
                 _state.value = state.value.copy(
                     shopList = shopList
-                )            }
+                )
+            }
             .launchIn(viewModelScope)
     }
 

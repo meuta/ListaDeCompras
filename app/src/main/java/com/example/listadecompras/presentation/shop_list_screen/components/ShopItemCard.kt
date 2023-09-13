@@ -15,6 +15,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ fun ShopItemCard(
     shopItem: ShopItem,
     modifier: Modifier = Modifier
 ) {
+
     Card(
         modifier = modifier
             .padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 4.dp)
@@ -35,14 +37,14 @@ fun ShopItemCard(
             defaultElevation = 4.dp
         )
     ) {
-        Box (modifier = Modifier
-            .background(FloatingActionButtonDefaults.containerColor),
+        Box(
+            modifier = Modifier
+                .background(if (shopItem.enabled) FloatingActionButtonDefaults.containerColor else Color.Gray)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
-                    .background(FloatingActionButtonDefaults.containerColor)
             ) {
                 Text(
                     modifier = Modifier
@@ -59,10 +61,8 @@ fun ShopItemCard(
                     fontWeight = FontWeight.Bold,
                     text = shopItem.count.toString()
                 )
-
             }
         }
-
     }
 }
 
