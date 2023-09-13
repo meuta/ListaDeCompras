@@ -15,6 +15,7 @@
             android:name=".presentation.ShopItemActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize"/>
+
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true">
@@ -24,6 +25,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".presentation.MainComposeActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

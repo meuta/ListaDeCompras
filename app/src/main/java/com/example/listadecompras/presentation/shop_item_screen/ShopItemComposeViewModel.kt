@@ -39,15 +39,17 @@ class ShopItemComposeViewModel @Inject constructor(
     var shopItemEditCount by mutableStateOf("")
         private set
 
-    var itemId: Int? = null
-
     var showErrorName by mutableStateOf(false)
         private set
     var showErrorCount by mutableStateOf(false)
         private set
 
-    private val _shopItem = MutableLiveData<ShopItem>()
-    val shopItem: LiveData<ShopItem> = _shopItem
+//    private val _shopItem = MutableLiveData<ShopItem>()
+//    val shopItem: LiveData<ShopItem> = _shopItem
+//    private var shopItem = ShopItem("", 0.0, false)
+    private var shopItem : ShopItem? = null
+    private var itemId: Int? = null
+
 
     var saveClick: () -> Unit = {}
 
@@ -55,7 +57,8 @@ class ShopItemComposeViewModel @Inject constructor(
         viewModelScope.launch {
             if (id != itemId) {
                 val item = getShopItemByIdUseCase(id)
-                _shopItem.value = item
+//                _shopItem.value = item
+                shopItem = item
                 shopItemEditName = item.name
                 shopItemEditCount = item.count.toString()
 
@@ -83,7 +86,6 @@ class ShopItemComposeViewModel @Inject constructor(
         Log.d("ShopItemViewModel", "shopItemName.value = $newName")
 
         shopItemEditName = newName
-//        showErrorName = false
         resetErrorInputName()
 //        _uiState.update { currentState ->
 //            currentState.copy(name = shopItemEditName, showErrorName = false)
@@ -94,7 +96,6 @@ class ShopItemComposeViewModel @Inject constructor(
         Log.d("ShopItemViewModel", "shopItemCount.value = $newCount")
 
         shopItemEditCount = newCount
-//        showErrorCount = false
         resetErrorInputCount()
 //        _uiState.update { currentState ->
 //            currentState.copy(count = newCount, showErrorCount = false)
@@ -124,8 +125,8 @@ class ShopItemComposeViewModel @Inject constructor(
         val count = parseCount(shopItemEditCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-            _shopItem.value?.let {
-
+            shopItem?.let {
+//            _shopItem.value?.let {
                 viewModelScope.launch {
                     val item = it.copy(name = name, count = count)
                     editShopItemUseCase(item)
