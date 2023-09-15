@@ -13,6 +13,7 @@ private val DarkColorPalette = darkColorScheme(
 //    primary = Purple200,
 //    onPrimary = Purple700,
 //    secondary = Teal200
+    secondaryContainer = ToggleItemColor
 )
 
 private val LightColorPalette = lightColorScheme(

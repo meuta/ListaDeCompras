@@ -1,48 +1,60 @@
 package com.example.listadecompras.presentation.shop_list_screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.listadecompras.presentation.shop_list_screen.components.ShopItemSwipeable
+import com.example.listadecompras.presentation.shop_list_screen.components.LazyColumnSwappable
 
 @Composable
-fun ShopListScreen(viewModel: MainComposeViewModel = hiltViewModel()){
+fun ShopListScreen(viewModel: MainComposeViewModel = hiltViewModel()) {
     val state = viewModel.state.value
 
+    var componentHeight by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
     Scaffold(
+
         floatingActionButton = {
-            FloatingActionButton(
+            FloatingActionButton(modifier = Modifier
+                .onGloballyPositioned {
+                    componentHeight = with(density) {
+                        it.size.height.toDp() + 32.dp
+                    }
+                },
+                shape = CircleShape,
                 onClick = {}
-            ){}
-        }
-    ) {padding ->
-        LazyColumn(modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-        ){
-            itemsIndexed(
-                state.shopList,
-                key = { _, item -> item.hashCode() }
-            )
-            { _, shopItem ->
-                ShopItemSwipeable(
-                    shopItem = shopItem,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {},
-                    onRemove = viewModel::deleteShopItem,
-                    onToggle = viewModel::changeEnableState
-                )
+            ) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
             }
         }
+    ) { padding ->
+        LazyColumnSwappable(
+            items = state.shopList,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(bottom = componentHeight),
+            onSwap = viewModel::dragShopItem,
+            onRemove = viewModel::deleteShopItem,
+            onToggle = viewModel::changeEnableState
+        )
     }
 }
+
+
+
 

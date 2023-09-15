@@ -1,11 +1,16 @@
 package com.example.listadecompras.presentation.shop_list_screen.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
@@ -25,7 +30,7 @@ fun ShopItemSwipeable(
     modifier: Modifier,
     onRemove: (ShopItem) -> Unit,
     onToggle: (ShopItem) -> Unit
-) {
+    ) {
     var show by remember { mutableStateOf(true) }
     val currentItem by rememberUpdatedState(shopItem)
     val dismissState = rememberDismissState(
@@ -46,10 +51,24 @@ fun ShopItemSwipeable(
             state = dismissState,
             modifier = modifier,
             background = {
-//                DismissBackground(dismissState)
+
+                val color by animateColorAsState(
+                    when (dismissState.dismissDirection) {
+                        DismissDirection.StartToEnd -> MaterialTheme.colorScheme.onError
+                        DismissDirection.EndToStart -> MaterialTheme.colorScheme.secondaryContainer
+                        else -> MaterialTheme.colorScheme.background
+                    }, label = ""
+                )
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(color)
+                )
             },
             dismissContent = {
-                ShopItemCard(shopItem = shopItem)
+                ShopItemCard(
+                    shopItem = shopItem
+                )
             },
 
         )
