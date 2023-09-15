@@ -31,11 +31,11 @@ fun ShopItemCard(
     val defaultElevation = if (shopItem.enabled) 6.dp else 3.dp
     Card(
         modifier = modifier
-            .shadow(
-                elevation = defaultElevation,
-                shape = RoundedCornerShape(4.dp),
-                spotColor = Color.LightGray
-            )
+//            .shadow(
+//                elevation = defaultElevation,
+//                shape = RoundedCornerShape(4.dp),
+//                spotColor = Color.LightGray
+//            )
             .wrapContentHeight(),
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.cardElevation(

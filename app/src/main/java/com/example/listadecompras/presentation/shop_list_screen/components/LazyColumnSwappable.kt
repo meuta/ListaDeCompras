@@ -1,9 +1,9 @@
 package com.example.listadecompras.presentation.shop_list_screen.components
 
-
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +27,7 @@ fun LazyColumnSwappable(
     onSwap: (Int, Int) -> Unit,
     onRemove: (ShopItem) -> Unit,
     onToggle: (ShopItem) -> Unit,
+    onItemClick: (ShopItem) -> Unit
 ) {
     var overscrollJob by remember { mutableStateOf<Job?>(null) }
     val listState = rememberLazyListState()
@@ -71,7 +72,7 @@ fun LazyColumnSwappable(
                 )
             },
         state = listState,
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(8.dp, 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         itemsIndexed(
@@ -80,6 +81,9 @@ fun LazyColumnSwappable(
         ) { index, item ->
 
             DraggableItem(
+                modifier = Modifier.clickable {
+                    onItemClick(item)
+                },
                 dragDropState = dragDropState,
                 index = index
             ) { isDragging ->
@@ -87,7 +91,7 @@ fun LazyColumnSwappable(
                     shopItem = item,
                     modifier = Modifier,
                     onRemove = onRemove,
-                    onToggle = onToggle,
+                    onToggle = onToggle
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.example.listadecompras.presentation.shop_list_screen
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -15,28 +16,42 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.presentation.shop_list_screen.components.LazyColumnSwappable
 
 @Composable
-fun ShopListScreen(viewModel: MainComposeViewModel = hiltViewModel()) {
+fun ShopListScreen(
+    viewModel: MainComposeViewModel = hiltViewModel(),
+    onItemClick: (ShopItem) -> Unit,
+    onFabClick: () -> Unit
+) {
     val state = viewModel.state.value
 
-    var componentHeight by remember { mutableStateOf(0.dp) }
+    var fabHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
+
+    val configuration = LocalConfiguration.current
+    val orientation = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        "Landscape"
+    } else {
+        "Portrait"
+    }
+
     Scaffold(
 
         floatingActionButton = {
             FloatingActionButton(modifier = Modifier
                 .onGloballyPositioned {
-                    componentHeight = with(density) {
-                        it.size.height.toDp() + 32.dp
+                    fabHeight = with(density) {
+                        it.size.height.toDp()
                     }
                 },
                 shape = CircleShape,
-                onClick = {}
+                onClick = onFabClick
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
             }
@@ -46,11 +61,11 @@ fun ShopListScreen(viewModel: MainComposeViewModel = hiltViewModel()) {
             items = state.shopList,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(bottom = componentHeight),
+                .padding(bottom = if (orientation == "Portrait") fabHeight + 32.dp else 0.dp),
             onSwap = viewModel::dragShopItem,
             onRemove = viewModel::deleteShopItem,
-            onToggle = viewModel::changeEnableState
+            onToggle = viewModel::changeEnableState,
+            onItemClick = onItemClick
         )
     }
 }

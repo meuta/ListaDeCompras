@@ -32,8 +32,6 @@ class MainComposeViewModel @Inject constructor(
     private val _state = mutableStateOf(ShopListState())
     val state: State<ShopListState> = _state
 
-//    var shopList: List<ShopItem> = emptyList()
-
     private var getShopListJob: Job? = null
 
     init {
@@ -50,8 +48,6 @@ class MainComposeViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
-
-//    val shopList = getShopListUseCase().asLiveData()
 
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {
