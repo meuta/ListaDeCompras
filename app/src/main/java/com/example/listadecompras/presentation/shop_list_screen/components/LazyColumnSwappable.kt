@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.example.listadecompras.domain.ShopItem
@@ -87,9 +88,10 @@ fun LazyColumnSwappable(
                 dragDropState = dragDropState,
                 index = index
             ) { isDragging ->
+                val alpha = if (isDragging) 0.7f else 1.0f
                 ShopItemSwipeable(
                     shopItem = item,
-                    modifier = Modifier,
+                    modifier = Modifier.alpha(alpha),
                     onRemove = onRemove,
                     onToggle = onToggle
                 )

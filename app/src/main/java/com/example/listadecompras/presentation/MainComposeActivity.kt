@@ -69,7 +69,7 @@ class MainComposeActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditi
 
     private fun onClickShopItem(shopItem: ShopItem) {
         if (isOnePaneMode()) {
-            val intent = ShopItemActivity.newIntentEditItem(this, shopItem.id)
+            val intent = ShopItemComposeActivity.newIntentEditItem(this, shopItem.id)
             startActivity(intent)
         } else {
             val fragment = ShopItemComposeFragment.newInstanceEditItem(shopItem.id)
@@ -79,7 +79,7 @@ class MainComposeActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditi
 
     private fun onClickFab() {
         if (isOnePaneMode()) {
-            val intent = ShopItemActivity.newIntentAddItem(this)
+            val intent = ShopItemComposeActivity.newIntentAddItem(this)
             startActivity(intent)
         } else {
             val fragment = ShopItemComposeFragment.newInstanceAddItem()

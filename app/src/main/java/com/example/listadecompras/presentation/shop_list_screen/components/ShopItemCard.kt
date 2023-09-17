@@ -15,7 +15,6 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,13 +29,7 @@ fun ShopItemCard(
 ) {
     val defaultElevation = if (shopItem.enabled) 6.dp else 3.dp
     Card(
-        modifier = modifier
-//            .shadow(
-//                elevation = defaultElevation,
-//                shape = RoundedCornerShape(4.dp),
-//                spotColor = Color.LightGray
-//            )
-            .wrapContentHeight(),
+        modifier = modifier.wrapContentHeight(),
         shape = RoundedCornerShape(4.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = defaultElevation

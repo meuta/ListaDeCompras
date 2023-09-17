@@ -10,7 +10,7 @@ import com.example.listadecompras.domain.ShopItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
+class ShopItemComposeActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditingFinishedListener {
 
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
@@ -34,8 +34,8 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun launchRightMode() {
 
         val fragment = when (screenMode) {
-            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
-            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(itemId)
+            MODE_ADD -> ShopItemComposeFragment.newInstanceAddItem()
+            MODE_EDIT -> ShopItemComposeFragment.newInstanceEditItem(itemId)
             else -> throw RuntimeException("Unknown second_screen_mode: $screenMode")
 
         }
@@ -73,13 +73,13 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         private const val MODE_UNKNOWN = ""
 
         fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
+            val intent = Intent(context, ShopItemComposeActivity::class.java)
             intent.putExtra(SECOND_SCREEN_MODE, MODE_ADD)
             return intent
         }
 
         fun newIntentEditItem(context: Context, itemId: Int): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
+            val intent = Intent(context, ShopItemComposeActivity::class.java)
             intent.putExtra(SECOND_SCREEN_MODE, MODE_EDIT)
             intent.putExtra(SHOP_ITEM_ID, itemId)
             return intent

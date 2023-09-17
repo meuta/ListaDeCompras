@@ -1,8 +1,6 @@
 package com.example.listadecompras.presentation.shop_item_screen
 
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -130,7 +128,6 @@ private fun constraints(): ConstraintSet {
             linkTo(parent.start, parent.end)
         }
 
-//                val verticalChain =
         createVerticalChain(textName, textCount, chainStyle = ChainStyle.Packed)
     }
 }
