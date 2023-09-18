@@ -10,10 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.listadecompras.databinding.FragmentComposeShopItemBinding
+import androidx.navigation.compose.rememberNavController
 import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.presentation.shop_item_screen.ShopItemComposeViewModel
 import com.example.listadecompras.presentation.shop_item_screen.ShopItemScreen
@@ -26,10 +27,6 @@ class ShopItemComposeFragment : Fragment() {
     private val viewModel: ShopItemComposeViewModel by viewModels()
 
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
-
-    private var _binding: FragmentComposeShopItemBinding? = null
-    private val binding: FragmentComposeShopItemBinding      //We can use it just between onCreateView and onDestroyView not inclusive.
-        get() = _binding ?: throw RuntimeException("FragmentComposeShopItemBinding == null")
 
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
@@ -57,45 +54,26 @@ class ShopItemComposeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentComposeShopItemBinding.inflate(inflater, container, false)
-//        return binding.root
-        val view = binding.root
-//        return ComposeView(requireContext()).apply {
-//            setContent {
-//                ListaDeComprasTheme {
-//                    Surface(
-//                        modifier = Modifier.fillMaxSize(),
-//                        color = MaterialTheme.colorScheme.background
-//                    ) {
-//                        ShopItemScreen()
-//                    }
-//                }
-//            }
-//        }
-        binding.composeView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner
-            // is destroyed
+
+        return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                // In Compose world
                 ListaDeComprasTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        ShopItemScreen()
+                        val navController = rememberNavController()
+
+                        ShopItemScreen(navController)
                     }
                 }
             }
         }
-        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = viewLifecycleOwner
 
         launchRightMode()
 
@@ -105,7 +83,7 @@ class ShopItemComposeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+//        _binding = null
     }
 
 

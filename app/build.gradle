@@ -8,7 +8,8 @@ plugins {
 
 android {
     namespace 'com.example.listadecompras'
-    compileSdk 33
+//    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.listadecompras"
@@ -85,7 +86,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
 
-    implementation "androidx.navigation:navigation-compose:2.4.0-alpha09"
+    implementation "androidx.navigation:navigation-compose:2.7.2"
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
 
 

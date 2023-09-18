@@ -3,18 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-            name="viewModel"
-            type="com.example.listadecompras.presentation.shop_item_screen.ShopItemComposeViewModel" />
-    </data>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/blackish"
-        tools:context=".presentation.ShopItemComposeFragment">
 
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/compose_view"
@@ -22,5 +10,4 @@
             android:layout_height="match_parent" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

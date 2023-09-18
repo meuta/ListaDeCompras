@@ -11,11 +11,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun ShopItemScreen(shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()) {
+fun ShopItemScreen(
+    navController: NavController,
+    shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()
+) {
 //    val itemPaneState by shopItemViewModel.uiState.collectAsState()
-
     Scaffold(Modifier.fillMaxSize()) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             ShopItemEditPane(

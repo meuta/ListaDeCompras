@@ -1,5 +1,6 @@
 package com.example.listadecompras.presentation.shop_list_screen
 
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,29 +11,32 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.layoutId
+import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
+import com.example.listadecompras.presentation.Screen
+import com.example.listadecompras.presentation.ShopItemComposeActivity
+import com.example.listadecompras.presentation.ShopItemComposeFragment
 import com.example.listadecompras.presentation.shop_list_screen.components.LazyColumnSwappable
 
 @Composable
 fun ShopListScreen(
+    navController: NavController,
     viewModel: MainComposeViewModel = hiltViewModel(),
-    onItemClick: (ShopItem) -> Unit,
-    onFabClick: () -> Unit
+//    onItemClick: (ShopItem) -> Unit,
+//    onFabClick: () -> Unit
 ) {
     val state = viewModel.state.value
-
-    var fabHeight by remember { mutableStateOf(0.dp) }
-    val density = LocalDensity.current
 
     val configuration = LocalConfiguration.current
     val orientation = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -40,36 +44,77 @@ fun ShopListScreen(
     } else {
         "Portrait"
     }
+    val context = LocalContext.current
 
-    Scaffold(
-
-        floatingActionButton = {
-            FloatingActionButton(modifier = Modifier
-                .onGloballyPositioned {
-                    fabHeight = with(density) {
-                        it.size.height.toDp()
-                    }
-                },
+    Scaffold() { padding ->
+        ConstraintLayout(
+            constraints(orientation),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LazyColumnSwappable(
+                items = state.shopList,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .layoutId("shopList"),
+                onSwap = viewModel::dragShopItem,
+                onRemove = viewModel::deleteShopItem,
+                onToggle = viewModel::changeEnableState,
+//                onItemClick = onItemClick
+            )
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .layoutId("fabAdd"),
                 shape = CircleShape,
-                onClick = onFabClick
+//                onClick = onFabClick
+//                onClick = { navController.navigate(Screen.ShopItemScreen.route) }
+                onClick = {
+                    if (orientation == "Portrait"){
+                        val intent = ShopItemComposeActivity.newIntentAddItem(context)
+                        context.startActivity(intent)
+                    } else {
+//                        val fragment = ShopItemComposeFragment.newInstanceAddItem()
+//                        launchFragment(fragment)
+                    }
+                }
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
             }
         }
-    ) { padding ->
-        LazyColumnSwappable(
-            items = state.shopList,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = if (orientation == "Portrait") fabHeight + 32.dp else 0.dp),
-            onSwap = viewModel::dragShopItem,
-            onRemove = viewModel::deleteShopItem,
-            onToggle = viewModel::changeEnableState,
-            onItemClick = onItemClick
-        )
     }
 }
 
+private fun constraints(orientation: String): ConstraintSet {
+    return ConstraintSet {
+        val shopList = createRefFor("shopList")
+        val fabAdd = createRefFor("fabAdd")
+
+        if (orientation == "Landscape") {
+
+            val startGuideline = createGuidelineFromAbsoluteRight(0.5f)
+
+            constrain(shopList) {
+                linkTo(parent.top, parent.bottom)
+                linkTo(parent.start, startGuideline)
+                width = Dimension.fillToConstraints
+            }
+            constrain(fabAdd) {
+                bottom.linkTo(parent.bottom)
+                end.linkTo(startGuideline)
+            }
+        } else {
+            constrain(shopList) {
+                linkTo(parent.top, fabAdd.top)
+                linkTo(parent.start, parent.end)
+                height = Dimension.fillToConstraints
+            }
+            constrain(fabAdd) {
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+            }
+        }
+    }
+}
 
 
 
