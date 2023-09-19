@@ -1,6 +1,5 @@
 package com.example.listadecompras.presentation
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,10 +14,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.compose.rememberNavController
 import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.presentation.shop_item_screen.ShopItemComposeViewModel
-import com.example.listadecompras.presentation.shop_item_screen.ShopItemScreen
+import com.example.listadecompras.presentation.shop_item_screen.ShopItemEditPane
 import com.example.listadecompras.ui.theme.ListaDeComprasTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,10 +49,15 @@ class ShopItemComposeFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-//                        val navController = rememberNavController()
-
-//                        ShopItemScreen(navController)
-                        ShopItemScreen()
+                        ShopItemEditPane(
+                            itemName = viewModel.shopItemEditName,
+                            itemCount = viewModel.shopItemEditCount,
+                            showErrorName = viewModel.showErrorName,
+                            showErrorCount = viewModel.showErrorCount,
+                            onNameChange = { name -> viewModel.onNameChanged(name) },
+                            onCountChange = { count -> viewModel.onCountChanged(count) },
+                            onClick = { viewModel.onSaveClick() }
+                        )
                     }
                 }
             }
@@ -72,7 +75,6 @@ class ShopItemComposeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-//        _binding = null
         Toast.makeText(this.context, "Success", Toast.LENGTH_SHORT).show()
 
     }
@@ -81,13 +83,12 @@ class ShopItemComposeFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.closeScreen.observe(viewLifecycleOwner) {
             Log.d("closeScreenSubscribeTest", it.toString())
-//            activity?.supportFragmentManager?.popBackStack()
+            activity?.supportFragmentManager?.popBackStack()
             activity?.let { activity -> if (activity is ShopItemComposeActivity) activity.onBackPressed() }
         }
     }
 
     private fun launchRightMode() {
-//        viewModel.screenModeUpdate(screenMode)
         when (screenMode) {
             MODE_ADD -> launchAddMode()
             MODE_EDIT -> launchEditMode()
@@ -125,11 +126,6 @@ class ShopItemComposeFragment : Fragment() {
     private fun launchEditMode() {
         viewModel.getShopItem(itemId)
         viewModel.saveClick = { viewModel.editShopItem() }
-    }
-
-
-    interface OnEditingFinishedListener {
-        fun onEditingFinished()
     }
 
 

@@ -28,7 +28,7 @@ fun LazyColumnSwappable(
     onSwap: (Int, Int) -> Unit,
     onRemove: (ShopItem) -> Unit,
     onToggle: (ShopItem) -> Unit,
-//    onItemClick: (ShopItem) -> Unit
+    onItemClick: (ShopItem) -> Unit
 ) {
     var overscrollJob by remember { mutableStateOf<Job?>(null) }
     val listState = rememberLazyListState()
@@ -83,7 +83,7 @@ fun LazyColumnSwappable(
 
             DraggableItem(
                 modifier = Modifier.clickable {
-//                    onItemClick(item)
+                    onItemClick(item)
                 },
                 dragDropState = dragDropState,
                 index = index

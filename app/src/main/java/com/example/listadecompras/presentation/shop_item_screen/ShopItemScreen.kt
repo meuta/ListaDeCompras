@@ -8,27 +8,33 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.fragment.app.FragmentManager
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.listadecompras.presentation.ShopItemComposeFragment
+import com.example.listadecompras.presentation.shop_item_screen.components.FragmentContainer
 
 @Composable
 fun ShopItemScreen(
-//    navController: NavController,
-    shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()
+    fragment: ShopItemComposeFragment?,
+    fragmentManager: FragmentManager,
 ) {
-//    val itemPaneState by shopItemViewModel.uiState.collectAsState()
     Scaffold(Modifier.fillMaxSize()) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-            ShopItemEditPane(
-                itemName = shopItemViewModel.shopItemEditName,
-                itemCount = shopItemViewModel.shopItemEditCount,
-                showErrorName = shopItemViewModel.showErrorName,
-                showErrorCount = shopItemViewModel.showErrorCount,
-                onNameChange = { name -> shopItemViewModel.onNameChanged(name) },
-                onCountChange = { count -> shopItemViewModel.onCountChanged(count) },
-                onClick = { shopItemViewModel.onSaveClick() }
+        fragment?.let { fragment ->
+            FragmentContainer(
+                modifier = Modifier.fillMaxSize(),
+                //                fragmentManager = supportFragmentManager,
+                fragmentManager = fragmentManager,
+                commit = {
+                    replace(it, fragment)
+                    commit()
+                }
             )
         }
     }

@@ -7,9 +7,12 @@ import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.listadecompras.domain.ShopItem
-import com.example.listadecompras.presentation.shop_item_screen.components.FragmentContainer
+import com.example.listadecompras.presentation.shop_item_screen.ShopItemScreen
+import com.example.listadecompras.ui.theme.ListaDeComprasTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,39 +20,39 @@ class ShopItemComposeActivity : AppCompatActivity() {
 
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
+    private var fragment: ShopItemComposeFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FragmentContainer(
-                modifier = Modifier.fillMaxSize(),
-                fragmentManager = supportFragmentManager,
-                commit = {
-                    replace(it, ShopItemComposeFragment.newInstanceAddItem())
-                    commit()
+            ListaDeComprasTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                )
+                {
+                    ShopItemScreen(
+                        fragment = fragment,
+                        fragmentManager = supportFragmentManager
+                    )
                 }
-            )
+            }
         }
         parseIntent()
 
-        if (savedInstanceState == null) {            //Means that the Activity was not recreated
-            launchRightMode()
-        }
-
+//        if (savedInstanceState == null) {            //Means that the Activity was not recreated
+        launchRightMode()
+//        }
     }
 
     private fun launchRightMode() {
 
-//        val fragment = when (screenMode) {
-//            MODE_ADD -> ShopItemComposeFragment.newInstanceAddItem()
-//            MODE_EDIT -> ShopItemComposeFragment.newInstanceEditItem(itemId)
-//            else -> throw RuntimeException("Unknown second_screen_mode: $screenMode")
-//
-//        }
-//
-//        supportFragmentManager.beginTransaction()
-////            .replace(R.id.shop_item_container, fragment)
-//            .commit()                                   // launch a transaction to execution
+        fragment = when (screenMode) {
+            MODE_ADD -> ShopItemComposeFragment.newInstanceAddItem()
+            MODE_EDIT -> ShopItemComposeFragment.newInstanceEditItem(itemId)
+            else -> throw RuntimeException("Unknown second_screen_mode: $screenMode")
+
+        }
     }
 
 

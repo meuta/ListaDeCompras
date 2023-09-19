@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -23,12 +22,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.layoutId
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.example.listadecompras.domain.ShopItem
-import com.example.listadecompras.presentation.Screen
 import com.example.listadecompras.presentation.ShopItemComposeActivity
 import com.example.listadecompras.presentation.ShopItemComposeFragment
 import com.example.listadecompras.presentation.shop_item_screen.components.FragmentContainer
@@ -36,10 +31,8 @@ import com.example.listadecompras.presentation.shop_list_screen.components.LazyC
 
 @Composable
 fun ShopListScreen(
-//    navController: NavController,
     fragmentManager: FragmentManager,
     viewModel: MainComposeViewModel = hiltViewModel(),
-//    onItemClick: (ShopItem) -> Unit,
 ) {
     val state = viewModel.state.value
 
@@ -66,7 +59,14 @@ fun ShopListScreen(
                 onSwap = viewModel::dragShopItem,
                 onRemove = viewModel::deleteShopItem,
                 onToggle = viewModel::changeEnableState,
-//                onItemClick = onItemClick
+                onItemClick = {
+                    if (orientation == "Portrait") {
+                        val intent = ShopItemComposeActivity.newIntentEditItem(context, it.id)
+                        context.startActivity(intent)
+                    } else {
+                        fragment = ShopItemComposeFragment.newInstanceEditItem(it.id)
+                    }
+                }
             )
             FloatingActionButton(
                 modifier = Modifier
@@ -79,13 +79,12 @@ fun ShopListScreen(
                         context.startActivity(intent)
                     } else {
                         fragment = ShopItemComposeFragment.newInstanceAddItem()
-
                     }
                 }
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
             }
-            fragment?.let {fragment ->
+            fragment?.let {myFragment ->
                 if (orientation == "Landscape") {
                     FragmentContainer(
                         modifier = Modifier
@@ -93,7 +92,7 @@ fun ShopListScreen(
                             .layoutId("fragmentContainer"),
                         fragmentManager = fragmentManager,
                         commit = {
-                            replace(it, fragment)
+                            replace(it, myFragment)
                             addToBackStack(null)
                             commit()
                         }

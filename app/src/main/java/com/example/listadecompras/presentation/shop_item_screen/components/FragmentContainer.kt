@@ -21,7 +21,7 @@ fun FragmentContainer(
     commit: FragmentTransaction.(containerId: Int) -> Unit
 ) {
     val containerId by rememberSaveable { mutableIntStateOf(View.generateViewId()) }
-//    var initialized by rememberSaveable { mutableStateOf(false) }
+    var initialized by rememberSaveable { mutableStateOf(false) }
 
     AndroidView(
         modifier = modifier,
