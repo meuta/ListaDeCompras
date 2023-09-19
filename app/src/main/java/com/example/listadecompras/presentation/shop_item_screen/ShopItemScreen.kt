@@ -12,11 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun ShopItemScreen(
-    navController: NavController,
+//    navController: NavController,
     shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()
 ) {
 //    val itemPaneState by shopItemViewModel.uiState.collectAsState()

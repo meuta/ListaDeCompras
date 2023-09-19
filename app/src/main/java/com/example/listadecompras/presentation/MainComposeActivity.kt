@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.presentation.shop_item_screen.ShopItemScreen
 import com.example.listadecompras.presentation.shop_list_screen.ShopListScreen
@@ -19,7 +18,7 @@ import com.example.listadecompras.ui.theme.ListaDeComprasTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainComposeActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditingFinishedListener {
+class MainComposeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -30,18 +29,18 @@ class MainComposeActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditi
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.ShopListScreen.route
-                    ) {
-                        composable(route = Screen.ShopListScreen.route) {
+//                    val navController = rememberNavController()
+//                    NavHost(
+//                        navController = navController,
+//                        startDestination = Screen.ShopListScreen.route
+//                    ) {
+//                        composable(route = Screen.ShopListScreen.route) {
                             ShopListScreen(
-                                navController = navController,
+//                                navController = navController,
+                                fragmentManager = supportFragmentManager
 //                                onItemClick = this@MainComposeActivity::onClickShopItem,
-//                                onFabClick = this@MainComposeActivity::onClickFab
                             )
-                        }
+//                        }
 //                            composable(
 //
 //                            ) {
@@ -50,7 +49,7 @@ class MainComposeActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditi
 //                                    navController = navController
 //                                )
 //                            }
-                    }
+//                    }
                 }
             }
         }
@@ -58,9 +57,6 @@ class MainComposeActivity : AppCompatActivity(), ShopItemComposeFragment.OnEditi
     }
 
 
-    override fun onEditingFinished() {
-        supportFragmentManager.popBackStack()
-    }
 
 //    private fun isOnePaneMode(): Boolean {
 //        return binding.shopItemContainer == null

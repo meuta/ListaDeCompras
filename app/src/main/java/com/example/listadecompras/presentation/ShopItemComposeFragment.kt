@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,21 +27,8 @@ class ShopItemComposeFragment : Fragment() {
 
     private val viewModel: ShopItemComposeViewModel by viewModels()
 
-    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
-
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
-
-    override fun onAttach(context: Context) {
-
-
-        super.onAttach(context)
-        if (context is OnEditingFinishedListener) {
-            onEditingFinishedListener = context
-        } else {
-            throw java.lang.RuntimeException("Activity must implement OnEditingFinishedListener")
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("ShopItemFragment", "onCreate")
@@ -63,9 +51,10 @@ class ShopItemComposeFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        val navController = rememberNavController()
+//                        val navController = rememberNavController()
 
-                        ShopItemScreen(navController)
+//                        ShopItemScreen(navController)
+                        ShopItemScreen()
                     }
                 }
             }
@@ -84,13 +73,16 @@ class ShopItemComposeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 //        _binding = null
+        Toast.makeText(this.context, "Success", Toast.LENGTH_SHORT).show()
+
     }
 
 
     private fun observeViewModel() {
         viewModel.closeScreen.observe(viewLifecycleOwner) {
             Log.d("closeScreenSubscribeTest", it.toString())
-            activity?.onBackPressed()
+//            activity?.supportFragmentManager?.popBackStack()
+            activity?.let { activity -> if (activity is ShopItemComposeActivity) activity.onBackPressed() }
         }
     }
 
