@@ -4,4 +4,5 @@ import com.example.listadecompras.domain.ShopItem
 
 data class ShopListState(
     val shopList: List<ShopItem> = emptyList(),
+//    val showItemScreen: Boolean = false
 )

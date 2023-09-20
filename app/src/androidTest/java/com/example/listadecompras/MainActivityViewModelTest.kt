@@ -7,7 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.example.listadecompras.di.AppModule
 import com.example.listadecompras.presentation.MainActivity
-import com.example.listadecompras.presentation.ShopItemViewHolder
+import com.example.listadecompras.presentation.old_staff.ShopItemViewHolder
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules

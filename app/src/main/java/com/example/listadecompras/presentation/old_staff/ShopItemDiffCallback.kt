@@ -1,4 +1,4 @@
-package com.example.listadecompras.presentation
+package com.example.listadecompras.presentation.old_staff
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.listadecompras.domain.ShopItem

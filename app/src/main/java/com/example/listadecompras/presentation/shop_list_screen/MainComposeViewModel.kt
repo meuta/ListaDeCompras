@@ -44,6 +44,14 @@ class MainComposeViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+//    fun showItemScreen(){
+//        _state.value = state.value.copy(showItemScreen = true)
+//    }
+//
+//    fun hideItemScreen(){
+//        _state.value = state.value.copy(showItemScreen = false)
+//    }
+
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {
             deleteShopItemUseCase(shopItem)

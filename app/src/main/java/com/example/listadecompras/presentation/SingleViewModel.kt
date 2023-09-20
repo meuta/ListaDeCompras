@@ -1,37 +1,43 @@
-package com.example.listadecompras.presentation.shop_item_screen
+package com.example.listadecompras.presentation
 
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.listadecompras.domain.AddShopItemUseCase
+import com.example.listadecompras.domain.DeleteShopItemUseCase
+import com.example.listadecompras.domain.DragShopItemUseCase
 import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
+import com.example.listadecompras.domain.GetShopListUseCase
 import com.example.listadecompras.domain.ShopItem
-import com.example.listadecompras.domain.ShopItem.Companion.UNDEFINED_ID
+import com.example.listadecompras.presentation.shop_list_screen.ShopListState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ShopItemComposeViewModel @Inject constructor(
+class SingleViewModel @Inject constructor(
     private val getShopItemByIdUseCase: GetShopItemUseCase,
     private val addItemToShopListUseCase: AddShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
+    private val getShopListUseCase: GetShopListUseCase,
+    private val deleteShopItemUseCase: DeleteShopItemUseCase,
+    private val dragShopItemUseCase: DragShopItemUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-//    private val _uiState = MutableStateFlow(ItemPaneState())
-//    val uiState: StateFlow<ItemPaneState> = _uiState.asStateFlow()
+    private val _state = mutableStateOf(ShopListState())
+    val state: State<ShopListState> = _state
 
-//    var screenMode by mutableStateOf("")
-//        private set
-
+    private var getShopListJob: Job? = null
     var shopItemEditName by mutableStateOf("")
         private set
     var shopItemEditCount by mutableStateOf("")
@@ -42,62 +48,76 @@ class ShopItemComposeViewModel @Inject constructor(
     var showErrorCount by mutableStateOf(false)
         private set
 
-//    private val _shopItem = MutableLiveData<ShopItem>()
-//    val shopItem: LiveData<ShopItem> = _shopItem
-//    private var shopItem = ShopItem("", 0.0, false)
-    private var shopItem : ShopItem? = null
+    private var shopItem: ShopItem? = null
     private var currentItemId: Int? = null
 
     var finish = false
 
     var saveClick: () -> Unit = {}
-    init {
 
-        savedStateHandle.get<Int>("itemId")?.let { itemId ->
-            if(itemId != -1) {
-                viewModelScope.launch {
-//                    itemUseCases.getNote(itemId)?.also { item ->
-//                        currentNoteId = item.id
-//                        _itemTitle.value = itemTitle.value.copy(
-//                            text = item.title,
-//                            isHintVisible = false
-//                        )
-//                        _itemContent.value = _itemContent.value.copy(
-//                            text = item.content,
-//                            isHintVisible = false
-//                        )
-//                    }
-                    getShopItem(itemId)
-                }
-            } else {getZeroItem()}
+    init {
+        getShopList()
+    }
+
+    private fun getShopList() {
+        getShopListJob?.cancel()
+        getShopListJob = getShopListUseCase()
+            .onEach { shopList ->
+                _state.value = state.value.copy(
+                    shopList = shopList
+                )
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun deleteShopItem(shopItem: ShopItem) {
+        viewModelScope.launch {
+            deleteShopItemUseCase(shopItem)
         }
     }
-    fun getShopItem(id: Int) {
+
+    fun changeEnableState(shopItem: ShopItem) {
+        viewModelScope.launch {
+            val newItem = shopItem.copy(enabled = !shopItem.enabled)
+            editShopItemUseCase(newItem)
+        }
+    }
+
+    fun dragShopItem(from: Int, to: Int) {
+        viewModelScope.launch {
+            dragShopItemUseCase(from, to)
+        }
+    }
+
+    init {
+        savedStateHandle.get<Int>("itemId")?.let { itemId ->
+            if (itemId != -1) {
+                getShopItem(itemId)
+            } else {
+                getZeroItem()
+            }
+        }
+    }
+
+    private fun getShopItem(id: Int) {
         viewModelScope.launch {
             if (id != currentItemId) {
                 val item = getShopItemByIdUseCase(id)
-//                _shopItem.value = item
                 shopItem = item
                 shopItemEditName = item.name
                 shopItemEditCount = item.count.toString()
 
                 currentItemId = id
-//            _uiState.update { currentState ->
-//                currentState.copy(name = shopItemEditName, count = shopItemEditCount)
-//            }
             }
         }
     }
 
-    fun getZeroItem() {
+    private fun getZeroItem() {
 
-        if (currentItemId == null){
-            currentItemId = UNDEFINED_ID
+        if (currentItemId == null) {
+            currentItemId = ShopItem.UNDEFINED_ID
             shopItemEditName = ""
             shopItemEditCount = "1.0"
-//        _uiState.update { currentState ->
-//            currentState.copy(name = shopItemEditName, count = shopItemEditCount)
-//        }
         }
     }
 
@@ -106,9 +126,6 @@ class ShopItemComposeViewModel @Inject constructor(
 
         shopItemEditName = newName
         resetErrorInputName()
-//        _uiState.update { currentState ->
-//            currentState.copy(name = shopItemEditName, showErrorName = false)
-//        }
     }
 
     fun onCountChanged(newCount: String) {
@@ -116,9 +133,6 @@ class ShopItemComposeViewModel @Inject constructor(
 
         shopItemEditCount = newCount
         resetErrorInputCount()
-//        _uiState.update { currentState ->
-//            currentState.copy(count = newCount, showErrorCount = false)
-//        }
     }
 
     fun onSaveClick() {
@@ -138,7 +152,6 @@ class ShopItemComposeViewModel @Inject constructor(
     }
 
     fun editShopItem() {
-
         val name = parseName(shopItemEditName)
         val count = parseCount(shopItemEditCount)
         val fieldsValid = validateInput(name, count)
@@ -185,14 +198,6 @@ class ShopItemComposeViewModel @Inject constructor(
 
     private fun resetErrorInputCount() {
         showErrorCount = false
-    }
-
-    private val _closeScreen = MutableLiveData<Unit>()
-    val closeScreen: LiveData<Unit>
-        get() = _closeScreen
-
-    private fun finishScreen() {
-        _closeScreen.value = Unit
     }
 
 }

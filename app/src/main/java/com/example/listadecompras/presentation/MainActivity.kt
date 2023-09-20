@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
 import com.example.listadecompras.databinding.ActivityMainBinding
+import com.example.listadecompras.presentation.old_staff.ShopListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

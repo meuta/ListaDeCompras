@@ -1,4 +1,4 @@
-package com.example.listadecompras.presentation.shop_list_screen
+package com.example.listadecompras.presentation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,16 +19,15 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.layoutId
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.listadecompras.presentation.Screen
-import com.example.listadecompras.presentation.SingleViewModel
+import com.example.listadecompras.presentation.shop_item_screen.ShopItemEditPane
 import com.example.listadecompras.presentation.shop_list_screen.components.LazyColumnSwappable
 
 @Composable
-fun ShopListScreen(
+fun TwoPaneScreen(
     navController: NavController,
+    screenMode: String,
     viewModel: SingleViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
 
     val configuration = LocalConfiguration.current
     val orientation = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -37,6 +36,11 @@ fun ShopListScreen(
         "Portrait"
     }
 
+    when (screenMode) {
+        "modeEdit" -> viewModel.saveClick = { viewModel.editShopItem() }
+        "modeAdd" -> viewModel.saveClick = { viewModel.addShopItem() }
+    }
+    val state = viewModel.state.value
     Scaffold() { padding ->
         ConstraintLayout(
             constraints(orientation),
@@ -51,6 +55,7 @@ fun ShopListScreen(
                 onRemove = viewModel::deleteShopItem,
                 onToggle = viewModel::changeEnableState,
                 onItemClick = {
+                    navController.navigateUp()
                     if (orientation == "Portrait") {
                         navController.navigate(
                             Screen.ShopItemScreen.route +
@@ -70,6 +75,7 @@ fun ShopListScreen(
                     .layoutId("fabAdd"),
                 shape = CircleShape,
                 onClick = {
+                    navController.navigateUp()
                     if (orientation == "Portrait") {
                         navController.navigate(
                             Screen.ShopItemScreen.route +
@@ -85,9 +91,30 @@ fun ShopListScreen(
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
             }
+            if (orientation == "Landscape") {
+
+                ShopItemEditPane(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .layoutId("itemPane"),
+                    itemName = viewModel.shopItemEditName,
+                    itemCount = viewModel.shopItemEditCount,
+                    showErrorName = viewModel.showErrorName,
+                    showErrorCount = viewModel.showErrorCount,
+                    onNameChange = { name -> viewModel.onNameChanged(name) },
+                    onCountChange = { count -> viewModel.onCountChanged(count) },
+                    onClick = {
+                        viewModel.onSaveClick()
+                        if (viewModel.finish) navController.navigateUp()
+                    }
+                )
+            }
         }
+
     }
+
 }
+
 
 private fun constraints(orientation: String): ConstraintSet {
     return ConstraintSet {
@@ -95,8 +122,8 @@ private fun constraints(orientation: String): ConstraintSet {
         val fabAdd = createRefFor("fabAdd")
 
         if (orientation == "Landscape") {
-
             val startGuideline = createGuidelineFromAbsoluteRight(0.5f)
+            val itemPane = createRefFor("itemPane")
 
             constrain(shopList) {
                 linkTo(parent.top, parent.bottom)
@@ -106,6 +133,11 @@ private fun constraints(orientation: String): ConstraintSet {
             constrain(fabAdd) {
                 bottom.linkTo(parent.bottom)
                 end.linkTo(startGuideline)
+            }
+            constrain(itemPane) {
+                linkTo(parent.top, parent.bottom)
+                linkTo(startGuideline, parent.end)
+                width = Dimension.fillToConstraints
             }
         } else {
             constrain(shopList) {
@@ -120,6 +152,4 @@ private fun constraints(orientation: String): ConstraintSet {
         }
     }
 }
-
-
 

@@ -27,6 +27,7 @@ import androidx.constraintlayout.compose.layoutId
 
 @Composable
 fun ShopItemEditPane(
+    modifier: Modifier,
     itemName: String,
     itemCount: String,
     showErrorName: Boolean,
@@ -38,7 +39,7 @@ fun ShopItemEditPane(
 
     ConstraintLayout(
         constraints(),
-        Modifier
+        modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState(), reverseScrolling = true)
     ) {
@@ -136,6 +137,7 @@ private fun constraints(): ConstraintSet {
 @Composable
 fun PreviewShopItemEditPane() {
     ShopItemEditPane(
+        Modifier.fillMaxSize(),
         itemName = "pesto",
         itemCount = "1.9",
         showErrorName = false,

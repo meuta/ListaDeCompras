@@ -1,4 +1,4 @@
-package com.example.listadecompras.presentation
+package com.example.listadecompras.presentation.shop_item_screen
 
 import android.os.Bundle
 import android.util.Log
@@ -15,8 +15,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.listadecompras.domain.ShopItem
-import com.example.listadecompras.presentation.shop_item_screen.ShopItemComposeViewModel
-import com.example.listadecompras.presentation.shop_item_screen.ShopItemEditPane
+import com.example.listadecompras.presentation.ShopItemComposeActivity
 import com.example.listadecompras.ui.theme.ListaDeComprasTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,15 +48,15 @@ class ShopItemComposeFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        ShopItemEditPane(
-                            itemName = viewModel.shopItemEditName,
-                            itemCount = viewModel.shopItemEditCount,
-                            showErrorName = viewModel.showErrorName,
-                            showErrorCount = viewModel.showErrorCount,
-                            onNameChange = { name -> viewModel.onNameChanged(name) },
-                            onCountChange = { count -> viewModel.onCountChanged(count) },
-                            onClick = { viewModel.onSaveClick() }
-                        )
+//                        ShopItemEditPane(
+//                            itemName = viewModel.shopItemEditName,
+//                            itemCount = viewModel.shopItemEditCount,
+//                            showErrorName = viewModel.showErrorName,
+//                            showErrorCount = viewModel.showErrorCount,
+//                            onNameChange = { name -> viewModel.onNameChanged(name) },
+//                            onCountChange = { count -> viewModel.onCountChanged(count) },
+//                            onClick = { viewModel.onSaveClick() }
+//                        )
                     }
                 }
             }
