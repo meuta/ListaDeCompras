@@ -27,7 +27,6 @@ fun ShopItemScreen(
         Box(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxSize()
         ) {
             ShopItemEditPane(
                 modifier = Modifier.fillMaxSize(),

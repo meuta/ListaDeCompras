@@ -1,6 +1,7 @@
 package com.example.listadecompras.presentation.shop_item_screen
 
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,12 +18,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.layoutId
 
 @Composable
@@ -36,11 +40,17 @@ fun ShopItemEditPane(
     onCountChange: (String) -> Unit,
     onClick: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val orientation = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        "Landscape"
+    } else {
+        "Portrait"
+    }
 
     ConstraintLayout(
-        constraints(),
+        constraints(orientation),
         modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .verticalScroll(rememberScrollState(), reverseScrolling = true)
     ) {
 
@@ -70,6 +80,7 @@ fun ShopItemEditPane(
             modifier = Modifier
                 .padding(all = 6.dp)
                 .padding(top = 0.dp)
+                .padding(bottom = 0.dp)
                 .layoutId("textCount"),
             label = { Text(text = "Count") },
             text = itemCount,
@@ -92,6 +103,7 @@ fun ShopItemEditPane(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(all = 6.dp)
+                .padding(top = 0.dp)
                 .layoutId("button"),
             shape = RoundedCornerShape(4.dp),
             colors = ButtonDefaults.buttonColors(containerColor = FloatingActionButtonDefaults.containerColor),
@@ -109,31 +121,58 @@ fun ShopItemEditPane(
 }
 
 
-private fun constraints(): ConstraintSet {
+private fun constraints(orientation: String): ConstraintSet {
     return ConstraintSet {
         val textName = createRefFor("textName")
         val textCount = createRefFor("textCount")
         val button = createRefFor("button")
+        if (orientation == "Portrait") {
 
-        constrain(textName) {
-            linkTo(parent.top, textCount.top)
-            linkTo(parent.start, parent.end)
-        }
-        constrain(textCount) {
-            linkTo(textName.bottom, button.top)
-            linkTo(parent.start, parent.end)
-        }
-        constrain(button) {
+            constrain(textName) {
+                linkTo(parent.top, textCount.top)
+                linkTo(parent.start, parent.end)
+            }
+            constrain(textCount) {
+                linkTo(textName.bottom, button.top)
+                linkTo(parent.start, parent.end)
+                width = Dimension.fillToConstraints
+            }
+            constrain(button) {
 
-            linkTo(textCount.bottom, parent.bottom, bias = 1f)
-            linkTo(parent.start, parent.end)
-        }
+                linkTo(textCount.bottom, parent.bottom, bias = 1f)
+                linkTo(parent.start, parent.end)
+            }
 
-        createVerticalChain(textName, textCount, chainStyle = ChainStyle.Packed)
+            createVerticalChain(textName, textCount, chainStyle = ChainStyle.Packed)
+
+        } else {
+
+            constrain(textName) {
+                linkTo(parent.top, button.top)
+                linkTo(parent.start, textCount.start)
+                width = Dimension.fillToConstraints
+            }
+            constrain(textCount) {
+                linkTo(textName.top, textName.bottom)
+                linkTo(textName.end, parent.end)
+                width = Dimension.fillToConstraints
+            }
+            constrain(button) {
+
+                linkTo(textCount.bottom, parent.bottom, bias = 1f)
+                linkTo(parent.start, parent.end)
+            }
+
+
+            createHorizontalChain(textName, textCount, chainStyle = ChainStyle.Packed)
+            createVerticalChain(textName, button, chainStyle = ChainStyle.Packed)
+
+        }
     }
 }
 
 @Preview(showBackground = true)
+@Preview(showBackground = true, device = Devices.AUTOMOTIVE_1024p, widthDp = 720, heightDp = 360)
 @Composable
 fun PreviewShopItemEditPane() {
     ShopItemEditPane(

@@ -103,11 +103,13 @@ class SingleViewModel @Inject constructor(
         viewModelScope.launch {
             if (id != currentItemId) {
                 val item = getShopItemByIdUseCase(id)
-                shopItem = item
-                shopItemEditName = item.name
-                shopItemEditCount = item.count.toString()
+                item?.let{
+                    shopItem = it
+                    shopItemEditName = it.name
+                    shopItemEditCount = it.count.toString()
 
-                currentItemId = id
+                    currentItemId = id
+                }
             }
         }
     }

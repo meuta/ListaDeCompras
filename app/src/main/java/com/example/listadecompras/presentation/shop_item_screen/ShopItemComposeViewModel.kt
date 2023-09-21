@@ -77,9 +77,9 @@ class ShopItemComposeViewModel @Inject constructor(
             if (id != currentItemId) {
                 val item = getShopItemByIdUseCase(id)
 //                _shopItem.value = item
-                shopItem = item
-                shopItemEditName = item.name
-                shopItemEditCount = item.count.toString()
+//                shopItem = item
+//                shopItemEditName = item.name
+//                shopItemEditCount = item.count.toString()
 
                 currentItemId = id
 //            _uiState.update { currentState ->
