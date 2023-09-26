@@ -1,4 +1,4 @@
-package com.example.listadecompras.presentation.shop_item_screen.components
+package com.example.listadecompras.presentation.shop_item_screen
 
 data class ShopItemScreenState(
     val screenMode: String = "",

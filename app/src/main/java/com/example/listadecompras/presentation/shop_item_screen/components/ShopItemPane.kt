@@ -1,4 +1,4 @@
-package com.example.listadecompras.presentation.shop_item_screen
+package com.example.listadecompras.presentation.shop_item_screen.components
 
 
 import android.content.res.Configuration

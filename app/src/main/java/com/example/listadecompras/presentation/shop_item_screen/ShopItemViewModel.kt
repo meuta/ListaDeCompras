@@ -13,7 +13,6 @@ import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
 import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.domain.ShopItem.Companion.UNDEFINED_ID
-import com.example.listadecompras.presentation.shop_item_screen.components.ShopItemScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.example.listadecompras.presentation.shop_item_screen
+package com.example.listadecompras.presentation.shop_item_screen.components
 
 data class ItemPaneState(
     val name: String = "",

@@ -1,9 +1,6 @@
-package com.example.listadecompras.presentation.shop_list_screen.components
+package com.example.listadecompras.presentation.first_screen.components
 
 
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -20,7 +17,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.zIndex
-import com.example.listadecompras.presentation.shop_list_screen.DragDropState
 
 @Composable
 fun rememberDragDropState(

@@ -26,8 +26,8 @@ import androidx.constraintlayout.compose.layoutId
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.listadecompras.presentation.ShopItemActivity
-import com.example.listadecompras.presentation.shop_item_screen.ShopItemEditPane
-import com.example.listadecompras.presentation.shop_list_screen.components.LazyColumnSwappable
+import com.example.listadecompras.presentation.shop_item_screen.components.ShopItemEditPane
+import com.example.listadecompras.presentation.first_screen.components.LazyColumnSwappable
 
 @Composable
 fun FirstScreen(

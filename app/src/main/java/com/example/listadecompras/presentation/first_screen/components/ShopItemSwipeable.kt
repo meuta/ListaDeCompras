@@ -1,4 +1,4 @@
-package com.example.listadecompras.presentation.shop_list_screen.components
+package com.example.listadecompras.presentation.first_screen.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState

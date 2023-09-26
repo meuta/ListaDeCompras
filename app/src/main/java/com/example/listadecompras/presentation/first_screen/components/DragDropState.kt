@@ -1,4 +1,4 @@
-package com.example.listadecompras.presentation.shop_list_screen
+package com.example.listadecompras.presentation.first_screen.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -9,8 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
-import com.example.listadecompras.presentation.shop_list_screen.components.getVisibleItemInfoFor
-import com.example.listadecompras.presentation.shop_list_screen.components.offsetEnd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

@@ -31,8 +31,8 @@ class FirstViewModel @Inject constructor(
     private val dragShopItemUseCase: DragShopItemUseCase,
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(FirstListState())
-    val state: State<FirstListState> = _state
+    private val _state = mutableStateOf(FirstScreenState())
+    val state: State<FirstScreenState> = _state
 
     private var getShopListJob: Job? = null
     var shopItemEditName by mutableStateOf("")
