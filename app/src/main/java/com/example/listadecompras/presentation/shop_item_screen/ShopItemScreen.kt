@@ -1,27 +1,34 @@
 package com.example.listadecompras.presentation.shop_item_screen
 
 
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.listadecompras.presentation.SingleViewModel
+import androidx.navigation.compose.rememberNavController
+
 
 @Composable
 fun ShopItemScreen(
     navController: NavController,
-    screenMode: String,
-    viewModel: SingleViewModel = hiltViewModel()
+    viewModel: ShopItemViewModel = hiltViewModel()
 ) {
-        when (screenMode) {
-            "modeEdit" -> viewModel.saveClick = { viewModel.editShopItem() }
-            "modeAdd" -> viewModel.saveClick = { viewModel.addShopItem() }
-        }
+    val context = LocalContext.current
+
+    val state = viewModel.state.value
+    when (state.screenMode) {
+        "mode_edit" -> viewModel.saveClick = { viewModel.editShopItem() }
+        "mode_add" -> viewModel.saveClick = { viewModel.addShopItem() }
+    }
 
     Scaffold(Modifier.fillMaxSize()) { padding ->
         Box(
@@ -38,19 +45,26 @@ fun ShopItemScreen(
                 onCountChange = { count -> viewModel.onCountChanged(count) },
                 onClick = {
                     viewModel.onSaveClick()
-                    if (viewModel.finish) navController.navigateUp()
+                    if (viewModel.finish) context.findActivity()?.finish()
                 }
             )
         }
     }
 }
 
+fun Context.findActivity(): ComponentActivity? = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
 @Preview(showBackground = true)
 @Composable
-fun PreviewShopItemScreen(shopItemViewModel: ShopItemComposeViewModel = hiltViewModel()) {
+fun PreviewShopItemScreen(shopItemViewModel: ShopItemViewModel = hiltViewModel()) {
 //    ShopItemScreen(shopItemViewModel = ShopItemViewModel(
 ////        GetShopItemUseCase(ShopListRepositoryImpl(, ShopListMapper())),
 ////        AddShopItemUseCase(ShopListRepositoryImpl(),
 ////    EditShopItemUseCase(ShopListRepositoryImpl()
 //    )
+    ShopItemScreen(navController = rememberNavController(), shopItemViewModel)
 }

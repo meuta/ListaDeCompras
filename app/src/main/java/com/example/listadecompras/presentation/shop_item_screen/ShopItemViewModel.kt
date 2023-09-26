@@ -1,11 +1,10 @@
 package com.example.listadecompras.presentation.shop_item_screen
 
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,12 +13,13 @@ import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
 import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.domain.ShopItem.Companion.UNDEFINED_ID
+import com.example.listadecompras.presentation.shop_item_screen.components.ShopItemScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ShopItemComposeViewModel @Inject constructor(
+class ShopItemViewModel @Inject constructor(
     private val getShopItemByIdUseCase: GetShopItemUseCase,
     private val addItemToShopListUseCase: AddShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
@@ -32,6 +32,9 @@ class ShopItemComposeViewModel @Inject constructor(
 //    var screenMode by mutableStateOf("")
 //        private set
 
+    private val _state = mutableStateOf(ShopItemScreenState())
+    val state: State<ShopItemScreenState> = _state
+
     var shopItemEditName by mutableStateOf("")
         private set
     var shopItemEditCount by mutableStateOf("")
@@ -42,20 +45,21 @@ class ShopItemComposeViewModel @Inject constructor(
     var showErrorCount by mutableStateOf(false)
         private set
 
-//    private val _shopItem = MutableLiveData<ShopItem>()
-//    val shopItem: LiveData<ShopItem> = _shopItem
-//    private var shopItem = ShopItem("", 0.0, false)
-    private var shopItem : ShopItem? = null
+    private var shopItem: ShopItem? = null
     private var currentItemId: Int? = null
 
     var finish = false
 
     var saveClick: () -> Unit = {}
+
     init {
 
         savedStateHandle.get<Int>("itemId")?.let { itemId ->
-            if(itemId != -1) {
-                viewModelScope.launch {
+            _state.value = state.value.copy(
+                itemId = itemId
+            )
+            if (itemId != 0) {
+//                viewModelScope.launch {
 //                    itemUseCases.getNote(itemId)?.also { item ->
 //                        currentNoteId = item.id
 //                        _itemTitle.value = itemTitle.value.copy(
@@ -67,21 +71,33 @@ class ShopItemComposeViewModel @Inject constructor(
 //                            isHintVisible = false
 //                        )
 //                    }
-                    getShopItem(itemId)
-                }
-            } else {getZeroItem()}
+                getShopItem(itemId)
+//                }
+            } else {
+                getZeroItem()
+            }
         }
+        savedStateHandle.get<String>("screenMode")?.let { mode ->
+            _state.value = state.value.copy(
+                screenMode = mode
+            )
+
+        }
+
     }
+
     fun getShopItem(id: Int) {
         viewModelScope.launch {
             if (id != currentItemId) {
                 val item = getShopItemByIdUseCase(id)
 //                _shopItem.value = item
-//                shopItem = item
-//                shopItemEditName = item.name
-//                shopItemEditCount = item.count.toString()
+                item?.let {
+                    shopItem = it
+                    shopItemEditName = it.name
+                    shopItemEditCount = it.count.toString()
 
-                currentItemId = id
+                    currentItemId = id
+                }
 //            _uiState.update { currentState ->
 //                currentState.copy(name = shopItemEditName, count = shopItemEditCount)
 //            }
@@ -91,7 +107,7 @@ class ShopItemComposeViewModel @Inject constructor(
 
     fun getZeroItem() {
 
-        if (currentItemId == null){
+        if (currentItemId == null) {
             currentItemId = UNDEFINED_ID
             shopItemEditName = ""
             shopItemEditCount = "1.0"
@@ -122,6 +138,7 @@ class ShopItemComposeViewModel @Inject constructor(
     }
 
     fun onSaveClick() {
+
         saveClick()
     }
 
@@ -185,14 +202,6 @@ class ShopItemComposeViewModel @Inject constructor(
 
     private fun resetErrorInputCount() {
         showErrorCount = false
-    }
-
-    private val _closeScreen = MutableLiveData<Unit>()
-    val closeScreen: LiveData<Unit>
-        get() = _closeScreen
-
-    private fun finishScreen() {
-        _closeScreen.value = Unit
     }
 
 }

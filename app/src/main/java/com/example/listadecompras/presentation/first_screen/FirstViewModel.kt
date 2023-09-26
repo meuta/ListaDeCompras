@@ -1,11 +1,10 @@
-package com.example.listadecompras.presentation
+package com.example.listadecompras.presentation.first_screen
 
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.listadecompras.domain.AddShopItemUseCase
@@ -15,7 +14,6 @@ import com.example.listadecompras.domain.EditShopItemUseCase
 import com.example.listadecompras.domain.GetShopItemUseCase
 import com.example.listadecompras.domain.GetShopListUseCase
 import com.example.listadecompras.domain.ShopItem
-import com.example.listadecompras.presentation.shop_list_screen.ShopListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -24,18 +22,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SingleViewModel @Inject constructor(
+class FirstViewModel @Inject constructor(
     private val getShopItemByIdUseCase: GetShopItemUseCase,
     private val addItemToShopListUseCase: AddShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
     private val getShopListUseCase: GetShopListUseCase,
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val dragShopItemUseCase: DragShopItemUseCase,
-    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(ShopListState())
-    val state: State<ShopListState> = _state
+    private val _state = mutableStateOf(FirstListState())
+    val state: State<FirstListState> = _state
 
     private var getShopListJob: Job? = null
     var shopItemEditName by mutableStateOf("")
@@ -89,15 +86,10 @@ class SingleViewModel @Inject constructor(
         }
     }
 
-    init {
-        savedStateHandle.get<Int>("itemId")?.let { itemId ->
-            if (itemId != -1) {
-                getShopItem(itemId)
-            } else {
-                getZeroItem()
-            }
-        }
+    fun getItem(itemId: Int?){
+        if (itemId == null) getZeroItem() else getShopItem(itemId)
     }
+
 
     private fun getShopItem(id: Int) {
         viewModelScope.launch {
@@ -139,6 +131,11 @@ class SingleViewModel @Inject constructor(
 
     fun onSaveClick() {
         saveClick()
+        currentItemId = null
+    }
+
+    fun onBackClick() {
+        currentItemId = null
     }
 
     fun addShopItem() {

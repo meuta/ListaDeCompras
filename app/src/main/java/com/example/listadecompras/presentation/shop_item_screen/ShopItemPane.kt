@@ -2,6 +2,7 @@ package com.example.listadecompras.presentation.shop_item_screen
 
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -81,6 +82,7 @@ fun ShopItemEditPane(
                 .padding(all = 6.dp)
                 .padding(top = 0.dp)
                 .padding(bottom = 0.dp)
+                .defaultMinSize(minWidth = 100.dp)
                 .layoutId("textCount"),
             label = { Text(text = "Count") },
             text = itemCount,
@@ -151,11 +153,13 @@ private fun constraints(orientation: String): ConstraintSet {
                 linkTo(parent.top, button.top)
                 linkTo(parent.start, textCount.start)
                 width = Dimension.fillToConstraints
+                horizontalChainWeight = 5f
             }
             constrain(textCount) {
                 linkTo(textName.top, textName.bottom)
                 linkTo(textName.end, parent.end)
                 width = Dimension.fillToConstraints
+                horizontalChainWeight = 2f
             }
             constrain(button) {
 
