@@ -67,6 +67,14 @@ class FirstViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun onReordered(fromPos: Int, toPos: Int) {
+        _state.value = state.value.copy(
+            state.value.shopList.toMutableList().apply {
+                add(toPos, removeAt(fromPos))
+            }
+        )
+    }
+
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {
             deleteShopItemUseCase(shopItem)

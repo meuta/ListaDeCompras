@@ -27,8 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.presentation.ShopItemActivity
+import com.example.listadecompras.presentation.first_screen.components.LazyColumnDragAndDrop
 import com.example.listadecompras.presentation.shop_item_screen.components.ShopItemEditPane
-import com.example.listadecompras.presentation.first_screen.components.LazyColumnSwappable
 
 @Composable
 fun FirstScreen(
@@ -56,14 +56,17 @@ fun FirstScreen(
     Scaffold() { padding ->
         ConstraintLayout(
             constraints(orientation),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
-            LazyColumnSwappable(
+            LazyColumnDragAndDrop(
                 items = state.shopList,
                 modifier = Modifier
                     .fillMaxSize()
                     .layoutId("shopList"),
                 onSwap = viewModel::dragShopItem,
+                onReordered = viewModel::onReordered,
                 onRemove = viewModel::deleteShopItem,
                 onToggle = viewModel::changeEnableState,
                 onItemClick = {
