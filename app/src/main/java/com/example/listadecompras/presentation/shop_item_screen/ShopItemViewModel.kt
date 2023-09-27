@@ -57,7 +57,7 @@ class ShopItemViewModel @Inject constructor(
             _state.value = state.value.copy(
                 itemId = itemId
             )
-            if (itemId != 0) {
+            if (itemId != UNDEFINED_ID) {
 //                viewModelScope.launch {
 //                    itemUseCases.getNote(itemId)?.also { item ->
 //                        currentNoteId = item.id
@@ -75,6 +75,7 @@ class ShopItemViewModel @Inject constructor(
             } else {
                 getZeroItem()
             }
+            currentItemId = itemId
         }
         savedStateHandle.get<String>("screenMode")?.let { mode ->
             _state.value = state.value.copy(
@@ -85,7 +86,7 @@ class ShopItemViewModel @Inject constructor(
 
     }
 
-    fun getShopItem(id: Int) {
+    private fun getShopItem(id: Int) {
         viewModelScope.launch {
             if (id != currentItemId) {
                 val item = getShopItemByIdUseCase(id)
@@ -94,8 +95,6 @@ class ShopItemViewModel @Inject constructor(
                     shopItem = it
                     shopItemEditName = it.name
                     shopItemEditCount = it.count.toString()
-
-                    currentItemId = id
                 }
 //            _uiState.update { currentState ->
 //                currentState.copy(name = shopItemEditName, count = shopItemEditCount)
@@ -104,10 +103,9 @@ class ShopItemViewModel @Inject constructor(
         }
     }
 
-    fun getZeroItem() {
+    private fun getZeroItem() {
 
         if (currentItemId == null) {
-            currentItemId = UNDEFINED_ID
             shopItemEditName = ""
             shopItemEditCount = "1.0"
 //        _uiState.update { currentState ->

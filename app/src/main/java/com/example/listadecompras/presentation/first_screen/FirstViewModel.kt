@@ -86,8 +86,10 @@ class FirstViewModel @Inject constructor(
         }
     }
 
-    fun getItem(itemId: Int?){
-        if (itemId == null) getZeroItem() else getShopItem(itemId)
+    fun getItem(itemId: Int){
+        if (itemId == ShopItem.UNDEFINED_ID) getZeroItem() else getShopItem(itemId)
+        currentItemId = itemId
+
     }
 
 
@@ -99,8 +101,6 @@ class FirstViewModel @Inject constructor(
                     shopItem = it
                     shopItemEditName = it.name
                     shopItemEditCount = it.count.toString()
-
-                    currentItemId = id
                 }
             }
         }
@@ -109,7 +109,6 @@ class FirstViewModel @Inject constructor(
     private fun getZeroItem() {
 
         if (currentItemId == null) {
-            currentItemId = ShopItem.UNDEFINED_ID
             shopItemEditName = ""
             shopItemEditCount = "1.0"
         }
@@ -134,7 +133,7 @@ class FirstViewModel @Inject constructor(
         currentItemId = null
     }
 
-    fun onBackClick() {
+    fun resetItemId() {
         currentItemId = null
     }
 

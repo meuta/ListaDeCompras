@@ -25,6 +25,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.layoutId
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.listadecompras.domain.ShopItem
 import com.example.listadecompras.presentation.ShopItemActivity
 import com.example.listadecompras.presentation.shop_item_screen.components.ShopItemEditPane
 import com.example.listadecompras.presentation.first_screen.components.LazyColumnSwappable
@@ -43,12 +44,12 @@ fun FirstScreen(
 
     val state = viewModel.state.value
     val context = LocalContext.current
-    var twoPaneMode by remember { mutableStateOf(false) }
+    var showItemPane by remember { mutableStateOf(false) }
 
     BackHandler {
-        if (twoPaneMode) {
-            twoPaneMode = false
-            viewModel.onBackClick()
+        if (showItemPane) {
+            showItemPane = false
+            viewModel.resetItemId()
         }
     }
 
@@ -76,7 +77,7 @@ fun FirstScreen(
 
                     } else {
 
-                        twoPaneMode = true
+                        showItemPane = true
                         viewModel.saveClick = { viewModel.editShopItem() }
                         viewModel.getItem(it.id)
                     }
@@ -93,13 +94,13 @@ fun FirstScreen(
 //                            Screen.ShopItemScreen.route +
 //                                    "?screenMode=modeAdd"
 //                        )
-                        twoPaneMode = false
+                        showItemPane = false
                         val intent = ShopItemActivity.newIntentAddItem(context)
                         context.startActivity(intent)
                     } else {
-                        twoPaneMode = true
+                        showItemPane = true
                         viewModel.saveClick = { viewModel.addShopItem() }
-                        viewModel.getItem(null)
+                        viewModel.getItem(ShopItem.UNDEFINED_ID)
                     }
                 }
             ) {
@@ -107,7 +108,7 @@ fun FirstScreen(
             }
 
 
-    if ((orientation == "Landscape") && twoPaneMode) {
+            if ((orientation == "Landscape") && showItemPane) {
 
                 ShopItemEditPane(
                     modifier = Modifier
@@ -121,7 +122,7 @@ fun FirstScreen(
                     onCountChange = { count -> viewModel.onCountChanged(count) },
                     onClick = {
                         viewModel.onSaveClick()
-                if (viewModel.finish) twoPaneMode = false
+                        if (viewModel.finish) showItemPane = false
                     }
                 )
             }
