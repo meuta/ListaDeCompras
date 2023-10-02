@@ -5,9 +5,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listadecompras.R
 import com.example.listadecompras.databinding.ActivityMainBinding
@@ -21,9 +23,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var binding: ActivityMainBinding
 
-    private var fromGlobal : Int? = null
-    private var toGlobal : Int? = null
+    private lateinit var layoutManager: LinearLayoutManager
 
+    private var fromGlobal: Int? = null
+    private var toGlobal: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -32,6 +35,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         setContentView(binding.root)
 
         setupRecyclerView()
+
+        layoutManager = binding.rvShopList.layoutManager as LinearLayoutManager
 
         viewModel.shopList.observe(this) {
             Log.d("TEST_OF_SUBSCRIBE", it.toString())
@@ -66,38 +71,59 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private fun launchFragment(fragment: Fragment) {
         with(supportFragmentManager) {
             popBackStack()
-            beginTransaction()
-                .replace(R.id.shop_item_container, fragment)    //adding fragment to container
-                .addToBackStack(null)
-                .commit()
+            beginTransaction().replace(
+                R.id.shop_item_container, fragment
+            )    //adding fragment to container
+                .addToBackStack(null).commit()
         }
     }
 
     private fun setupRecyclerView() {
         shopListAdapter = ShopListAdapter()
+
         with(binding.rvShopList) {
             adapter = shopListAdapter
 
             recycledViewPool.setMaxRecycledViews(
-                ShopListAdapter.VIEW_TYPE_ENABLED,
-                ShopListAdapter.MAX_POOL_SIZE
+                ShopListAdapter.VIEW_TYPE_ENABLED, ShopListAdapter.MAX_POOL_SIZE
             )
             recycledViewPool.setMaxRecycledViews(
-                ShopListAdapter.VIEW_TYPE_DISABLED,
-                ShopListAdapter.MAX_POOL_SIZE
+                ShopListAdapter.VIEW_TYPE_DISABLED, ShopListAdapter.MAX_POOL_SIZE
             )
+
+            layoutManager =
+                LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
         }
+
+        setupScrollController()
 
         setupClickListener()
 
         setupSwipeAndDragListener(binding.rvShopList)
     }
 
+    private fun setupScrollController() {
+        shopListAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+
+                val firstPos = layoutManager.findFirstCompletelyVisibleItemPosition()
+                if (firstPos >= 0) {
+                    val firstView = layoutManager.findViewByPosition(firstPos)
+                    firstView?.let {
+                        val offsetTop = layoutManager.getDecoratedTop(it) -
+                                layoutManager.getTopDecorationHeight(it) -
+                                it.marginTop
+                        layoutManager.scrollToPositionWithOffset(firstPos, offsetTop)
+                    }
+                }
+            }
+        })
+    }
+
 
     private fun setupSwipeAndDragListener(rvShopList: RecyclerView) {
         val callback = object : ItemTouchHelper.SimpleCallback(
-            UP or DOWN,
-            LEFT or RIGHT
+            UP or DOWN, LEFT or RIGHT
         ) {
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
                 return 0.7f
@@ -118,10 +144,12 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
                 val list = shopListAdapter.currentList.toMutableList()
                 val item = list[from]
+
                 list.removeAt(from)
                 list.add(to, item)
 
                 shopListAdapter.submitList(list)
+
                 return true
             }
 
@@ -134,6 +162,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                         fromGlobal = viewHolder?.bindingAdapterPosition
                         Log.d("setupSwipeAndDragListener", "Item is dragging. $fromGlobal")
                     }
+
                     ACTION_STATE_IDLE -> {
                         Log.d("setupSwipeAndDragListener", "Item is dropped. $fromGlobal $toGlobal")
                         fromGlobal?.let { from ->
@@ -150,8 +179,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             }
 
             override fun clearView(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
+                recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder
             ) {
                 super.clearView(recyclerView, viewHolder)
                 viewHolder.itemView.alpha = 1.0f
@@ -183,5 +211,4 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             }
         }
     }
-
 }

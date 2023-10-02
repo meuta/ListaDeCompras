@@ -12,7 +12,7 @@ interface ShopListRepository {
 
     suspend fun deleteShopItem(shopItem: ShopItem)
 
-    suspend fun getShopItem(itemId: Int): ShopItem
+    suspend fun getShopItem(itemId: Int): ShopItem?
 
     suspend fun dragShopItem(from:Int, to: Int)
 
