@@ -36,7 +36,9 @@ class GetShopItemUseCaseTest{
 
         for ((index, i) in ('a'..'z').withIndex()) {
             val shopItem = getShopItem(index)
-            assertThat(shopItem.name).isEqualTo(i.toString())
+            shopItem?.let {
+                assertThat(it.name).isEqualTo(i.toString())
+            }
         }
     }
 

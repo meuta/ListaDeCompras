@@ -12,8 +12,10 @@ class FakeShopListRepository : ShopListRepository {
         return flow { emit(shopList) }
     }
 
-    override suspend fun getShopItem(itemId: Int): ShopItem {
-        return shopList.find { it.id == itemId } ?: ShopItem("", 0.0, false)
+//    override suspend fun getShopItem(itemId: Int): ShopItem {
+    override suspend fun getShopItem(itemId: Int): ShopItem? {
+//        return shopList.find { it.id == itemId } ?: ShopItem("", 0.0, false)
+        return shopList.find { it.id == itemId }
     }
 
     override suspend fun addShopItem(shopItem: ShopItem) {

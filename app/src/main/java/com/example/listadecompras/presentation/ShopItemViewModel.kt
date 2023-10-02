@@ -1,10 +1,6 @@
 package com.example.listadecompras.presentation
 
-import android.util.Log
 import androidx.lifecycle.*
-import androidx.work.ExistingWorkPolicy
-import androidx.work.WorkManager
-import com.example.listadecompras.data.workers.SimpleWorker
 import com.example.listadecompras.domain.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -15,16 +11,7 @@ class ShopItemViewModel @Inject constructor(
     private val getShopItemByIdUseCase: GetShopItemUseCase,
     private val addItemToShopListUseCase: AddShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
-    private val workManager: WorkManager
 ) : ViewModel() {
-
-    init {
-        workManager.enqueueUniqueWork(
-            SimpleWorker.WORK_NAME,
-            ExistingWorkPolicy.REPLACE,
-            SimpleWorker.makeRequest()
-        )
-    }
 
     private var _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
@@ -38,7 +25,7 @@ class ShopItemViewModel @Inject constructor(
     fun getShopItem(itemId: Int) {
         viewModelScope.launch {
             val item = getShopItemByIdUseCase(itemId)
-            _shopItem.value = item
+            item?.let { _shopItem.value = it }
         }
     }
 
