@@ -73,7 +73,7 @@ class ShopItemFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.closeScreen.observe(viewLifecycleOwner) {
             Log.d("closeScreenSubscribeTest", it.toString())
-            activity?.onBackPressed()
+            activity?.onBackPressedDispatcher?.onBackPressed()
         }
     }
 
