@@ -6,6 +6,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ShopListMapper @Inject constructor() {
+
     fun mapEntityToDbModel(shopItem: ShopItem) = ShopItemBbModel(
         id = shopItem.id,
         name = shopItem.name,

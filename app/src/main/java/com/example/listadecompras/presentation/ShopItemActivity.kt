@@ -3,7 +3,6 @@ package com.example.listadecompras.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem
@@ -61,7 +60,6 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 throw RuntimeException("Param shop_item_id is absent")
             }
             itemId = intent.getIntExtra(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-            Log.d("ShopItemActivity", "id = $itemId")
         }
     }
 

@@ -1,16 +1,20 @@
 package com.example.listadecompras.presentation
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.listadecompras.R
 import com.example.listadecompras.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,12 +43,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         layoutManager = binding.rvShopList.layoutManager as LinearLayoutManager
 
         viewModel.shopList.observe(this) {
-            Log.d("TEST_OF_SUBSCRIBE", it.toString())
-
             shopListAdapter.submitList(it)      // Created new thread
-            Log.d("TEST_OF_SUBSCRIBE", "submitList")
-
-
         }
 
         binding.buttonAddShopItem.setOnClickListener {
@@ -58,9 +57,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         }
     }
 
-
     override fun onEditingFinished() {
-        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
         supportFragmentManager.popBackStack()
     }
 
@@ -71,9 +68,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private fun launchFragment(fragment: Fragment) {
         with(supportFragmentManager) {
             popBackStack()
-            beginTransaction().replace(
-                R.id.shop_item_container, fragment
-            )    //adding fragment to container
+            beginTransaction()
+                .replace(R.id.shop_item_container, fragment)
                 .addToBackStack(null).commit()
         }
     }
@@ -91,8 +87,11 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 ShopListAdapter.VIEW_TYPE_DISABLED, ShopListAdapter.MAX_POOL_SIZE
             )
 
-            layoutManager =
-                LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(
+                this@MainActivity,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
         }
 
         setupScrollController()
@@ -122,17 +121,29 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
 
     private fun setupSwipeAndDragListener(rvShopList: RecyclerView) {
-        val callback = object : ItemTouchHelper.SimpleCallback(
+        val callback = object : SimpleCallback(
             UP or DOWN, LEFT or RIGHT
         ) {
-            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+            var context = applicationContext
+
+            private val deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete)
+            private val editIcon = ContextCompat.getDrawable(context, R.drawable.ic_shopping_bag)
+            private val intrinsicWidthDelete = deleteIcon!!.intrinsicWidth
+            private val intrinsicHeightDelete = deleteIcon!!.intrinsicHeight
+            private val intrinsicWidthEdit = editIcon!!.intrinsicWidth
+            private val intrinsicHeightEdit = editIcon!!.intrinsicHeight
+
+             private val clearPaint =
+                Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
+
+            override fun getSwipeThreshold(viewHolder: ViewHolder): Float {
                 return 0.7f
             }
 
             override fun onMove(
                 recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
+                viewHolder: ViewHolder,
+                target: ViewHolder
             ): Boolean {
 
                 //the position from where item has been moved
@@ -153,18 +164,15 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 return true
             }
 
-            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-                Log.d("setupSwipeAndDragListener", "onSelectedChanged   actionState = $actionState")
+            override fun onSelectedChanged(viewHolder: ViewHolder?, actionState: Int) {
                 super.onSelectedChanged(viewHolder, actionState)
                 when (actionState) {
                     ACTION_STATE_DRAG -> {
                         viewHolder?.itemView?.alpha = 0.7f
                         fromGlobal = viewHolder?.bindingAdapterPosition
-                        Log.d("setupSwipeAndDragListener", "Item is dragging. $fromGlobal")
                     }
 
                     ACTION_STATE_IDLE -> {
-                        Log.d("setupSwipeAndDragListener", "Item is dropped. $fromGlobal $toGlobal")
                         fromGlobal?.let { from ->
                             toGlobal?.let { to ->
                                 if (fromGlobal != toGlobal) {
@@ -179,14 +187,14 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             }
 
             override fun clearView(
-                recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder
+                recyclerView: RecyclerView, viewHolder: ViewHolder
             ) {
                 super.clearView(recyclerView, viewHolder)
                 viewHolder.itemView.alpha = 1.0f
             }
 
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.bindingAdapterPosition]
                 if (direction == RIGHT) {
                     viewModel.deleteShopItem(item)
@@ -194,6 +202,82 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 } else {
                     viewModel.changeEnableState(item)
                 }
+            }
+
+            override fun onChildDraw(
+                c: Canvas, recyclerView: RecyclerView, viewHolder: ViewHolder,
+                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+            ) {
+
+                val itemView = viewHolder.itemView
+                val itemHeight = itemView.bottom - itemView.top
+                val isCanceled = dX == 0f && !isCurrentlyActive
+
+                if (isCanceled) {
+                    clearCanvas(
+                        c,
+                        itemView.right + dX,
+                        itemView.top.toFloat(),
+                        itemView.right.toFloat(),
+                        itemView.bottom.toFloat()
+                    )
+                    super.onChildDraw(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        dX,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
+                    return
+                }
+
+                // Draw the green delete background
+                if (dX < 0) {
+
+                    val editIconTop = itemView.top + (itemHeight - intrinsicHeightEdit) / 2
+                    val editIconMargin = (itemHeight - intrinsicHeightEdit)
+                    val editIconLeft = itemView.right - editIconMargin
+                    val editIconRight = itemView.right - editIconMargin + intrinsicWidthEdit
+                    val editIconBottom = editIconTop + intrinsicHeightEdit
+
+                    // Draw the edit icon
+                    editIcon!!.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
+                    editIcon.draw(c)
+
+                } else if (dX > 0) {
+
+                    val deleteIconTop = itemView.top + (itemHeight - intrinsicHeightDelete) / 2
+                    val deleteIconMargin = (itemHeight - intrinsicHeightDelete)
+                    val deleteIconLeft = itemView.left + deleteIconMargin - intrinsicWidthDelete
+                    val deleteIconRight = itemView.left + deleteIconMargin
+                    val deleteIconBottom = deleteIconTop + intrinsicHeightDelete
+
+                    // Draw the delete icon
+                    deleteIcon!!.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom)
+                    deleteIcon.draw(c)
+                }
+
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+
+            private fun clearCanvas(
+                c: Canvas?,
+                left: Float,
+                top: Float,
+                right: Float,
+                bottom: Float
+            ) {
+                c?.drawRect(left, top, right, bottom, clearPaint)
             }
         }
         val itemTouchHelper = ItemTouchHelper(callback)

@@ -6,5 +6,4 @@ import javax.inject.Inject
 class GetShopListUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
     operator fun invoke(): Flow<List<ShopItem>> = shopListRepository.getShopList()
-
 }

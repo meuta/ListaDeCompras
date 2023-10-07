@@ -6,7 +6,6 @@ import com.example.listadecompras.R
 import com.example.listadecompras.domain.ShopItem.Companion.UNDEFINED_ID
 import com.google.android.material.textfield.TextInputLayout
 
-
 @BindingAdapter("setErrorInputName")
 fun bindErrorInputName(til: TextInputLayout, isError: Boolean){
     val message = if (isError) {

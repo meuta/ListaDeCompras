@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +39,6 @@ class ShopItemFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("ShopItemFragment", "onCreate")
         super.onCreate(savedInstanceState)
         parseParams()
     }
@@ -66,13 +64,11 @@ class ShopItemFragment : Fragment() {
         launchRightMode()
 
         observeViewModel()
-
     }
 
 
     private fun observeViewModel() {
         viewModel.closeScreen.observe(viewLifecycleOwner) {
-            Log.d("closeScreenSubscribeTest", it.toString())
             activity?.onBackPressedDispatcher?.onBackPressed()
         }
     }
@@ -129,7 +125,6 @@ class ShopItemFragment : Fragment() {
                 throw RuntimeException("Param shop_item_id is absent")
             }
             itemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-            Log.d("ShopItemActivity", "id = $itemId")
         }
     }
 
@@ -148,14 +143,11 @@ class ShopItemFragment : Fragment() {
                 binding.etCount.text?.toString()
             )
         }
-
     }
-
 
     interface OnEditingFinishedListener {
         fun onEditingFinished()
     }
-
 
     companion object {
         private const val SECOND_SCREEN_MODE = "second_screen_mode"
@@ -163,7 +155,6 @@ class ShopItemFragment : Fragment() {
         private const val MODE_ADD = "mode_add"
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_UNKNOWN = ""
-
 
         fun newInstanceAddItem(): ShopItemFragment {
             return ShopItemFragment().apply {
@@ -183,5 +174,4 @@ class ShopItemFragment : Fragment() {
             }
         }
     }
-
 }

@@ -12,9 +12,7 @@ import com.example.listadecompras.domain.ShopItem
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 
-
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         val layout = when (viewType) {
@@ -29,7 +27,6 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
             false
         )
         return ShopItemViewHolder(binding)
-
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
@@ -50,7 +47,6 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
                 binding.shopItem = shopItem
             }
         }
-
     }
 
     override fun getItemViewType(position: Int): Int {
