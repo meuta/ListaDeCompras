@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/name_hint"
                 android:text="@{viewModel.shopItem.name}"
-                android:inputType="textCapWords" />
+                android:inputType="textCapSentences" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
