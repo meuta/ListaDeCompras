@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.listadecompras.presentation.ShopItemViewModel" />
+            type="com.obrigada_eu.listadecompras.presentation.ShopItemViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

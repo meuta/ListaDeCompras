@@ -10,13 +10,13 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.listadecompras"
+        applicationId 'com.obrigada_eu.listadecompras'
         minSdk 23
         targetSdk 33
-        versionCode 4
-        versionName "4.0"
+        versionCode 5
+        versionName "5.0"
 
-        testInstrumentationRunner "com.example.listadecompras.HiltTestRunner"
+        testInstrumentationRunner "com.obrigada_eu.listadecompras.HiltTestRunner"
     }
 
     buildTypes {
@@ -40,7 +40,7 @@ android {
     buildFeatures {
         dataBinding true
     }
-    namespace 'com.example.listadecompras'
+    namespace 'com.obrigada_eu.listadecompras'
 }
 
 dependencies {
