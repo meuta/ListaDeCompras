@@ -1,12 +1,14 @@
 package com.obrigada_eu.listadecompras.presentation
 
 import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.obrigada_eu.listadecompras.databinding.FragmentShopItemBinding
@@ -64,12 +66,28 @@ class ShopItemFragment : Fragment() {
         launchRightMode()
 
         observeViewModel()
+
+        setFocus()
+
+    }
+
+    private fun setFocus() {
+        binding.etName.requestFocus()
+        val inputMethodManager =
+            activity?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(binding.etName, 0)
     }
 
 
     private fun observeViewModel() {
         viewModel.closeScreen.observe(viewLifecycleOwner) {
             activity?.onBackPressedDispatcher?.onBackPressed()
+        }
+        viewModel.shopItem.observe(viewLifecycleOwner){ item ->
+            with(binding) {
+                etName.setText(item.name)
+                etName.setSelection(item.name.length)
+            }
         }
     }
 
