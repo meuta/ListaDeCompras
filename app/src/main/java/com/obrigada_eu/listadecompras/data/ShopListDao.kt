@@ -17,6 +17,8 @@ interface ShopListDao {
 
     @Query("SELECT * FROM shop_items WHERE id=:shopItemId LIMIT 1")
     suspend fun getShopItem(shopItemId: Int): ShopItemBbModel?
+    @Query("SELECT * FROM shop_items WHERE shop_item_order=:order LIMIT 1")
+    suspend fun getShopItemByOrder(order: Int): ShopItemBbModel?
 
     @Query("SELECT MAX(shop_item_order) FROM shop_items")
     suspend fun getLargestOrder(): Int?

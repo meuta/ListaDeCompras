@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.data
 
+import android.util.Log
 import com.obrigada_eu.listadecompras.domain.ShopItem
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
         return shopListDao.getShopList().map {
             mapper.mapListDbModelToEntity(it).apply {
+                Log.d("getShopList", "$it")
                 shopListDbModel = it
             }
         }
@@ -38,7 +40,15 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteShopItem(shopItem: ShopItem) {
+        val order = shopListDao.getShopItem(shopItem.id)?.mOrder
+        Log.d("deleteShopItem", "order = $order")
         shopListDao.deleteShopItem(shopItem.id)
+        order?.let {
+            for (i in it .. (shopListDao.getLargestOrder() ?: (it-1))){
+                val nextItem = shopListDao.getShopItemByOrder(i)
+                nextItem?.let { item -> shopListDao.addShopItem(item.copy(mOrder = i - 1)) }
+            }
+        }
     }
 
     override suspend fun getShopItem(itemId: Int): ShopItem? {
