@@ -99,7 +99,8 @@ class ShopItemFragment : Fragment() {
     }
 
     private fun addTextChangedListeners() {
-        binding.etName.addTextChangedListener(object : TextWatcher {
+         val inputErrorListener = object : TextWatcher {
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -109,19 +110,11 @@ class ShopItemFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {
             }
-        })
-
-        binding.etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorInputCount()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
+        }
+        with(binding) {
+            etName.addTextChangedListener(inputErrorListener)
+            etCount.addTextChangedListener(inputErrorListener)
+        }
     }
 
 
@@ -150,7 +143,6 @@ class ShopItemFragment : Fragment() {
         binding.btnSave.setOnClickListener {
             viewModel.addShopItem(binding.etName.text?.toString(), binding.etCount.text?.toString())
         }
-
     }
 
     private fun launchEditMode() {
