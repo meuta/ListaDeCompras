@@ -7,20 +7,21 @@ import javax.inject.Singleton
 @Singleton
 class ShopListMapper @Inject constructor() {
 
-    fun mapEntityToDbModel(shopItem: ShopItem) = ShopItemBbModel(
+    fun mapEntityToDbModel(shopItem: ShopItem) = ShopItemDbModel(
         id = shopItem.id,
         name = shopItem.name,
         count = shopItem.count,
-        enabled = shopItem.enabled
+        enabled = shopItem.enabled,
+        shopListId = -1
     )
 
-    fun mapDbModelToEntity(shopItemDbModel: ShopItemBbModel) = ShopItem(
+    fun mapDbModelToEntity(shopItemDbModel: ShopItemDbModel) = ShopItem(
         id = shopItemDbModel.id,
         name = shopItemDbModel.name,
         count = shopItemDbModel.count,
         enabled = shopItemDbModel.enabled
     )
 
-    fun mapListDbModelToEntity(list: List<ShopItemBbModel>) = list.map { mapDbModelToEntity(it) }
+    fun mapListDbModelToEntity(list: List<ShopItemDbModel>) = list.map { mapDbModelToEntity(it) }
 
 }

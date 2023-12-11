@@ -5,12 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [ShopItemBbModel::class], version = 2, exportSchema = false)
-abstract class AppDatabase: RoomDatabase() {
+@Database(
+    entities = [
+        ShopItemDbModel::class,
+        ShopListDbModel::class
+    ],
+    version = 3,
+    exportSchema = false
+)
+abstract class AppDatabase : RoomDatabase() {
 
     abstract fun shopListDao(): ShopListDao
+    abstract fun shopItemDao(): ShopItemDao
 
-    companion object{
+    companion object {
 
         private const val DB_NAME = "shop_item.db"
 

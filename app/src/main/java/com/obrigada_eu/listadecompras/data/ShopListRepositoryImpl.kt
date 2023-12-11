@@ -15,7 +15,7 @@ class ShopListRepositoryImpl @Inject constructor(
     private val mapper: ShopListMapper
 ) : ShopListRepository {
 
-    private lateinit var shopListDbModel: MutableList<ShopItemBbModel>
+    private lateinit var shopListDbModel: MutableList<ShopItemDbModel>
 
     override fun getShopList(): Flow<List<ShopItem>> {
 
