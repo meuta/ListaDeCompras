@@ -12,5 +12,11 @@ data class ShopItemBbModel(
     val count: Double,
     val enabled: Boolean,
     @ColumnInfo(name = "shop_item_order")
-    var mOrder: Int = 0
+    var position: Int = -1
+)
+
+data class ItemOrder (
+    val id: Int,
+    @ColumnInfo(name = "shop_item_order")
+    var position: Int
 )

@@ -4,6 +4,8 @@ import com.obrigada_eu.listadecompras.domain.ShopItem
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.lang.Integer.max
+import java.lang.Integer.min
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -11,40 +13,38 @@ import javax.inject.Singleton
 class ShopListRepositoryImpl @Inject constructor(
     private val shopListDao: ShopListDao,
     private val mapper: ShopListMapper
-    ): ShopListRepository {
+) : ShopListRepository {
 
-    private lateinit var shopListDbModel: List<ShopItemBbModel>
+    private lateinit var shopListDbModel: MutableList<ShopItemBbModel>
 
     override fun getShopList(): Flow<List<ShopItem>> {
 
         return shopListDao.getShopList().map {
-            mapper.mapListDbModelToEntity(it).apply {
-                shopListDbModel = it
-            }
+            shopListDbModel = it.toMutableList()
+            mapper.mapListDbModelToEntity(it)
         }
     }
 
     override suspend fun addShopItem(shopItem: ShopItem) {
         val dbModel = mapper.mapEntityToDbModel(shopItem)
-        dbModel.mOrder = (shopListDao.getLargestOrder() ?: 0) + 1
+        dbModel.position = (shopListDao.getLargestOrder() ?: -1) + 1
         shopListDao.addShopItem(dbModel)
     }
 
     override suspend fun editShopItem(shopItem: ShopItem) {
         val dbModel = mapper.mapEntityToDbModel(shopItem)
         val item = shopListDao.getShopItem(shopItem.id)
-        dbModel.mOrder = item?.mOrder ?: ((shopListDao.getLargestOrder() ?: 0) + 1)
+        dbModel.position = item?.position ?: ((shopListDao.getLargestOrder() ?: -1) + 1)
         shopListDao.addShopItem(dbModel)
     }
 
     override suspend fun deleteShopItem(shopItem: ShopItem) {
-        val order = shopListDao.getShopItem(shopItem.id)?.mOrder
+        val itemIndex = shopListDbModel.indexOfFirst { it.id == shopItem.id }
+        shopListDbModel.removeAt(itemIndex)
         shopListDao.deleteShopItem(shopItem.id)
-        order?.let {
-            for (i in it .. (shopListDao.getLargestOrder() ?: (it-1))){
-                val nextItem = shopListDao.getShopItemByOrder(i)
-                nextItem?.let { item -> shopListDao.addShopItem(item.copy(mOrder = i - 1)) }
-            }
+        shopListDbModel.drop(itemIndex).forEach{
+            it.position--
+            shopListDao.updateItemOrder(ItemOrder(it.id, it.position) )
         }
     }
 
@@ -56,22 +56,20 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun dragShopItem(from: Int, to: Int) {
-
+        shopListDbModel[from].position = to
         if (from < to) {
-            val lastOrder = shopListDbModel[to].mOrder
-            for (i in to downTo from + 1) {
-                shopListDbModel[i].mOrder = shopListDbModel[i-1].mOrder
-            }
-            shopListDbModel[from].mOrder = lastOrder
-
+            shopListDbModel
+                .slice(to downTo from + 1)
+                .forEach { it.position-- }
         } else if (from > to) {
-            val lastOrder = shopListDbModel[to].mOrder
-            for (i in to until from) {
-                shopListDbModel[i].mOrder = shopListDbModel[i+1].mOrder
-            }
-            shopListDbModel[from].mOrder = lastOrder
+            shopListDbModel
+                .slice(to until from)
+                .forEach { it.position++ }
         }
+        shopListDbModel
+            .slice(min(from, to) .. max(from, to))
+            .sortedBy { it.position }
 
-        shopListDao.update(shopListDbModel)
+        shopListDao.updateList(shopListDbModel)
     }
 }

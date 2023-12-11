@@ -24,5 +24,8 @@ interface ShopListDao {
     suspend fun getLargestOrder(): Int?
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(shopListBbModel: List<ShopItemBbModel>)
+    suspend fun updateList(shopListBbModel: List<ShopItemBbModel>)
+
+    @Update(entity = ShopItemBbModel::class)
+    suspend fun updateItemOrder(order: ItemOrder)
 }
