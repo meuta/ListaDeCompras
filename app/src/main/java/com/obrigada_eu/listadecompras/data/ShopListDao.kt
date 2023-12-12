@@ -35,6 +35,6 @@ interface ShopListDao {
 
     @Transaction
     @Query("SELECT * FROM shop_lists")
-    fun getShopListsWithShopItems(): List<ShopListWithShopItemsDbModel>
+    fun getShopListsWithShopItems(): Flow<List<ShopListWithShopItemsDbModel>>
 
 }

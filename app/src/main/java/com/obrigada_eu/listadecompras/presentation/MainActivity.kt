@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -43,7 +44,14 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         layoutManager = binding.rvShopList.layoutManager as LinearLayoutManager
 
         viewModel.shopList.observe(this) {
-            shopListAdapter.submitList(it)      // Created new thread
+            shopListAdapter.submitList(it)
+            Log.d("MainActivity", "shopList.observe =\n $it")
+
+        }
+
+
+        viewModel.allListsWithItems.observe(this) {
+            Log.d("MainActivity", "allListsWithItems.observe =\n $it")
         }
 
         binding.buttonAddShopItem.setOnClickListener {

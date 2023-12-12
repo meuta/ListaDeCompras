@@ -9,7 +9,7 @@ import androidx.room.Relation
 @Entity(tableName = "shop_lists")
 data class ShopListDbModel(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "shop_list_id")
+    @ColumnInfo(name = "id")
     val id: Int,
     val name: String
 )
@@ -17,7 +17,7 @@ data class ShopListDbModel(
 data class ShopListWithShopItemsDbModel(
     @Embedded val shopListDbModel: ShopListDbModel,
     @Relation(
-        parentColumn = "shop_list_id",
+        parentColumn = "id",
         entityColumn = "shop_list_id"
     )
     val shopList: List<ShopItemDbModel>

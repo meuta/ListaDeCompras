@@ -16,4 +16,8 @@ interface ShopListRepository {
 
     suspend fun dragShopItem(from:Int, to: Int)
 
+
+    suspend fun addShopList(shopListName: String)
+
+    fun getAllListsWithItems(): Flow<List<ShopList>>
 }

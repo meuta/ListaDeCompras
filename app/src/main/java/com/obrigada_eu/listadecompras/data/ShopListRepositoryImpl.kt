@@ -1,6 +1,8 @@
 package com.obrigada_eu.listadecompras.data
 
+import android.util.Log
 import com.obrigada_eu.listadecompras.domain.ShopItem
+import com.obrigada_eu.listadecompras.domain.ShopList
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,6 +20,7 @@ class ShopListRepositoryImpl @Inject constructor(
     private lateinit var shopListDbModel: MutableList<ShopItemDbModel>
 
     override fun getShopList(): Flow<List<ShopItem>> {
+        Log.d("RepositoryImpl", "getShopList() ")
 
         return shopListDao.getShopList().map {
             shopListDbModel = it.toMutableList()
@@ -71,5 +74,20 @@ class ShopListRepositoryImpl @Inject constructor(
             .sortedBy { it.position }
 
         shopListDao.updateList(shopListDbModel)
+    }
+
+    override suspend fun addShopList(shopListName: String) {
+        val dbModel = ShopListDbModel(id = -2, name = shopListName)
+        shopListDao.insertShopList(dbModel)
+        Log.d("RepositoryImpl", "addShopList() List.name = $shopListName")
+    }
+
+
+    override fun getAllListsWithItems(): Flow<List<ShopList>> {
+        Log.d("RepositoryImpl", "getAllLists() ")
+        return shopListDao.getShopListsWithShopItems().map { list ->
+            list.map { mapper.mapShopListWithItemsDbModelToEntityList(it) }
+                .also { Log.d("RepositoryImpl", "getAllListsWithItems() List<ShopList> =\n $it") }
+        }
     }
 }
