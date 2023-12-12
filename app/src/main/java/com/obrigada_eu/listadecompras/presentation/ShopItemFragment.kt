@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ShopItemFragment : Fragment() {
 
-    private val viewModel: ShopItemViewModel by viewModels()
+    private val shopItemViewModel: ShopItemViewModel by viewModels()
 
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
@@ -58,7 +58,7 @@ class ShopItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.viewModel = viewModel
+        binding.viewModel = shopItemViewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
         addTextChangedListeners()
@@ -80,10 +80,10 @@ class ShopItemFragment : Fragment() {
 
 
     private fun observeViewModel() {
-        viewModel.closeScreen.observe(viewLifecycleOwner) {
+        shopItemViewModel.closeScreen.observe(viewLifecycleOwner) {
             activity?.onBackPressedDispatcher?.onBackPressed()
         }
-        viewModel.shopItem.observe(viewLifecycleOwner){ item ->
+        shopItemViewModel.shopItem.observe(viewLifecycleOwner){ item ->
             with(binding) {
                 etName.setText(item.name)
                 etName.setSelection(item.name.length)
@@ -105,7 +105,13 @@ class ShopItemFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorInputName()
+                with(binding) {
+                    if (etName.text.hashCode() == s.hashCode()) {
+                        shopItemViewModel.resetErrorInputName()
+                    } else if (etCount.text.hashCode() == s.hashCode()) {
+                        shopItemViewModel.resetErrorInputCount()
+                    }
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -141,14 +147,14 @@ class ShopItemFragment : Fragment() {
 
     private fun launchAddMode() {
         binding.btnSave.setOnClickListener {
-            viewModel.addShopItem(binding.etName.text?.toString(), binding.etCount.text?.toString())
+            shopItemViewModel.addShopItem(binding.etName.text?.toString(), binding.etCount.text?.toString())
         }
     }
 
     private fun launchEditMode() {
-        viewModel.getShopItem(itemId)
+        shopItemViewModel.getShopItem(itemId)
         binding.btnSave.setOnClickListener {
-            viewModel.editShopItem(
+            shopItemViewModel.editShopItem(
                 binding.etName.text?.toString(),
                 binding.etCount.text?.toString()
             )
