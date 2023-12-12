@@ -54,15 +54,37 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             Log.d("MainActivity", "allListsWithItems.observe =\n $it")
         }
 
-        binding.buttonAddShopItem.setOnClickListener {
-            if (isOnePaneMode()) {
-                val intent = ShopItemActivity.newIntentAddItem(this)
+        setupButtons()
+
+        setupActionBar()
+     }
+
+    private fun setupActionBar() {
+        setSupportActionBar(binding.toolbarMainActivity)
+        val actionBar = supportActionBar
+        if (actionBar != null) {
+            actionBar.title = "ShopList"
+        }
+    }
+
+    private fun setupButtons() {
+        with(binding) {
+            buttonAddShopItem.setOnClickListener {
+                if (isOnePaneMode()) {
+                    val intent = ShopItemActivity.newIntentAddItem(this@MainActivity)
+                    startActivity(intent)
+                } else {
+                    val fragment = ShopItemFragment.newInstanceAddItem()
+                    launchFragment(fragment)
+                }
+            }
+
+            buttonLists?.setOnClickListener {
+                val intent = ListSetActivity.newIntent(this@MainActivity)
                 startActivity(intent)
-            } else {
-                val fragment = ShopItemFragment.newInstanceAddItem()
-                launchFragment(fragment)
             }
         }
+
     }
 
     override fun onEditingFinished() {

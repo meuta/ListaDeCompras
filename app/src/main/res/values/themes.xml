@@ -15,4 +15,12 @@
         <item name="android:navigationBarColor" >?attr/colorPrimaryVariant</item>
 
     </style>
+
+    <style name="Theme.ListaDeCompras.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.ListaDeCompras.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.ListaDeCompras.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
