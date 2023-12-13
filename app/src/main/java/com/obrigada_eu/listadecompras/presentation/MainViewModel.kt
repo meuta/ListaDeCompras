@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -21,14 +22,18 @@ class MainViewModel @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
+        val shopList: LiveData<List<ShopItem>> = getShopListUseCase(-2).asLiveData()
     init {
         scope.launch {
-            addShopListUseCase( "shopList #1" )
+            addShopListUseCase("shopList #1")
         }
+//        scope.launch {
+//            getShopListUseCase(-2).collect {
+//                _shopList.value = it
+//            }
+//        }
     }
 
-
-    val shopList = getShopListUseCase().asLiveData()
 
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {
@@ -36,14 +41,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun changeEnableState(shopItem: ShopItem){
+    fun changeEnableState(shopItem: ShopItem) {
         viewModelScope.launch {
             val newItem = shopItem.copy(enabled = !shopItem.enabled)
             editShopItemUseCase(newItem)
         }
     }
 
-    fun dragShopItem(from: Int, to: Int){
+    fun dragShopItem(from: Int, to: Int) {
         viewModelScope.launch {
             dragShopItemUseCase(from, to)
         }

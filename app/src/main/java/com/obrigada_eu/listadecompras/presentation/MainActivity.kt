@@ -1,5 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
@@ -18,10 +20,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityMainBinding
+import com.obrigada_eu.listadecompras.domain.ShopList
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
+
+    private var listId = ShopList.UNDEFINED_ID
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -39,20 +44,32 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        parseIntent()
+
         setupRecyclerView()
 
         layoutManager = binding.rvShopList.layoutManager as LinearLayoutManager
 
-        viewModel.shopList.observe(this) {
-            shopListAdapter.submitList(it)
-            Log.d("MainActivity", "shopList.observe =\n $it")
-
-        }
-
         setupButtons()
 
         setupActionBar()
-     }
+
+        observeViewModel()
+
+    }
+
+    private fun observeViewModel() {
+        viewModel.shopList.observe(this) {
+            shopListAdapter.submitList(it)
+            Log.d("MainActivity", "shopList.observe =\n ${it.map { it.name }}")
+        }
+    }
+
+    private fun parseIntent(){
+        if (intent.hasExtra(LIST_ID)) {
+            listId = intent.getIntExtra(LIST_ID, ShopList.UNDEFINED_ID)
+        }
+    }
 
     private fun setupActionBar() {
         setSupportActionBar(binding.toolbarMainActivity)
@@ -158,7 +175,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             private val intrinsicWidthEdit = editIcon!!.intrinsicWidth
             private val intrinsicHeightEdit = editIcon!!.intrinsicHeight
 
-             private val clearPaint =
+            private val clearPaint =
                 Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
             override fun getSwipeThreshold(viewHolder: ViewHolder): Float {
@@ -280,7 +297,12 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                     val deleteIconBottom = deleteIconTop + intrinsicHeightDelete
 
                     // Draw the delete icon
-                    deleteIcon!!.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom)
+                    deleteIcon!!.setBounds(
+                        deleteIconLeft,
+                        deleteIconTop,
+                        deleteIconRight,
+                        deleteIconBottom
+                    )
                     deleteIcon.draw(c)
                 }
 
@@ -319,5 +341,17 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 launchFragment(fragment)
             }
         }
+    }
+
+
+    companion object {
+        private const val LIST_ID = "list_id"
+
+        fun newIntent(context: Context, listId: Int): Intent {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.putExtra(LIST_ID, listId)
+            return intent
+        }
+
     }
 }

@@ -42,6 +42,7 @@ class ListSetFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         setupRecyclerView()
+        setupClickListener()
 
         listSetViewModel.allListsWithItems.observe(viewLifecycleOwner) {
             listSetAdapter.submitList(it)
@@ -60,6 +61,15 @@ class ListSetFragment : Fragment() {
                 LinearLayoutManager.VERTICAL,
                 false
             )
+        }
+    }
+
+
+    private fun setupClickListener() {
+        listSetAdapter.onListItemClickListener = {
+            this.requireActivity().finish()
+            val intent = MainActivity.newIntent(this.requireContext(), it.id)
+            startActivity(intent)
         }
     }
 

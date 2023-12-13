@@ -5,5 +5,5 @@ import javax.inject.Inject
 
 class GetShopListUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
-    operator fun invoke(): Flow<List<ShopItem>> = shopListRepository.getShopList()
+    operator fun invoke(listId: Int): Flow<List<ShopItem>> = shopListRepository.getShopList(listId)
 }

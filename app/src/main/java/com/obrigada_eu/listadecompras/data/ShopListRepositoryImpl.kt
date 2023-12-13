@@ -6,8 +6,6 @@ import com.obrigada_eu.listadecompras.domain.ShopList
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.lang.Integer.max
-import java.lang.Integer.min
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,10 +17,10 @@ class ShopListRepositoryImpl @Inject constructor(
 
     private lateinit var shopListDbModel: MutableList<ShopItemDbModel>
 
-    override fun getShopList(): Flow<List<ShopItem>> {
-        Log.d("RepositoryImpl", "getShopList() ")
 
-        return shopListDao.getShopList().map {
+    override fun getShopList(listId: Int): Flow<List<ShopItem>> {
+        Log.d("RepositoryImpl", "getShopList() ")
+        return shopListDao.getShopList(listId).map {
             shopListDbModel = it.toMutableList()
             mapper.mapListDbModelToEntity(it)
         }
@@ -59,6 +57,7 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun dragShopItem(from: Int, to: Int) {
+        Log.d("RepositoryImpl", "dragShopItem()     ${shopListDbModel.map{it.name to it.position}}")
         shopListDbModel[from].position = to
         if (from < to) {
             shopListDbModel
@@ -69,10 +68,8 @@ class ShopListRepositoryImpl @Inject constructor(
                 .slice(to until from)
                 .forEach { it.position++ }
         }
-        shopListDbModel
-            .slice(min(from, to) .. max(from, to))
-            .sortedBy { it.position }
-
+        shopListDbModel.sortBy { it.position }
+        Log.d("RepositoryImpl", "dragShopItem() FIN ${shopListDbModel.map{it.name to it.position}}")
         shopListDao.updateList(shopListDbModel)
     }
 

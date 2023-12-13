@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ShopListRepository {
 
-    fun getShopList(): Flow<List<ShopItem>>
+    fun getShopList(listId: Int): Flow<List<ShopItem>>
 
     suspend fun addShopItem(shopItem: ShopItem)
 
