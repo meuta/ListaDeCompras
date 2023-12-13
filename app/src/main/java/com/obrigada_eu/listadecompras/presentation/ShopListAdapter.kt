@@ -20,12 +20,13 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
             else -> throw RuntimeException("Unknown viewType: $viewType")
         }
-        val binding = DataBindingUtil.inflate<ViewDataBinding>(     // Specify parent type, cause different viewTypes
-            LayoutInflater.from(parent.context),
-            layout,
-            parent,
-            false
-        )
+        val binding =
+            DataBindingUtil.inflate<ViewDataBinding>(     // Specify parent type, cause different viewTypes
+                LayoutInflater.from(parent.context),
+                layout,
+                parent,
+                false
+            )
         return ShopItemViewHolder(binding)
     }
 
@@ -39,10 +40,11 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
             onShopItemClickListener?.invoke(shopItem)
         }
 
-        when (binding){
+        when (binding) {
             is ItemShopDisabledBinding -> {
                 binding.shopItem = shopItem
             }
+
             is ItemShopEnabledBinding -> {
                 binding.shopItem = shopItem
             }

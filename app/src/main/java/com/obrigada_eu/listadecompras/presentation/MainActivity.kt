@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         }
     }
 
-    private fun parseIntent(){
+    private fun parseIntent() {
         if (intent.hasExtra(LIST_ID)) {
             listId = intent.getIntExtra(LIST_ID, ShopList.UNDEFINED_ID)
         }

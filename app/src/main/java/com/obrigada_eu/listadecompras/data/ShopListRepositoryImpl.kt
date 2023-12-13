@@ -43,9 +43,9 @@ class ShopListRepositoryImpl @Inject constructor(
         val itemIndex = shopListDbModel.indexOfFirst { it.id == shopItem.id }
         shopListDbModel.removeAt(itemIndex)
         shopListDao.deleteShopItem(shopItem.id)
-        shopListDbModel.drop(itemIndex).forEach{
+        shopListDbModel.drop(itemIndex).forEach {
             it.position--
-            shopListDao.updateItemOrder(ItemOrder(it.id, it.position) )
+            shopListDao.updateItemOrder(ItemOrder(it.id, it.position))
         }
     }
 
@@ -57,7 +57,10 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun dragShopItem(from: Int, to: Int) {
-        Log.d("RepositoryImpl", "dragShopItem()     ${shopListDbModel.map{it.name to it.position}}")
+        Log.d(
+            "RepositoryImpl",
+            "dragShopItem()     ${shopListDbModel.map { it.name to it.position }}"
+        )
         shopListDbModel[from].position = to
         if (from < to) {
             shopListDbModel
@@ -69,7 +72,10 @@ class ShopListRepositoryImpl @Inject constructor(
                 .forEach { it.position++ }
         }
         shopListDbModel.sortBy { it.position }
-        Log.d("RepositoryImpl", "dragShopItem() FIN ${shopListDbModel.map{it.name to it.position}}")
+        Log.d(
+            "RepositoryImpl",
+            "dragShopItem() FIN ${shopListDbModel.map { it.name to it.position }}"
+        )
         shopListDao.updateList(shopListDbModel)
     }
 

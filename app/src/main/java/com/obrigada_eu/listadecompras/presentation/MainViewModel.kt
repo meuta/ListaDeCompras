@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getShopListUseCase: GetShopListUseCase,
+    getShopListUseCase: GetShopListUseCase,
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
     private val dragShopItemUseCase: DragShopItemUseCase,
@@ -22,7 +22,8 @@ class MainViewModel @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-        val shopList: LiveData<List<ShopItem>> = getShopListUseCase(-2).asLiveData()
+    val shopList: LiveData<List<ShopItem>> = getShopListUseCase(-2).asLiveData()
+
     init {
         scope.launch {
             addShopListUseCase("shopList #1")

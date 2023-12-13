@@ -17,6 +17,7 @@ interface ShopListDao {
 
     @Query("SELECT * FROM shop_items WHERE shop_item_id=:shopItemId LIMIT 1")
     suspend fun getShopItem(shopItemId: Int): ShopItemDbModel?
+
     @Query("SELECT * FROM shop_items WHERE shop_item_order=:order LIMIT 1")
     suspend fun getShopItemByOrder(order: Int): ShopItemDbModel?
 
