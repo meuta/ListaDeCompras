@@ -17,10 +17,11 @@
             android:theme="@style/Theme.ListaDeCompras.AppBarOverlay">
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar_task_list_activity"
+                android:id="@+id/toolbar_list_set_activity"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
+                app:title="ListSet"
                 app:popupTheme="@style/Theme.ListaDeCompras.PopupOverlay" />
         </com.google.android.material.appbar.AppBarLayout>
 

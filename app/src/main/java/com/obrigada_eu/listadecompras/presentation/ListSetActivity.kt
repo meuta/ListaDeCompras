@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityListSetBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,21 +18,13 @@ class ListSetActivity : AppCompatActivity() {
         binding = ActivityListSetBinding.inflate(layoutInflater)
         setContentView(binding.root)
         if (savedInstanceState == null) {
-//            supportFragmentManager.beginTransaction()
-//                .replace(R.id.container, ListSetFragment.newInstance())
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.list_set_container, ListSetFragment.newInstance())
 //                .commitNow()
-            ListSetFragment.newInstance()
-            setupActionBar()
+                .commit()
         }
     }
 
-    private fun setupActionBar() {
-        setSupportActionBar(binding.toolbarTaskListActivity)
-        val actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar.title = "ListSet"
-        }
-    }
 
     companion object {
         fun newIntent(context: Context): Intent {

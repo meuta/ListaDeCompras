@@ -16,7 +16,6 @@ class MainViewModel @Inject constructor(
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
     private val dragShopItemUseCase: DragShopItemUseCase,
-    private val getAllListsWithItemsUseCase: GetAllListsWithItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase
 ) : ViewModel() {
 
@@ -30,8 +29,6 @@ class MainViewModel @Inject constructor(
 
 
     val shopList = getShopListUseCase().asLiveData()
-
-    val allListsWithItems = getAllListsWithItemsUseCase().asLiveData()
 
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {

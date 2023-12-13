@@ -49,11 +49,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
         }
 
-
-        viewModel.allListsWithItems.observe(this) {
-            Log.d("MainActivity", "allListsWithItems.observe =\n $it")
-        }
-
         setupButtons()
 
         setupActionBar()
