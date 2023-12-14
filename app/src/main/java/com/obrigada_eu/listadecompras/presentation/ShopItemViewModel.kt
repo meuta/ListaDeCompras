@@ -37,18 +37,17 @@ class ShopItemViewModel @Inject constructor(
     val closeScreen: LiveData<Unit>
         get() = _closeScreen
 
-    fun addShopItem(inputName: String?, inputCount: String?) {
+    fun addShopItem(inputName: String?, inputCount: String?, listId: Int) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
 
             viewModelScope.launch {
-                val shopItem = ShopItem(name, count, true)
+                val shopItem = ShopItem(name, count, true, shopListId = listId)
                 addItemToShopListUseCase(shopItem)
                 finishScreen()
             }
-
         }
     }
 
@@ -71,7 +70,6 @@ class ShopItemViewModel @Inject constructor(
 
     private fun finishScreen() {
         _closeScreen.value = Unit
-
     }
 
     private fun parseName(inputName: String?): String {

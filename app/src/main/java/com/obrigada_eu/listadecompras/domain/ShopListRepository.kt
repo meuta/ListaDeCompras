@@ -20,4 +20,6 @@ interface ShopListRepository {
     suspend fun addShopList(shopListName: String)
 
     fun getAllListsWithItems(): Flow<List<ShopList>>
+
+    suspend fun getShopListName(listId: Int): String
 }

@@ -52,30 +52,36 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
         setupButtons()
 
-        setupActionBar()
-
         observeViewModel()
 
     }
 
     private fun observeViewModel() {
+        viewModel.getShopListName(listId)
+        viewModel.shopListName.observe(this) {
+            Log.d("MainActivity", "shopListName.observe = $it")
+            setupActionBar(it)
+        }
+
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
-            Log.d("MainActivity", "shopList.observe =\n ${it.map { it.name }}")
+            Log.d("MainActivity", "shopList.observe = ${it.map { it.name to it.shopListId }}")
         }
     }
 
     private fun parseIntent() {
         if (intent.hasExtra(LIST_ID)) {
             listId = intent.getIntExtra(LIST_ID, ShopList.UNDEFINED_ID)
+            viewModel.getShopList(listId)
+            Log.d("MainActivity", "parseIntent() = $listId")
         }
     }
 
-    private fun setupActionBar() {
+    private fun setupActionBar(name: String) {
         setSupportActionBar(binding.toolbarMainActivity)
         val actionBar = supportActionBar
         if (actionBar != null) {
-            actionBar.title = "ShopList"
+            actionBar.title = name
         }
     }
 
@@ -83,10 +89,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         with(binding) {
             buttonAddShopItem.setOnClickListener {
                 if (isOnePaneMode()) {
-                    val intent = ShopItemActivity.newIntentAddItem(this@MainActivity)
+                    val intent = ShopItemActivity.newIntentAddItem(this@MainActivity, listId)
                     startActivity(intent)
                 } else {
-                    val fragment = ShopItemFragment.newInstanceAddItem()
+                    val fragment = ShopItemFragment.newInstanceAddItem(listId)
                     launchFragment(fragment)
                 }
             }

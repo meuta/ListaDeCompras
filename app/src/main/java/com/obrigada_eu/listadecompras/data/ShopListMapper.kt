@@ -13,7 +13,7 @@ class ShopListMapper @Inject constructor() {
         name = shopItem.name,
         count = shopItem.count,
         enabled = shopItem.enabled,
-        shopListId = -2
+        shopListId = shopItem.shopListId
     )
 
     fun mapDbModelToEntity(shopItemDbModel: ShopItemDbModel) = ShopItem(
@@ -31,7 +31,8 @@ class ShopListMapper @Inject constructor() {
         shopListWithShopItemsDbModel: ShopListWithShopItemsDbModel
     ) : ShopList = ShopList(
         shopListWithShopItemsDbModel.shopListDbModel.name,
-        shopListWithShopItemsDbModel.shopListDbModel.id,
-        shopListWithShopItemsDbModel.shopList.map { mapDbModelToEntity(it) }
+        shopListWithShopItemsDbModel.shopList.map { mapDbModelToEntity(it) },
+        shopListWithShopItemsDbModel.shopListDbModel.id
     )
+
 }

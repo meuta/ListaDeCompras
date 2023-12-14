@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.obrigada_eu.listadecompras.databinding.FragmentShopItemBinding
 import com.obrigada_eu.listadecompras.domain.ShopItem
+import com.obrigada_eu.listadecompras.domain.ShopList
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,6 +29,7 @@ class ShopItemFragment : Fragment() {
 
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
+    private var listId = ShopList.UNDEFINED_ID
 
     override fun onAttach(context: Context) {
 
@@ -143,21 +145,35 @@ class ShopItemFragment : Fragment() {
             }
             itemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
+        if (screenMode == MODE_ADD && listId == ShopList.UNDEFINED_ID) {
+            if (!args.containsKey(SHOP_LIST_ID)) {
+                throw RuntimeException("Param shop_list_id is absent")
+            }
+            listId = args.getInt(SHOP_LIST_ID, ShopList.UNDEFINED_ID)
+        }
     }
 
     private fun launchAddMode() {
-        binding.btnSave.setOnClickListener {
-            shopItemViewModel.addShopItem(binding.etName.text?.toString(), binding.etCount.text?.toString())
+        with(binding) {
+            btnSave.setOnClickListener {
+                shopItemViewModel.addShopItem(
+                    etName.text?.toString(),
+                    etCount.text?.toString(),
+                    listId
+                )
+            }
         }
     }
 
     private fun launchEditMode() {
         shopItemViewModel.getShopItem(itemId)
-        binding.btnSave.setOnClickListener {
-            shopItemViewModel.editShopItem(
-                binding.etName.text?.toString(),
-                binding.etCount.text?.toString()
-            )
+        with(binding) {
+            btnSave.setOnClickListener {
+                shopItemViewModel.editShopItem(
+                    etName.text?.toString(),
+                    etCount.text?.toString()
+                )
+            }
         }
     }
 
@@ -168,14 +184,16 @@ class ShopItemFragment : Fragment() {
     companion object {
         private const val SECOND_SCREEN_MODE = "second_screen_mode"
         private const val SHOP_ITEM_ID = "shop_item_id"
+        private const val SHOP_LIST_ID = "shop_list_id"
         private const val MODE_ADD = "mode_add"
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_UNKNOWN = ""
 
-        fun newInstanceAddItem(): ShopItemFragment {
+        fun newInstanceAddItem(listId: Int): ShopItemFragment {
             return ShopItemFragment().apply {
                 arguments = Bundle().apply {
                     putString(SECOND_SCREEN_MODE, MODE_ADD)
+                    putInt(SHOP_LIST_ID, listId)
                 }
             }
         }

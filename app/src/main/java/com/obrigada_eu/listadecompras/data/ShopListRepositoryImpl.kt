@@ -1,6 +1,5 @@
 package com.obrigada_eu.listadecompras.data
 
-import android.util.Log
 import com.obrigada_eu.listadecompras.domain.ShopItem
 import com.obrigada_eu.listadecompras.domain.ShopList
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
@@ -19,7 +18,6 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     override fun getShopList(listId: Int): Flow<List<ShopItem>> {
-        Log.d("RepositoryImpl", "getShopList() ")
         return shopListDao.getShopList(listId).map {
             shopListDbModel = it.toMutableList()
             mapper.mapListDbModelToEntity(it)
@@ -28,14 +26,14 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override suspend fun addShopItem(shopItem: ShopItem) {
         val dbModel = mapper.mapEntityToDbModel(shopItem)
-        dbModel.position = (shopListDao.getLargestOrder() ?: -1) + 1
+        dbModel.position = (shopListDao.getLargestOrder(shopItem.shopListId) ?: -1) + 1
         shopListDao.addShopItem(dbModel)
     }
 
     override suspend fun editShopItem(shopItem: ShopItem) {
         val dbModel = mapper.mapEntityToDbModel(shopItem)
         val item = shopListDao.getShopItem(shopItem.id)
-        dbModel.position = item?.position ?: ((shopListDao.getLargestOrder() ?: -1) + 1)
+        dbModel.position = item?.position ?: ((shopListDao.getLargestOrder(shopItem.shopListId) ?: -1) + 1)
         shopListDao.addShopItem(dbModel)
     }
 
@@ -57,10 +55,6 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun dragShopItem(from: Int, to: Int) {
-        Log.d(
-            "RepositoryImpl",
-            "dragShopItem()     ${shopListDbModel.map { it.name to it.position }}"
-        )
         shopListDbModel[from].position = to
         if (from < to) {
             shopListDbModel
@@ -72,25 +66,22 @@ class ShopListRepositoryImpl @Inject constructor(
                 .forEach { it.position++ }
         }
         shopListDbModel.sortBy { it.position }
-        Log.d(
-            "RepositoryImpl",
-            "dragShopItem() FIN ${shopListDbModel.map { it.name to it.position }}"
-        )
         shopListDao.updateList(shopListDbModel)
     }
 
     override suspend fun addShopList(shopListName: String) {
-        val dbModel = ShopListDbModel(id = -2, name = shopListName)
+        val dbModel = ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID)
         shopListDao.insertShopList(dbModel)
-        Log.d("RepositoryImpl", "addShopList() List.name = $shopListName")
     }
 
 
     override fun getAllListsWithItems(): Flow<List<ShopList>> {
-        Log.d("RepositoryImpl", "getAllLists() ")
         return shopListDao.getShopListsWithShopItems().map { list ->
             list.map { mapper.mapShopListWithItemsDbModelToEntityList(it) }
-                .also { Log.d("RepositoryImpl", "getAllListsWithItems() List<ShopList> =\n $it") }
         }
+    }
+
+    override suspend fun getShopListName(listId: Int): String {
+        return shopListDao.getShopListName(listId) ?: ""
     }
 }

@@ -11,6 +11,7 @@ data class ShopListDbModel(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int,
+    @ColumnInfo(name = "shop_list_name")
     val name: String
 )
 

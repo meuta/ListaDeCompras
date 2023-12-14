@@ -1,6 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -13,28 +14,35 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getShopListUseCase: GetShopListUseCase,
+    private val getShopListUseCase: GetShopListUseCase,
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
     private val dragShopItemUseCase: DragShopItemUseCase,
-    private val addShopListUseCase: AddShopListUseCase
+    private val getShopListNameUseCase: GetShopListNameUseCase
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    val shopList: LiveData<List<ShopItem>> = getShopListUseCase(-2).asLiveData()
+    private val _shopListName = MutableLiveData<String>()
+    val shopListName: LiveData<String>
+        get() = _shopListName
 
-    init {
+    private var _shopList = getShopListUseCase(0).asLiveData()
+    val shopList: LiveData<List<ShopItem>>
+        get() = _shopList
+
+    fun getShopList(listId: Int) {
         scope.launch {
-            addShopListUseCase("shopList #1")
+            _shopList = getShopListUseCase(listId).asLiveData()
         }
-//        scope.launch {
-//            getShopListUseCase(-2).collect {
-//                _shopList.value = it
-//            }
-//        }
     }
 
+    fun getShopListName(listId: Int) {
+        viewModelScope.launch {
+            val name = getShopListNameUseCase(listId)
+            _shopListName.value = name
+        }
+    }
 
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {
