@@ -24,7 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_shop_enabled" />
+            tools:listitem="@layout/list_item" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_new_list"
@@ -63,7 +63,7 @@
                     android:textColor="@color/grayish"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:text="New List" />
+                    tools:text="New List" />
 
                 <Button
                     android:id="@+id/button_create_list"

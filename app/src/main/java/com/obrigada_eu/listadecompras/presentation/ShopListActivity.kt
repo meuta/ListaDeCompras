@@ -81,8 +81,11 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         setSupportActionBar(binding.toolbarShopListActivity)
         val actionBar = supportActionBar
         if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_24)
             actionBar.title = name
         }
+        binding.toolbarShopListActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 
     private fun setupButtons() {
@@ -96,13 +99,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                     launchFragment(fragment)
                 }
             }
-
-            buttonLists?.setOnClickListener {
-                val intent = ListSetActivity.newIntent(this@ShopListActivity)
-                startActivity(intent)
-            }
         }
-
     }
 
     override fun onEditingFinished() {
@@ -281,7 +278,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                     return
                 }
 
-                // Draw the green delete background
+                // Draw the edit background
                 if (dX < 0) {
 
                     val editIconTop = itemView.top + (itemHeight - intrinsicHeightEdit) / 2

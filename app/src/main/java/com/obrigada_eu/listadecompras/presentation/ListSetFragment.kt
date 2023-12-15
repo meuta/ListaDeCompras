@@ -56,17 +56,16 @@ class ListSetFragment : Fragment() {
             override fun handleOnBackPressed() {
                 with(binding) {
                     if (cardNewList.visibility == View.VISIBLE) {
-//                    val inputMethodManager =
-//                        activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//                    inputMethodManager.hideSoftInputFromWindow(buttonCreateList.windowToken, 0)
                         etListName.setText("")
                         cardNewList.visibility = View.GONE
+                    }else{
+                        requireActivity().finish()
                     }
                 }
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(
-            this, // LifecycleOwner
+            this,
             callback
         )
     }
@@ -159,7 +158,6 @@ class ListSetFragment : Fragment() {
 
     private fun setupClickListener() {
         listSetAdapter.onListItemClickListener = {
-            this.requireActivity().finish()
             val intent = ShopListActivity.newIntent(this.requireContext(), it.id)
             startActivity(intent)
         }
