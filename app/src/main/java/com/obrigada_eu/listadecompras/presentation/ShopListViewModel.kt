@@ -41,7 +41,9 @@ class ShopListViewModel @Inject constructor(
 
     val allListsWithItems = getAllListsWithItemsUseCase().asLiveData()
 
+    private var shopListId: Int = ShopList.UNDEFINED_ID
     fun getShopList(listId: Int) {
+        shopListId = listId
         scope.launch {
             _shopList = getShopListUseCase(listId).asLiveData()
         }
@@ -95,9 +97,12 @@ class ShopListViewModel @Inject constructor(
         Log.d("validateInput", "names = $names")
         names?.let {
             if (names.contains(name)) {
-                _errorInputName.value = true
-                Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
-                result = false
+                val id = allListsWithItems.value?.find { it.name == name }?.id
+                if (id != shopListId) {
+                    _errorInputName.value = true
+                    Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
+                    result = false
+                }
             }
         }
         return result
