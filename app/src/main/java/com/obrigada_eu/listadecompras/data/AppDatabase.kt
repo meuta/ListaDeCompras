@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
         ShopItemDbModel::class,
         ShopListDbModel::class
     ],
-    version = 5,
+    version = 9,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

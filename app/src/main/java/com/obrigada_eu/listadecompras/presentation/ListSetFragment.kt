@@ -1,6 +1,10 @@
 package com.obrigada_eu.listadecompras.presentation
 
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,8 +15,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -142,6 +151,8 @@ class ListSetFragment : Fragment() {
                 LinearLayoutManager.VERTICAL,
                 false
             )
+
+        setupSwipeListener(this)
         }
     }
 
@@ -153,6 +164,124 @@ class ListSetFragment : Fragment() {
             startActivity(intent)
         }
     }
+
+    private fun setupSwipeListener(rvLists: RecyclerView) {
+        val callback = object : SimpleCallback(
+            0, RIGHT
+        ) {
+            var context = requireContext()
+
+            private val deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete)
+            private val editIcon = ContextCompat.getDrawable(context, R.drawable.ic_shopping_bag)
+            private val intrinsicWidthDelete = deleteIcon!!.intrinsicWidth
+            private val intrinsicHeightDelete = deleteIcon!!.intrinsicHeight
+            private val intrinsicWidthEdit = editIcon!!.intrinsicWidth
+            private val intrinsicHeightEdit = editIcon!!.intrinsicHeight
+
+            private val clearPaint =
+                Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                return 0.7f
+            }
+
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val item = listSetAdapter.currentList[viewHolder.bindingAdapterPosition]
+                if (direction == RIGHT) {
+                    listSetViewModel.deleteShopList(item.id)
+                    Log.d("onSwiped", "delete name = ${item.name}")
+                }
+            }
+
+            override fun onChildDraw(
+                c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+            ) {
+
+                val itemView = viewHolder.itemView
+                val itemHeight = itemView.bottom - itemView.top
+                val isCanceled = dX == 0f && !isCurrentlyActive
+
+                if (isCanceled) {
+                    clearCanvas(
+                        c,
+                        itemView.right + dX,
+                        itemView.top.toFloat(),
+                        itemView.right.toFloat(),
+                        itemView.bottom.toFloat()
+                    )
+                    super.onChildDraw(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        dX,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
+                    return
+                }
+
+                // Draw the edit background
+                if (dX < 0) {
+
+                    val editIconTop = itemView.top + (itemHeight - intrinsicHeightEdit) / 2
+                    val editIconMargin = (itemHeight - intrinsicHeightEdit)
+                    val editIconLeft = itemView.right - editIconMargin
+                    val editIconRight = itemView.right - editIconMargin + intrinsicWidthEdit
+                    val editIconBottom = editIconTop + intrinsicHeightEdit
+
+                    // Draw the edit icon
+                    editIcon!!.setBounds(editIconLeft, editIconTop, editIconRight, editIconBottom)
+                    editIcon.draw(c)
+
+                } else if (dX > 0) {
+
+                    val deleteIconTop = itemView.top + (itemHeight - intrinsicHeightDelete) / 2
+                    val deleteIconMargin = (itemHeight - intrinsicHeightDelete)
+                    val deleteIconLeft = itemView.left + deleteIconMargin - intrinsicWidthDelete
+                    val deleteIconRight = itemView.left + deleteIconMargin
+                    val deleteIconBottom = deleteIconTop + intrinsicHeightDelete
+
+                    // Draw the delete icon
+                    deleteIcon!!.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom)
+                    deleteIcon.draw(c)
+                }
+
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+
+            private fun clearCanvas(
+                c: Canvas?,
+                left: Float,
+                top: Float,
+                right: Float,
+                bottom: Float
+            ) {
+                c?.drawRect(left, top, right, bottom, clearPaint)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(rvLists)
+    }
+
 
     companion object {
         fun newInstance() = ListSetFragment()

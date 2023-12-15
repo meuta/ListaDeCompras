@@ -22,4 +22,7 @@ interface ShopListRepository {
     fun getAllListsWithItems(): Flow<List<ShopList>>
 
     suspend fun getShopListName(listId: Int): String
+
+    suspend fun deleteShopList(id: Int)
+
 }

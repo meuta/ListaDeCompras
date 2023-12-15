@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.data
 
+import android.util.Log
 import com.obrigada_eu.listadecompras.domain.ShopItem
 import com.obrigada_eu.listadecompras.domain.ShopList
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
@@ -45,6 +46,7 @@ class ShopListRepositoryImpl @Inject constructor(
             it.position--
             shopListDao.updateItemOrder(ItemOrder(it.id, it.position))
         }
+        Log.d("deleteShopItem", " list = ${shopListDbModel.map { it.id }}")
     }
 
     override suspend fun getShopItem(itemId: Int): ShopItem? {
@@ -83,5 +85,9 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override suspend fun getShopListName(listId: Int): String {
         return shopListDao.getShopListName(listId) ?: ""
+    }
+
+    override suspend fun deleteShopList(id: Int) {
+        shopListDao.deleteShopList(id)
     }
 }

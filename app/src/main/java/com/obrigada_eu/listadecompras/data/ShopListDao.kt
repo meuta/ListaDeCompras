@@ -41,4 +41,7 @@ interface ShopListDao {
     @Query("SELECT shop_list_name FROM shop_lists WHERE id=:shopListId LIMIT 1")
     suspend fun getShopListName(shopListId: Int): String?
 
+    @Transaction
+    @Query("DELETE FROM shop_lists WHERE id=:shopListId")
+    suspend fun deleteShopList(shopListId: Int)
 }
