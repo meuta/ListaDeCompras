@@ -6,7 +6,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollToLastPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.obrigada_eu.listadecompras.di.AppModule
-import com.obrigada_eu.listadecompras.presentation.MainActivity
+import com.obrigada_eu.listadecompras.presentation.ShopListActivity
 import com.obrigada_eu.listadecompras.presentation.ShopItemViewHolder
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -17,13 +17,13 @@ import org.junit.Test
 
 @HiltAndroidTest
 @UninstallModules(AppModule::class)
-class MainActivityViewModelTest {
+class ShopListActivityViewModelTest {
 
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
+    val activityScenarioRule = ActivityScenarioRule(ShopListActivity::class.java)
 
     @Before
     fun setUp() {

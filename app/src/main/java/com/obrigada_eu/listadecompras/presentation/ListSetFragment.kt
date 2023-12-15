@@ -160,7 +160,7 @@ class ListSetFragment : Fragment() {
     private fun setupClickListener() {
         listSetAdapter.onListItemClickListener = {
             this.requireActivity().finish()
-            val intent = MainActivity.newIntent(this.requireContext(), it.id)
+            val intent = ShopListActivity.newIntent(this.requireContext(), it.id)
             startActivity(intent)
         }
     }

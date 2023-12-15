@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         android:background="@color/blackish"
         android:orientation="vertical"
-        tools:context=".presentation.MainActivity">
+        tools:context=".presentation.ShopListActivity">
 
 
         <com.google.android.material.appbar.AppBarLayout
@@ -17,7 +17,7 @@
             android:theme="@style/Theme.ListaDeCompras.AppBarOverlay">
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar_main_activity"
+                android:id="@+id/toolbar_shop_list_activity"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/blackish"
-            tools:context=".presentation.MainActivity">
+            tools:context=".presentation.ShopListActivity">
 
 
             <androidx.recyclerview.widget.RecyclerView

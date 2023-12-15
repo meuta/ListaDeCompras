@@ -25,7 +25,7 @@ class ShopListEndToEndTest {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
+    val activityScenarioRule = ActivityScenarioRule(ShopListActivity::class.java)
 
 
     @Before

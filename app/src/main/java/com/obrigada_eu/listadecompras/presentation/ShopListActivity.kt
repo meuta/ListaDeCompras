@@ -19,19 +19,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.obrigada_eu.listadecompras.R
-import com.obrigada_eu.listadecompras.databinding.ActivityMainBinding
+import com.obrigada_eu.listadecompras.databinding.ActivityShopListBinding
 import com.obrigada_eu.listadecompras.domain.ShopList
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
+class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private var listId = ShopList.UNDEFINED_ID
 
-    private val viewModel: MainViewModel by viewModels()
+    private val shopListViewModel: ShopListViewModel by viewModels()
 
     private lateinit var shopListAdapter: ShopListAdapter
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityShopListBinding
 
     private lateinit var layoutManager: LinearLayoutManager
 
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityShopListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         parseIntent()
@@ -57,28 +57,28 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun observeViewModel() {
-        viewModel.getShopListName(listId)
-        viewModel.shopListName.observe(this) {
-            Log.d("MainActivity", "shopListName.observe = $it")
+        shopListViewModel.getShopListName(listId)
+        shopListViewModel.shopListName.observe(this) {
+            Log.d("ShopListActivity", "shopListName.observe = $it")
             setupActionBar(it)
         }
 
-        viewModel.shopList.observe(this) {
+        shopListViewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
-            Log.d("MainActivity", "shopList.observe = ${it.map { it.name to it.shopListId }}")
+            Log.d("ShopListActivity", "shopList.observe = ${it.map { it.name to it.shopListId }}")
         }
     }
 
     private fun parseIntent() {
         if (intent.hasExtra(LIST_ID)) {
             listId = intent.getIntExtra(LIST_ID, ShopList.UNDEFINED_ID)
-            viewModel.getShopList(listId)
-            Log.d("MainActivity", "parseIntent() = $listId")
+            shopListViewModel.getShopList(listId)
+            Log.d("ShopListActivity", "parseIntent() = $listId")
         }
     }
 
     private fun setupActionBar(name: String) {
-        setSupportActionBar(binding.toolbarMainActivity)
+        setSupportActionBar(binding.toolbarShopListActivity)
         val actionBar = supportActionBar
         if (actionBar != null) {
             actionBar.title = name
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         with(binding) {
             buttonAddShopItem.setOnClickListener {
                 if (isOnePaneMode()) {
-                    val intent = ShopItemActivity.newIntentAddItem(this@MainActivity, listId)
+                    val intent = ShopItemActivity.newIntentAddItem(this@ShopListActivity, listId)
                     startActivity(intent)
                 } else {
                     val fragment = ShopItemFragment.newInstanceAddItem(listId)
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             }
 
             buttonLists?.setOnClickListener {
-                val intent = ListSetActivity.newIntent(this@MainActivity)
+                val intent = ListSetActivity.newIntent(this@ShopListActivity)
                 startActivity(intent)
             }
         }
@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             )
 
             layoutManager = LinearLayoutManager(
-                this@MainActivity,
+                this@ShopListActivity,
                 LinearLayoutManager.VERTICAL,
                 false
             )
@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                         fromGlobal?.let { from ->
                             toGlobal?.let { to ->
                                 if (fromGlobal != toGlobal) {
-                                    viewModel.dragShopItem(from, to)
+                                    shopListViewModel.dragShopItem(from, to)
                                     fromGlobal = null
                                     toGlobal = null
                                 }
@@ -245,10 +245,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.bindingAdapterPosition]
                 if (direction == RIGHT) {
-                    viewModel.deleteShopItem(item)
+                    shopListViewModel.deleteShopItem(item)
 
                 } else {
-                    viewModel.changeEnableState(item)
+                    shopListViewModel.changeEnableState(item)
                 }
             }
 
@@ -354,7 +354,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         private const val LIST_ID = "list_id"
 
         fun newIntent(context: Context, listId: Int): Intent {
-            val intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, ShopListActivity::class.java)
             intent.putExtra(LIST_ID, listId)
             return intent
         }
