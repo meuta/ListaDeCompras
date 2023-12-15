@@ -44,4 +44,7 @@ interface ShopListDao {
     @Transaction
     @Query("DELETE FROM shop_lists WHERE id=:shopListId")
     suspend fun deleteShopList(shopListId: Int)
+
+    @Update(entity = ShopListDbModel::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateListName(name: ListName)
 }

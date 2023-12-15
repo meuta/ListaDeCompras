@@ -25,4 +25,6 @@ interface ShopListRepository {
 
     suspend fun deleteShopList(id: Int)
 
+    suspend fun updateListName(id: Int, name: String)
+
 }

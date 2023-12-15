@@ -7,7 +7,11 @@ import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -67,6 +71,10 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             shopListAdapter.submitList(it)
             Log.d("ShopListActivity", "shopList.observe = ${it.map { it.name to it.shopListId }}")
         }
+
+        shopListViewModel.allListsWithItems.observe(this) {
+            Log.d("ShopListActivity", "allListsWithItems.observe =\n $it")
+        }
     }
 
     private fun parseIntent() {
@@ -83,10 +91,64 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_24)
-            actionBar.title = name
+            binding.etToolbarShopListActivity?.setText(name)
         }
         binding.toolbarShopListActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+
+        setupEditText()
     }
+
+    private fun setupEditText(){
+        with(binding){
+            etToolbarShopListActivity?.setOnFocusChangeListener {view, hasFocus ->
+                Log.d("setOnFocusChangeListener", "")
+                if(hasFocus) {
+                    buttonSaveListName?.visibility = View.VISIBLE
+                } else {
+                    buttonSaveListName?.visibility = View.INVISIBLE
+                }
+            }
+
+            buttonSaveListName?.setOnClickListener {
+                if (etToolbarShopListActivity?.text?.isNotEmpty() == true) {
+                    shopListViewModel.updateShopListName(listId, etToolbarShopListActivity.text.toString())
+                    val isError = shopListViewModel.errorInputName.value ?: true
+                    if (!isError) {
+                        it.visibility = View.INVISIBLE
+                        etToolbarShopListActivity.clearFocus()
+                        val inputMethodManager =
+                            this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        inputMethodManager.hideSoftInputFromWindow(etToolbarShopListActivity.windowToken, 0)
+                    }
+                }
+            }
+        }
+        addTextChangedListeners()
+    }
+
+    private fun addTextChangedListeners() {
+        val inputErrorListener = object : TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                with(binding) {
+                    if (etToolbarShopListActivity?.text.hashCode() == s.hashCode()) {
+                        shopListViewModel.resetErrorInputName()
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        }
+        with(binding) {
+            etToolbarShopListActivity?.addTextChangedListener(inputErrorListener)
+        }
+    }
+
+
 
     private fun setupButtons() {
         with(binding) {

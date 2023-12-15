@@ -90,4 +90,8 @@ class ShopListRepositoryImpl @Inject constructor(
     override suspend fun deleteShopList(id: Int) {
         shopListDao.deleteShopList(id)
     }
+
+    override suspend fun updateListName(id: Int, name: String) {
+        shopListDao.updateListName(ListName(id, name))
+    }
 }
