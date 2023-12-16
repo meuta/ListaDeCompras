@@ -7,14 +7,14 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "shop_items",
-//    foreignKeys = [
-//        ForeignKey(
-//            entity = ShopListDbModel::class,
-//            parentColumns = ["id"],
-//            childColumns = ["shop_list_id"],
-//            onDelete = ForeignKey.CASCADE
-//        )
-//    ]
+    foreignKeys = [
+        ForeignKey(
+            entity = ShopListDbModel::class,
+            parentColumns = ["id"],
+            childColumns = ["shop_list_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
     )
 data class ShopItemDbModel(
     @PrimaryKey(autoGenerate = true)
