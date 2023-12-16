@@ -87,6 +87,7 @@ class ShopListViewModel @Inject constructor(
 
 
     private fun validateInput(name: String): Boolean {
+        _errorInputName.value = false
         var result = true
         if (name.isBlank()) {
             _errorInputName.value = true
