@@ -46,4 +46,9 @@ interface ShopListDao {
 
     @Update(entity = ShopListDbModel::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateListName(name: ListName)
+
+
+    @Query("SELECT * FROM shop_lists WHERE id=:shopListId")
+    fun getShopListWithItems(shopListId: Int): Flow<ShopListWithShopItemsDbModel>
+
 }

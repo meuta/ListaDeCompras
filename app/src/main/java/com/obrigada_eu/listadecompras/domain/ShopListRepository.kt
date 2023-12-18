@@ -27,4 +27,7 @@ interface ShopListRepository {
 
     suspend fun updateListName(id: Int, name: String)
 
+    fun getShopListWithItems(listId: Int): Flow<ShopList>
+
+
 }

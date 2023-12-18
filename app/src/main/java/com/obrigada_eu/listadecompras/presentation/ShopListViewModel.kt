@@ -21,7 +21,8 @@ class ShopListViewModel @Inject constructor(
     private val editShopItemUseCase: EditShopItemUseCase,
     private val dragShopItemUseCase: DragShopItemUseCase,
     private val getShopListNameUseCase: GetShopListNameUseCase,
-    private val updateShopListNameUseCase: UpdateShopListNameUseCase
+    private val updateShopListNameUseCase: UpdateShopListNameUseCase,
+    private val getShopListWithItemsUseCase: GetShopListWithItemsUseCase,
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -30,10 +31,12 @@ class ShopListViewModel @Inject constructor(
     val shopListName: LiveData<String>
         get() = _shopListName
 
-    private var _shopList = getShopListUseCase(0).asLiveData()
+//    private var _shopList = getShopListWithItemsUseCase(0).asLiveData()
+//    val shopList: LiveData<ShopList>
+//        get() = _shopList
+private var _shopList = getShopListUseCase(0).asLiveData()
     val shopList: LiveData<List<ShopItem>>
         get() = _shopList
-
 
     private var _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
@@ -41,7 +44,13 @@ class ShopListViewModel @Inject constructor(
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData()
 
-    private var shopListId: Int = ShopListEntity.UNDEFINED_ID
+//    fun getShopList(listId: Int) {
+//        scope.launch {
+//            _shopList = getShopListWithItemsUseCase(listId).asLiveData()
+//        }
+//    }
+
+private var shopListId: Int = ShopListEntity.UNDEFINED_ID
     fun getShopList(listId: Int) {
         shopListId = listId
         scope.launch {
@@ -94,6 +103,10 @@ class ShopListViewModel @Inject constructor(
             result = false
         }
 
+//        allListsWithoutItems.value?.let {list ->
+//            if (list.map { it.name }.contains(name)) {
+//                val id = list.find { it.name == name }?.id
+//                if (id != _shopList.value?.id) {
         val names = allListsWithoutItems.value?.map { it.name }
         Log.d("validateInput", "names = $names")
         names?.let {

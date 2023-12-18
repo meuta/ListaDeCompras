@@ -61,13 +61,17 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     }
 
     private fun observeViewModel() {
+        shopListViewModel.getShopList(listId)
+
         shopListViewModel.getShopListName(listId)
         shopListViewModel.shopListName.observe(this) {
-            Log.d("ShopListActivity", "shopListName.observe = $it")
+            Log.d("ShopListActivity", "shopListNameobserve = $it")
             setupActionBar(it)
         }
 
         shopListViewModel.shopList.observe(this) {
+//            shopListAdapter.submitList(it?.itemList)
+//            Log.d("ShopListActivity", "shopList.observe = ${it?.itemList?.map { it.name to it.shopListId }}")
             shopListAdapter.submitList(it)
             Log.d("ShopListActivity", "shopList.observe = ${it.map { it.name to it.shopListId }}")
         }
@@ -80,7 +84,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun parseIntent() {
         if (intent.hasExtra(LIST_ID)) {
             listId = intent.getIntExtra(LIST_ID, ShopListEntity.UNDEFINED_ID)
-            shopListViewModel.getShopList(listId)
+//            shopListViewModel.getShopList(listId)
             Log.d("ShopListActivity", "parseIntent() = $listId")
         }
     }
@@ -101,7 +105,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun setupEditText(){
         with(binding){
             etToolbarShopListActivity?.setOnFocusChangeListener {view, hasFocus ->
-                Log.d("setOnFocusChangeListener", "")
                 if(hasFocus) {
                     buttonSaveListName?.visibility = View.VISIBLE
                 } else {

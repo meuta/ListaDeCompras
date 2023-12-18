@@ -2,6 +2,7 @@ package com.obrigada_eu.listadecompras.data
 
 import android.util.Log
 import com.obrigada_eu.listadecompras.domain.ShopItem
+import com.obrigada_eu.listadecompras.domain.ShopList
 import com.obrigada_eu.listadecompras.domain.ShopListEntity
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,8 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getShopList(listId: Int): Flow<List<ShopItem>> {
         return shopListDao.getShopList(listId).map {
+            Log.d("getShopList", "shopList = $it")
+// here is a problem
             shopListDbModel = it.toMutableList()
             mapper.mapListDbModelToEntity(it)
         }
@@ -94,4 +97,15 @@ class ShopListRepositoryImpl @Inject constructor(
     override suspend fun updateListName(id: Int, name: String) {
         shopListDao.updateListName(ListName(id, name))
     }
+
+
+    override fun getShopListWithItems(listId: Int): Flow<ShopList> {
+        return shopListDao.getShopListWithItems(listId).map { list ->
+            Log.d("getShopListWithItems", "shopList = $list")
+            val newList = list.shopList.sortedBy { it.position }.toMutableList()
+            mapper.mapShopListWithItemsDbModelToShopList(list.copy(shopList = newList))
+        }
+    }
+
+
 }
