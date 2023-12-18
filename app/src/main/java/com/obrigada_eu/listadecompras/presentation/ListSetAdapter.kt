@@ -6,11 +6,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ListItemBinding
-import com.obrigada_eu.listadecompras.domain.ShopList
+import com.obrigada_eu.listadecompras.domain.ShopListEntity
 
-class ListSetAdapter : ListAdapter<ShopList, ListItemViewHolder>(ListItemDiffCallback()) {
+class ListSetAdapter : ListAdapter<ShopListEntity, ListItemViewHolder>(ListItemDiffCallback()) {
 
-    var onListItemClickListener: ((ShopList) -> Unit)? = null
+    var onListItemClickListener: ((ShopListEntity) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         val layout = R.layout.list_item

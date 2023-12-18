@@ -24,13 +24,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityShopListBinding
-import com.obrigada_eu.listadecompras.domain.ShopList
+import com.obrigada_eu.listadecompras.domain.ShopListEntity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
-    private var listId = ShopList.UNDEFINED_ID
+    private var listId = ShopListEntity.UNDEFINED_ID
 
     private val shopListViewModel: ShopListViewModel by viewModels()
 
@@ -72,14 +72,14 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             Log.d("ShopListActivity", "shopList.observe = ${it.map { it.name to it.shopListId }}")
         }
 
-        shopListViewModel.allListsWithItems.observe(this) {
+        shopListViewModel.allListsWithoutItems.observe(this) {
             Log.d("ShopListActivity", "allListsWithItems.observe =\n $it")
         }
     }
 
     private fun parseIntent() {
         if (intent.hasExtra(LIST_ID)) {
-            listId = intent.getIntExtra(LIST_ID, ShopList.UNDEFINED_ID)
+            listId = intent.getIntExtra(LIST_ID, ShopListEntity.UNDEFINED_ID)
             shopListViewModel.getShopList(listId)
             Log.d("ShopListActivity", "parseIntent() = $listId")
         }

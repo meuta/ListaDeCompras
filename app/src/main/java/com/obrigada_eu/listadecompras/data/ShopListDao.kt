@@ -34,9 +34,8 @@ interface ShopListDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertShopList(shopListDbModel: ShopListDbModel)
 
-    @Transaction
     @Query("SELECT * FROM shop_lists")
-    fun getShopListsWithShopItems(): Flow<List<ShopListWithShopItemsDbModel>>
+    fun getShopListsWithoutShopItems(): Flow<List<ShopListDbModel>>
 
     @Query("SELECT shop_list_name FROM shop_lists WHERE id=:shopListId LIMIT 1")
     suspend fun getShopListName(shopListId: Int): String?

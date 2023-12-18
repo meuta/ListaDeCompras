@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.obrigada_eu.listadecompras.databinding.FragmentShopItemBinding
 import com.obrigada_eu.listadecompras.domain.ShopItem
-import com.obrigada_eu.listadecompras.domain.ShopList
+import com.obrigada_eu.listadecompras.domain.ShopListEntity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,7 +29,7 @@ class ShopItemFragment : Fragment() {
 
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
-    private var listId = ShopList.UNDEFINED_ID
+    private var listId = ShopListEntity.UNDEFINED_ID
 
     override fun onAttach(context: Context) {
 
@@ -145,11 +145,11 @@ class ShopItemFragment : Fragment() {
             }
             itemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
-        if (screenMode == MODE_ADD && listId == ShopList.UNDEFINED_ID) {
+        if (screenMode == MODE_ADD && listId == ShopListEntity.UNDEFINED_ID) {
             if (!args.containsKey(SHOP_LIST_ID)) {
                 throw RuntimeException("Param shop_list_id is absent")
             }
-            listId = args.getInt(SHOP_LIST_ID, ShopList.UNDEFINED_ID)
+            listId = args.getInt(SHOP_LIST_ID, ShopListEntity.UNDEFINED_ID)
         }
     }
 

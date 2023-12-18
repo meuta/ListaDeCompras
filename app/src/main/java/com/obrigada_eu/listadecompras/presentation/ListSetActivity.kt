@@ -20,7 +20,6 @@ class ListSetActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.list_set_container, ListSetFragment.newInstance())
-//                .commitNow()
                 .commit()
         }
     }

@@ -1,8 +1,7 @@
 package com.obrigada_eu.listadecompras.domain
 
-data class ShopList(
+data class ShopListEntity(
     val name: String,
-    val itemList: List<ShopItem>,
     val id: Int = UNDEFINED_ID
 )
 {

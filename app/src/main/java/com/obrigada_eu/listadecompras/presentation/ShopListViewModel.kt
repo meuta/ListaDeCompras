@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShopListViewModel @Inject constructor(
-    getAllListsWithItemsUseCase: GetAllListsWithItemsUseCase,
+    getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val getShopListUseCase: GetShopListUseCase,
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
@@ -39,9 +39,9 @@ class ShopListViewModel @Inject constructor(
     val errorInputName: LiveData<Boolean>
         get() = _errorInputName
 
-    val allListsWithItems = getAllListsWithItemsUseCase().asLiveData()
+    val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData()
 
-    private var shopListId: Int = ShopList.UNDEFINED_ID
+    private var shopListId: Int = ShopListEntity.UNDEFINED_ID
     fun getShopList(listId: Int) {
         shopListId = listId
         scope.launch {
@@ -94,11 +94,11 @@ class ShopListViewModel @Inject constructor(
             result = false
         }
 
-        val names = allListsWithItems.value?.map { it.name }
+        val names = allListsWithoutItems.value?.map { it.name }
         Log.d("validateInput", "names = $names")
         names?.let {
             if (names.contains(name)) {
-                val id = allListsWithItems.value?.find { it.name == name }?.id
+                val id = allListsWithoutItems.value?.find { it.name == name }?.id
                 if (id != shopListId) {
                     _errorInputName.value = true
                     Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")

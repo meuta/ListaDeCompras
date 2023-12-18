@@ -8,7 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.AddShopListUseCase
 import com.obrigada_eu.listadecompras.domain.DeleteShopListUseCase
-import com.obrigada_eu.listadecompras.domain.GetAllListsWithItemsUseCase
+import com.obrigada_eu.listadecompras.domain.GetAllListsWithoutItemsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListSetViewModel @Inject constructor(
-    getAllListsWithItemsUseCase: GetAllListsWithItemsUseCase,
+    getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase,
     private val deleteShopListUseCase: DeleteShopListUseCase
 ) : ViewModel() {
@@ -33,7 +33,7 @@ class ListSetViewModel @Inject constructor(
 //    val closeScreen: LiveData<Unit>
 //        get() = _closeScreen
 
-    val allListsWithItems = getAllListsWithItemsUseCase().asLiveData()
+    val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData()
 
     fun addShopList(inputName: String?) {
         val name = parseName(inputName)
@@ -57,7 +57,7 @@ class ListSetViewModel @Inject constructor(
             result = false
         }
 
-        val names = allListsWithItems.value?.map { it.name }
+        val names = allListsWithoutItems.value?.map { it.name }
         Log.d("validateInput", "names = $names")
         names?.let {
             if (names.contains(name)) {
@@ -66,7 +66,6 @@ class ListSetViewModel @Inject constructor(
                 result = false
             }
         }
-
         return result
     }
 

@@ -1,7 +1,7 @@
 package com.obrigada_eu.listadecompras.data
 
 import com.obrigada_eu.listadecompras.domain.ShopItem
-import com.obrigada_eu.listadecompras.domain.ShopList
+import com.obrigada_eu.listadecompras.domain.ShopListEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,12 +27,11 @@ class ShopListMapper @Inject constructor() {
     fun mapListDbModelToEntity(list: List<ShopItemDbModel>) = list.map { mapDbModelToEntity(it) }
 
 
-    fun mapShopListWithItemsDbModelToEntityList(
-        shopListWithShopItemsDbModel: ShopListWithShopItemsDbModel
-    ) : ShopList = ShopList(
-        shopListWithShopItemsDbModel.shopListDbModel.name,
-        shopListWithShopItemsDbModel.shopList.map { mapDbModelToEntity(it) },
-        shopListWithShopItemsDbModel.shopListDbModel.id
+    fun mapShopListDbModelToEntity(
+        shopListDbModel: ShopListDbModel
+    ) : ShopListEntity = ShopListEntity(
+        shopListDbModel.name,
+        shopListDbModel.id
     )
 
 }

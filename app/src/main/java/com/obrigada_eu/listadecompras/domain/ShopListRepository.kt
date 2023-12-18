@@ -19,7 +19,7 @@ interface ShopListRepository {
 
     suspend fun addShopList(shopListName: String)
 
-    fun getAllListsWithItems(): Flow<List<ShopList>>
+    fun getAllListsWithoutItems(): Flow<List<ShopListEntity>>
 
     suspend fun getShopListName(listId: Int): String
 

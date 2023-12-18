@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.domain.ShopItem
-import com.obrigada_eu.listadecompras.domain.ShopList
+import com.obrigada_eu.listadecompras.domain.ShopListEntity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -14,7 +14,7 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
-    private var listId = ShopList.UNDEFINED_ID
+    private var listId = ShopListEntity.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +67,7 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             if (!intent.hasExtra(SHOP_LIST_ID)) {
                 throw RuntimeException("Param shop_list_id is absent")
             }
-           listId = intent.getIntExtra(SHOP_LIST_ID, ShopList.UNDEFINED_ID)
+           listId = intent.getIntExtra(SHOP_LIST_ID, ShopListEntity.UNDEFINED_ID)
         }
     }
 

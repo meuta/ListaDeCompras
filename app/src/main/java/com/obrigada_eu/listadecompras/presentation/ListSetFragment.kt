@@ -80,7 +80,7 @@ class ListSetFragment : Fragment() {
         setupClickListener()
         addTextChangedListeners()
         setupButtons()
-        listSetViewModel.allListsWithItems.observe(viewLifecycleOwner) {
+        listSetViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
             listSetAdapter.submitList(it)
             Log.d("ListSetFragment", "allListsWithItems.observe =\n $it")
         }

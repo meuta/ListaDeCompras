@@ -4,7 +4,7 @@
     <data>
         <variable
             name="listItem"
-            type="com.obrigada_eu.listadecompras.domain.ShopList" />
+            type="com.obrigada_eu.listadecompras.domain.ShopListEntity" />
     </data>
 
     <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"

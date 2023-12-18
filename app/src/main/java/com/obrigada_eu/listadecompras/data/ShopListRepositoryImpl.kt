@@ -2,7 +2,7 @@ package com.obrigada_eu.listadecompras.data
 
 import android.util.Log
 import com.obrigada_eu.listadecompras.domain.ShopItem
-import com.obrigada_eu.listadecompras.domain.ShopList
+import com.obrigada_eu.listadecompras.domain.ShopListEntity
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -72,14 +72,14 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addShopList(shopListName: String) {
-        val dbModel = ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID)
+        val dbModel = ShopListDbModel(name = shopListName, id = ShopListEntity.UNDEFINED_ID)
         shopListDao.insertShopList(dbModel)
     }
 
 
-    override fun getAllListsWithItems(): Flow<List<ShopList>> {
-        return shopListDao.getShopListsWithShopItems().map { list ->
-            list.map { mapper.mapShopListWithItemsDbModelToEntityList(it) }
+    override fun getAllListsWithoutItems(): Flow<List<ShopListEntity>> {
+        return shopListDao.getShopListsWithoutShopItems().map { list ->
+            list.map { mapper.mapShopListDbModelToEntity(it) }
         }
     }
 

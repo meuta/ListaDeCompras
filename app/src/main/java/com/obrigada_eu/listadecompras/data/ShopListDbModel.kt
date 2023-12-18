@@ -14,12 +14,14 @@ data class ShopListDbModel(
     @ColumnInfo(name = "shop_list_name")
     val name: String
 )
+
 data class ListName (
     @ColumnInfo(name = "id")
     val id: Int,
     @ColumnInfo(name = "shop_list_name")
     var name: String
 )
+
 data class ShopListWithShopItemsDbModel(
     @Embedded val shopListDbModel: ShopListDbModel,
     @Relation(
