@@ -22,7 +22,7 @@ class ShopListRepositoryImpl @Inject constructor(
     override fun getShopList(listId: Int): Flow<List<ShopItem>> {
         return shopListDao.getShopList(listId).map {
             Log.d("getShopList", "shopList = $it")
-// here is a problem
+// here was a problem, solved by the adding parameters to the coroutine collecting the Flow in a viewModel: .asLiveData(scope.coroutineContext, 0)
             shopListDbModel = it.toMutableList()
             mapper.mapListDbModelToEntity(it)
         }

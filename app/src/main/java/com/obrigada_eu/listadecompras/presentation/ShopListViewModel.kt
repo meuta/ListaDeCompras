@@ -34,7 +34,7 @@ class ShopListViewModel @Inject constructor(
 //    private var _shopList = getShopListWithItemsUseCase(0).asLiveData()
 //    val shopList: LiveData<ShopList>
 //        get() = _shopList
-private var _shopList = getShopListUseCase(0).asLiveData()
+    private var _shopList = getShopListUseCase(0).asLiveData(scope.coroutineContext, 500)
     val shopList: LiveData<List<ShopItem>>
         get() = _shopList
 
@@ -42,7 +42,7 @@ private var _shopList = getShopListUseCase(0).asLiveData()
     val errorInputName: LiveData<Boolean>
         get() = _errorInputName
 
-    val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData()
+    val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
 
 //    fun getShopList(listId: Int) {
 //        scope.launch {
@@ -50,11 +50,11 @@ private var _shopList = getShopListUseCase(0).asLiveData()
 //        }
 //    }
 
-private var shopListId: Int = ShopListEntity.UNDEFINED_ID
+    private var shopListId: Int = ShopListEntity.UNDEFINED_ID
     fun getShopList(listId: Int) {
         shopListId = listId
         scope.launch {
-            _shopList = getShopListUseCase(listId).asLiveData()
+            _shopList = getShopListUseCase(listId).asLiveData(scope.coroutineContext, 500)
         }
     }
 
