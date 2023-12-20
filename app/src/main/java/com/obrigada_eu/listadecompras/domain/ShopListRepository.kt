@@ -1,6 +1,7 @@
 package com.obrigada_eu.listadecompras.domain
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface ShopListRepository {
 
@@ -29,5 +30,7 @@ interface ShopListRepository {
 
     fun getShopListWithItems(listId: Int): Flow<ShopList>
 
+    suspend fun setCurrentListId(listId: Int)
 
+    fun getCurrentListId(): StateFlow<Int>
 }

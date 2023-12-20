@@ -80,9 +80,17 @@ class ListSetFragment : Fragment() {
         setupClickListener()
         addTextChangedListeners()
         setupButtons()
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
         listSetViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
             listSetAdapter.submitList(it)
             Log.d("ListSetFragment", "allListsWithItems.observe =\n $it")
+        }
+
+        listSetViewModel.shopListIdLD.observe(viewLifecycleOwner) {
+            startShopListActivity()
         }
     }
 
@@ -158,9 +166,14 @@ class ListSetFragment : Fragment() {
 
     private fun setupClickListener() {
         listSetAdapter.onListItemClickListener = {
-            val intent = ShopListActivity.newIntent(this.requireContext(), it.id)
-            startActivity(intent)
+            listSetViewModel.updateShopListIdState(it.id)
         }
+    }
+
+    private fun startShopListActivity() {
+        Log.d("ListSetFragment", "startShopListActivity listId = $id")
+        val intent = ShopListActivity.newIntent(this.requireContext())
+        startActivity(intent)
     }
 
     private fun setupSwipeListener(rvLists: RecyclerView) {

@@ -10,28 +10,33 @@ import com.obrigada_eu.listadecompras.domain.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ShopListViewModel @Inject constructor(
     getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
-    private val getShopListUseCase: GetShopListUseCase,
+    getShopListUseCase: GetShopListUseCase,
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
     private val dragShopItemUseCase: DragShopItemUseCase,
     private val getShopListNameUseCase: GetShopListNameUseCase,
     private val updateShopListNameUseCase: UpdateShopListNameUseCase,
+    private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
+    getCurrentListIdUseCase: GetCurrentListIdUseCase
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
+
+    private val shopListIdFlow: StateFlow<Int> = getCurrentListIdUseCase()
+    val shopListIdLD = shopListIdFlow.asLiveData(scope.coroutineContext)
 
     private val _shopListName = MutableLiveData<String>()
     val shopListName: LiveData<String>
         get() = _shopListName
 
-
-    private var _shopList = getShopListUseCase(0).asLiveData(scope.coroutineContext, 500)
+    private val _shopList = getShopListUseCase(shopListIdFlow.value).asLiveData(scope.coroutineContext, 500)
     val shopList: LiveData<List<ShopItem>>
         get() = _shopList
 
@@ -42,17 +47,16 @@ class ShopListViewModel @Inject constructor(
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
 
 
-    private var shopListId: Int = ShopListEntity.UNDEFINED_ID
-    fun getShopList(listId: Int) {
-        shopListId = listId
+    fun updateShopListIdState(listId: Int) {
         scope.launch {
-            _shopList = getShopListUseCase(listId).asLiveData(scope.coroutineContext, 500)
+            setCurrentListIdUseCase(listId)
         }
     }
 
-    fun getShopListName(listId: Int) {
+
+    fun getShopListName() {
         viewModelScope.launch {
-            val name = getShopListNameUseCase(listId)
+            val name = getShopListNameUseCase(shopListIdFlow.value)
             _shopListName.value = name
         }
     }
@@ -76,12 +80,12 @@ class ShopListViewModel @Inject constructor(
         }
     }
 
-    fun updateShopListName(id: Int, inputName: String){
+    fun updateShopListName(inputName: String){
         val name = parseName(inputName)
         val fieldsValid = validateInput(name)
         if (fieldsValid) {
             scope.launch {
-                updateShopListNameUseCase(id, name)
+                updateShopListNameUseCase(shopListIdFlow.value, name)
             }
         }
     }
@@ -95,16 +99,13 @@ class ShopListViewModel @Inject constructor(
             result = false
         }
 
-//        allListsWithoutItems.value?.let {list ->
-//            if (list.map { it.name }.contains(name)) {
-//                val id = list.find { it.name == name }?.id
-//                if (id != _shopList.value?.id) {
+
         val names = allListsWithoutItems.value?.map { it.name }
         Log.d("validateInput", "names = $names")
         names?.let {
             if (names.contains(name)) {
                 val id = allListsWithoutItems.value?.find { it.name == name }?.id
-                if (id != shopListId) {
+                if (id != shopListIdFlow.value) {
                     _errorInputName.value = true
                     Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
                     result = false

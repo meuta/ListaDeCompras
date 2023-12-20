@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.AddShopListUseCase
 import com.obrigada_eu.listadecompras.domain.DeleteShopListUseCase
 import com.obrigada_eu.listadecompras.domain.GetAllListsWithoutItemsUseCase
+import com.obrigada_eu.listadecompras.domain.GetCurrentListIdUseCase
+import com.obrigada_eu.listadecompras.domain.SetCurrentListIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +21,9 @@ import javax.inject.Inject
 class ListSetViewModel @Inject constructor(
     getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase,
-    private val deleteShopListUseCase: DeleteShopListUseCase
+    private val deleteShopListUseCase: DeleteShopListUseCase,
+    private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
+    private val getCurrentListIdUseCase: GetCurrentListIdUseCase
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -27,13 +31,23 @@ class ListSetViewModel @Inject constructor(
     private var _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
         get() = _errorInputName
-//
-//
-//    private val _closeScreen = MutableLiveData<Unit>()
-//    val closeScreen: LiveData<Unit>
-//        get() = _closeScreen
 
-    val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData()
+    private val _shopListIdLD = MutableLiveData<Unit>()
+    val shopListIdLD: LiveData<Unit>
+        get() = _shopListIdLD
+
+    val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext)
+
+    init {
+        viewModelScope.launch {
+            getCurrentListIdUseCase().collect{
+                Log.d("ListSetViewModel","init id = $it")
+                if (it != 0) {
+                    _shopListIdLD.value = Unit
+                }
+            }
+        }
+    }
 
     fun addShopList(inputName: String?) {
         val name = parseName(inputName)
@@ -46,9 +60,6 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
-//    private fun finishView() {
-//            _closeScreen.value = Unit
-//    }
 
     private fun validateInput(name: String): Boolean {
         var result = true
@@ -80,6 +91,12 @@ class ListSetViewModel @Inject constructor(
     fun deleteShopList(id: Int) {
         scope.launch {
             deleteShopListUseCase(id)
+        }
+    }
+
+    fun updateShopListIdState(listId: Int) {
+        scope.launch {
+            setCurrentListIdUseCase(listId)
         }
     }
 }

@@ -1,20 +1,38 @@
 package com.obrigada_eu.listadecompras.data
 
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import com.obrigada_eu.listadecompras.domain.ShopItem
 import com.obrigada_eu.listadecompras.domain.ShopList
 import com.obrigada_eu.listadecompras.domain.ShopListEntity
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ShopListRepositoryImpl @Inject constructor(
     private val shopListDao: ShopListDao,
-    private val mapper: ShopListMapper
+    private val mapper: ShopListMapper,
+    private val shopListPreferences: DataStore<Preferences>
+
 ) : ShopListRepository {
+
+    private val scope = CoroutineScope(Dispatchers.IO)
+
 
     private lateinit var shopListDbModel: MutableList<ShopItemDbModel>
 
@@ -22,7 +40,6 @@ class ShopListRepositoryImpl @Inject constructor(
     override fun getShopList(listId: Int): Flow<List<ShopItem>> {
         return shopListDao.getShopList(listId).map {
             Log.d("getShopList", "shopList = $it")
-// here was a problem, solved by the adding parameters to the coroutine collecting the Flow in a viewModel: .asLiveData(scope.coroutineContext, 0)
             shopListDbModel = it.toMutableList()
             mapper.mapListDbModelToEntity(it)
         }
@@ -108,4 +125,48 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
+    private val shopListIdFlow: StateFlow<Int> = shopListPreferences.data
+        .catch { exception ->
+            /*
+                 * dataStore.data throws an IOException when an error
+                 * is encountered when reading data
+                 */
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }.map { preferences ->
+            // Get our name value, defaulting to "" if not set
+            preferences[KEY_LIST_ID] ?: 0
+        }.stateIn(scope, SharingStarted.Eagerly, 0)
+
+
+
+    override suspend fun setCurrentListId(listId: Int){
+        shopListPreferences.edit { preferences ->
+            preferences[KEY_LIST_ID] = listId
+        }
+    }
+
+
+    override fun getCurrentListId(): StateFlow<Int> {
+        return shopListIdFlow
+    }
+
+
+    suspend fun fetchInitialPreferences() =
+        mapLoopPreferences(shopListPreferences.data.first().toPreferences())
+
+    private fun mapLoopPreferences(preferences: Preferences): ShopListPreferences {
+        val listId = preferences[KEY_LIST_ID] ?: 0
+
+        return ShopListPreferences(listId)
+    }
+
+    private companion object {
+
+        val KEY_LIST_ID = intPreferencesKey(name = "listId")
+
+    }
 }
