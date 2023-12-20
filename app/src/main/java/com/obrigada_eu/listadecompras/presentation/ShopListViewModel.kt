@@ -22,7 +22,6 @@ class ShopListViewModel @Inject constructor(
     private val dragShopItemUseCase: DragShopItemUseCase,
     private val getShopListNameUseCase: GetShopListNameUseCase,
     private val updateShopListNameUseCase: UpdateShopListNameUseCase,
-    private val getShopListWithItemsUseCase: GetShopListWithItemsUseCase,
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -31,9 +30,7 @@ class ShopListViewModel @Inject constructor(
     val shopListName: LiveData<String>
         get() = _shopListName
 
-//    private var _shopList = getShopListWithItemsUseCase(0).asLiveData()
-//    val shopList: LiveData<ShopList>
-//        get() = _shopList
+
     private var _shopList = getShopListUseCase(0).asLiveData(scope.coroutineContext, 500)
     val shopList: LiveData<List<ShopItem>>
         get() = _shopList
@@ -44,11 +41,6 @@ class ShopListViewModel @Inject constructor(
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
 
-//    fun getShopList(listId: Int) {
-//        scope.launch {
-//            _shopList = getShopListWithItemsUseCase(listId).asLiveData()
-//        }
-//    }
 
     private var shopListId: Int = ShopListEntity.UNDEFINED_ID
     fun getShopList(listId: Int) {

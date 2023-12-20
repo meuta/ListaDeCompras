@@ -70,8 +70,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         }
 
         shopListViewModel.shopList.observe(this) {
-//            shopListAdapter.submitList(it?.itemList)
-//            Log.d("ShopListActivity", "shopList.observe = ${it?.itemList?.map { it.name to it.shopListId }}")
             shopListAdapter.submitList(it)
             Log.d("ShopListActivity", "shopList.observe = ${it.map { it.name to it.shopListId }}")
         }
@@ -84,7 +82,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun parseIntent() {
         if (intent.hasExtra(LIST_ID)) {
             listId = intent.getIntExtra(LIST_ID, ShopListEntity.UNDEFINED_ID)
-//            shopListViewModel.getShopList(listId)
             Log.d("ShopListActivity", "parseIntent() = $listId")
         }
     }
@@ -95,7 +92,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_24)
-            binding.etToolbarShopListActivity?.setText(name)
+            binding.etToolbarShopListActivity.setText(name)
         }
         binding.toolbarShopListActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
@@ -104,16 +101,16 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun setupEditText(){
         with(binding){
-            etToolbarShopListActivity?.setOnFocusChangeListener {view, hasFocus ->
+            etToolbarShopListActivity.setOnFocusChangeListener {view, hasFocus ->
                 if(hasFocus) {
-                    buttonSaveListName?.visibility = View.VISIBLE
+                    buttonSaveListName.visibility = View.VISIBLE
                 } else {
-                    buttonSaveListName?.visibility = View.INVISIBLE
+                    buttonSaveListName.visibility = View.INVISIBLE
                 }
             }
 
-            buttonSaveListName?.setOnClickListener {
-                if (etToolbarShopListActivity?.text?.isNotEmpty() == true) {
+            buttonSaveListName.setOnClickListener {
+                if (etToolbarShopListActivity.text?.isNotEmpty() == true) {
                     shopListViewModel.updateShopListName(listId, etToolbarShopListActivity.text.toString())
                     val isError = shopListViewModel.errorInputName.value ?: true
                     if (!isError) {
@@ -137,7 +134,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 with(binding) {
-                    if (etToolbarShopListActivity?.text.hashCode() == s.hashCode()) {
+                    if (etToolbarShopListActivity.text.hashCode() == s.hashCode()) {
                         shopListViewModel.resetErrorInputName()
                     }
                 }
@@ -147,7 +144,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             }
         }
         with(binding) {
-            etToolbarShopListActivity?.addTextChangedListener(inputErrorListener)
+            etToolbarShopListActivity.addTextChangedListener(inputErrorListener)
         }
     }
 
