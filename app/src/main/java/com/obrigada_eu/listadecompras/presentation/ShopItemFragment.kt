@@ -1,14 +1,14 @@
 package com.obrigada_eu.listadecompras.presentation
 
 import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.obrigada_eu.listadecompras.databinding.FragmentShopItemBinding
@@ -74,10 +74,14 @@ class ShopItemFragment : Fragment() {
     }
 
     private fun setFocus() {
-        binding.etName.requestFocus()
-        val inputMethodManager =
-            activity?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(binding.etName, 0)
+        with(binding) {
+            etName.requestFocus()
+            WindowCompat.getInsetsController(requireActivity().window, etName)
+                .show(WindowInsetsCompat.Type.ime())
+//            val inputMethodManager =
+//                activity?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//            inputMethodManager.showSoftInput(etName, SHOW_IMPLICIT)
+        }
     }
 
 

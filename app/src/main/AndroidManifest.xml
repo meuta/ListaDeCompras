@@ -10,29 +10,32 @@
         android:roundIcon="@mipmap/ic_shopping_cart_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ListaDeCompras">
+
         <activity
             android:name=".presentation.ListSetActivity"
             android:exported="true"
-            android:theme="@style/Theme.ListaDeCompras.NoActionBar" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
-    <activity
+            android:theme="@style/Theme.ListaDeCompras.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".presentation.ShopItemActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
         <activity
             android:name=".presentation.ShopListActivity"
             android:exported="false"
-            android:theme="@style/Theme.ListaDeCompras.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.ListaDeCompras.NoActionBar" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
+
     </application>
 
 </manifest>
