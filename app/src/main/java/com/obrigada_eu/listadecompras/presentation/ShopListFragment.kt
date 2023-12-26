@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
@@ -56,6 +57,8 @@ class ShopListFragment: Fragment()  {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setOnBackPressedCallback()
+
     }
 
 
@@ -343,10 +346,24 @@ class ShopListFragment: Fragment()  {
         fun onFabClick(listId: Int)
     }
 
-    override fun onDestroy() {
-        shopListViewModel.updateShopListIdState(0)
-        super.onDestroy()
-        Log.d("ShopListFragment", "onDestroy")
+    private val callback = object : OnBackPressedCallback(
+        true // default to enabled
+    ) {
+        override fun handleOnBackPressed() {
+            val fragments = parentFragmentManager.fragments
+            Log.d("setOnBackPressedCallback", "list fragments = $fragments")
+            Log.d("setOnBackPressedCallback", "fragments this = ${this@ShopListFragment}")
+            if (fragments.last() == this@ShopListFragment) {
+                shopListViewModel.updateShopListIdState(0)
+                requireActivity().finish()
+            } else {
+                parentFragmentManager.popBackStack()
+            }
+        }
+    }
+
+    private fun setOnBackPressedCallback() {
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     companion object {

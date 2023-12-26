@@ -32,8 +32,8 @@ class ListSetViewModel @Inject constructor(
     val errorInputName: LiveData<Boolean>
         get() = _errorInputName
 
-    private val _shopListIdLD = MutableLiveData<Unit>()
-    val shopListIdLD: LiveData<Unit>
+    private val _shopListIdLD = MutableLiveData<Int>()
+    val shopListIdLD: LiveData<Int>
         get() = _shopListIdLD
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext)
@@ -42,12 +42,17 @@ class ListSetViewModel @Inject constructor(
         viewModelScope.launch {
             getCurrentListIdUseCase().collect{
                 Log.d("ListSetViewModel","init id = $it")
-                if (it != 0) {
-                    _shopListIdLD.value = Unit
-                }
+                _shopListIdLD.value = it
             }
         }
     }
+
+    fun openShopList(listId: Int){
+        scope.launch {
+            setCurrentListIdUseCase(listId)
+        }
+    }
+
 
     fun addShopList(inputName: String?) {
         val name = parseName(inputName)
@@ -94,9 +99,4 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
-    fun updateShopListIdState(listId: Int) {
-        scope.launch {
-            setCurrentListIdUseCase(listId)
-        }
-    }
 }

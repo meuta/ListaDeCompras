@@ -86,11 +86,12 @@ class ListSetFragment : Fragment() {
     private fun observeViewModel() {
         listSetViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
             listSetAdapter.submitList(it)
-            Log.d("ListSetFragment", "allListsWithItems.observe =\n $it")
         }
-
         listSetViewModel.shopListIdLD.observe(viewLifecycleOwner) {
-            startShopListActivity()
+            Log.d("ListSetFragment", "shopListIdLD.observe = $it")
+            if (it != 0){
+                startShopListActivity()
+            }
         }
     }
 
@@ -166,12 +167,12 @@ class ListSetFragment : Fragment() {
 
     private fun setupClickListener() {
         listSetAdapter.onListItemClickListener = {
-            listSetViewModel.updateShopListIdState(it.id)
+            listSetViewModel.openShopList(it.id)
         }
     }
 
     private fun startShopListActivity() {
-        Log.d("ListSetFragment", "startShopListActivity listId = $id")
+        Log.d("ListSetFragment", "startShopListActivity listId = ${listSetViewModel.shopListIdLD.value}")
         val intent = ShopListActivity.newIntent(this.requireContext())
         startActivity(intent)
     }
