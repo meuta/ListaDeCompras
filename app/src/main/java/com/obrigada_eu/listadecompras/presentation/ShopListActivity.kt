@@ -2,6 +2,7 @@ package com.obrigada_eu.listadecompras.presentation
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -35,6 +36,15 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             supportFragmentManager.beginTransaction()
                 .replace(R.id.shop_list_container, ShopListFragment.newInstance())
                 .commit()
+        } else {
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                with(supportFragmentManager){
+                    val fragments = fragments
+                    if (fragments.isNotEmpty() && fragments.last() is ShopItemFragment){
+                        popBackStack()
+                    }
+                }
+            }
         }
     }
 
