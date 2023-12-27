@@ -63,7 +63,10 @@
                     android:textColor="@color/grayish"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="New List" />
+                    android:inputType="text"
+                    android:autofillHints="list name"
+                    tools:ignore="LabelFor"
+                    tools:text="@string/new_list" />
 
                 <Button
                     android:id="@+id/button_create_list"
@@ -71,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:background="@color/grayish"
                     android:textStyle="bold"
-                    android:text="Create List"
+                    android:text="@string/create_list"
                     android:textColor="@color/whitish" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

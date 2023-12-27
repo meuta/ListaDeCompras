@@ -354,7 +354,7 @@ class ShopListFragment: Fragment()  {
             Log.d("setOnBackPressedCallback", "list fragments = $fragments")
             Log.d("setOnBackPressedCallback", "fragments this = ${this@ShopListFragment}")
             if (fragments.last() == this@ShopListFragment) {
-                shopListViewModel.updateShopListIdState(0)
+                shopListViewModel.updateShopListIdState(ShopList.UNDEFINED_ID)
                 requireActivity().finish()
             } else {
                 parentFragmentManager.popBackStack()

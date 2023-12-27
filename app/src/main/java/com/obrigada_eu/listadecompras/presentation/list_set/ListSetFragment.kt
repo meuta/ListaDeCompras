@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
+import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.shop_list.ShopListActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -90,7 +91,7 @@ class ListSetFragment : Fragment() {
         }
         listSetViewModel.shopListIdLD.observe(viewLifecycleOwner) {
             Log.d("ListSetFragment", "shopListIdLD.observe = $it")
-            if (it != 0){
+            if (it != ShopList.UNDEFINED_ID){
                 startShopListActivity()
             }
         }
@@ -101,7 +102,7 @@ class ListSetFragment : Fragment() {
             buttonAddShopList.setOnClickListener {
                 if (cardNewList.visibility == View.GONE) {
                     cardNewList.visibility = View.VISIBLE
-                    etListName.setText("New List")
+                    etListName.setText(requireContext().resources.getString(R.string.new_list))
                     etListName.requestFocus()
                     etListName.setSelection(etListName.text.length)
 

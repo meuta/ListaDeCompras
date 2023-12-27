@@ -40,7 +40,10 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="4"
-                        android:background="@color/blackish" />
+                        android:background="@color/blackish"
+                        android:inputType="text"
+                        android:autofillHints="list name"
+                        tools:ignore="LabelFor"/>
                     <ImageButton
                         android:id="@+id/button_save_list_name"
                         android:layout_width="wrap_content"
@@ -50,7 +53,8 @@
                         android:background="@color/blackish"
                         app:srcCompat="@drawable/ic_check_24"
                         android:visibility="invisible"
-                        tools:visibility="visible"/>
+                        tools:visibility="visible"
+                        android:contentDescription="@string/save_name"/>
                 </LinearLayout>
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>

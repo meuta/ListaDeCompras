@@ -84,8 +84,8 @@ class ShopListRepositoryImpl @Inject constructor(
             }
         }.map { preferences ->
             // Get our name value, defaulting to "" if not set
-            preferences[KEY_LIST_ID] ?: 0
-        }.stateIn(scope, SharingStarted.Eagerly, 0)
+            preferences[KEY_LIST_ID] ?: ShopList.UNDEFINED_ID
+        }.stateIn(scope, SharingStarted.Eagerly, ShopList.UNDEFINED_ID)
 
 
 
@@ -105,7 +105,7 @@ class ShopListRepositoryImpl @Inject constructor(
         mapLoopPreferences(shopListPreferences.data.first().toPreferences())
 
     private fun mapLoopPreferences(preferences: Preferences): ShopListPreferences {
-        val listId = preferences[KEY_LIST_ID] ?: 0
+        val listId = preferences[KEY_LIST_ID] ?: ShopList.UNDEFINED_ID
 
         return ShopListPreferences(listId)
     }
