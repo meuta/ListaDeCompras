@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         android:background="@color/blackish"
         android:orientation="vertical"
-        tools:context=".presentation.ListSetActivity">
+        tools:context=".presentation.list_set.ListSetActivity">
 
 
         <com.google.android.material.appbar.AppBarLayout

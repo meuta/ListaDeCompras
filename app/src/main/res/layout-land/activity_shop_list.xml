@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.obrigada_eu.listadecompras.presentation.ShopListViewModel" />
+            type="com.obrigada_eu.listadecompras.presentation.shop_list.ShopListViewModel" />
     </data>
 
     <LinearLayout
@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:background="@color/blackish"
         android:orientation="vertical"
-        tools:context=".presentation.ShopListActivity">
+        tools:context=".presentation.shop_list.ShopListActivity">
 
 
         <com.google.android.material.appbar.AppBarLayout
@@ -59,13 +59,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/blackish"
-            tools:context=".presentation.ShopListActivity">
+            tools:context=".presentation.shop_list.ShopListActivity">
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/shop_list_container"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                tools:context=".presentation.ShopListActivity"
+                tools:context=".presentation.shop_list.ShopListActivity"
                 tools:layout="@layout/fragment_shop_list"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/guideline_middle"
@@ -86,7 +86,7 @@
                 android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/guideline_middle"
-                tools:context=".presentation.ShopItemActivity"
+                tools:context=".presentation.shop_item.ShopItemActivity"
                 tools:layout="@layout/fragment_shop_item" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

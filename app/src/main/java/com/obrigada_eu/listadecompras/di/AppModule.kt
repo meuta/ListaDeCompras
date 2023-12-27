@@ -4,11 +4,14 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.obrigada_eu.listadecompras.data.AppDatabase
-import com.obrigada_eu.listadecompras.data.ShopListDao
-import com.obrigada_eu.listadecompras.data.ShopListMapper
-import com.obrigada_eu.listadecompras.data.ShopListRepositoryImpl
-import com.obrigada_eu.listadecompras.domain.ShopListRepository
+import com.obrigada_eu.listadecompras.data.database.AppDatabase
+import com.obrigada_eu.listadecompras.data.database.ShopItemDao
+import com.obrigada_eu.listadecompras.data.database.ShopListDao
+import com.obrigada_eu.listadecompras.data.mapper.ShopListMapper
+import com.obrigada_eu.listadecompras.data.repositories.ShopListRepositoryImpl
+import com.obrigada_eu.listadecompras.domain.shop_item.ShopItemRepository
+import com.obrigada_eu.listadecompras.data.repositories.ShopItemRepositoryImpl
+import com.obrigada_eu.listadecompras.domain.shop_list.ShopListRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,6 +43,12 @@ object AppModule {
         return db.shopListDao()
     }
 
+    @Singleton
+    @Provides
+    fun provideShopItemDao(db: AppDatabase): ShopItemDao {
+        return db.shopItemDao()
+    }
+
     @Provides
     @Singleton
     fun provideUserDataStorePreferences(
@@ -50,12 +59,21 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRepository(
-        dao: ShopListDao,
+    fun provideShopListRepository(
+        shopListDao: ShopListDao,
         mapper: ShopListMapper,
         dataStore: DataStore<Preferences>
     ): ShopListRepository {
-        return ShopListRepositoryImpl(dao, mapper, dataStore)
+        return ShopListRepositoryImpl(shopListDao, mapper, dataStore)
+    }
+
+    @Singleton
+    @Provides
+    fun provideShopItemRepository(
+        shopItemDao: ShopItemDao,
+        mapper: ShopListMapper
+    ): ShopItemRepository {
+        return ShopItemRepositoryImpl(shopItemDao, mapper)
     }
 
     @Singleton

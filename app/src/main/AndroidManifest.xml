@@ -12,7 +12,7 @@
         android:theme="@style/Theme.ListaDeCompras">
 
         <activity
-            android:name=".presentation.ListSetActivity"
+            android:name=".presentation.list_set.ListSetActivity"
             android:exported="true"
             android:theme="@style/Theme.ListaDeCompras.NoActionBar">
             <intent-filter>
@@ -22,12 +22,12 @@
         </activity>
 
         <activity
-            android:name=".presentation.ShopItemActivity"
+            android:name=".presentation.shop_item.ShopItemActivity"
             android:exported="false"
             android:windowSoftInputMode="stateVisible|adjustResize" />
 
         <activity
-            android:name=".presentation.ShopListActivity"
+            android:name=".presentation.shop_list.ShopListActivity"
             android:exported="false"
             android:theme="@style/Theme.ListaDeCompras.NoActionBar" />
 

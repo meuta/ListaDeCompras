@@ -6,14 +6,14 @@
     <data>
         <variable
             name="viewModel"
-            type="com.obrigada_eu.listadecompras.presentation.ListSetViewModel" />
+            type="com.obrigada_eu.listadecompras.presentation.list_set.ListSetViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/list_set"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.ListSetFragment">
+        tools:context=".presentation.list_set.ListSetFragment">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_list_set"

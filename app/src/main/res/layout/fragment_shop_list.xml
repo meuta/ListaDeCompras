@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.obrigada_eu.listadecompras.presentation.ShopListViewModel" />
+            type="com.obrigada_eu.listadecompras.presentation.shop_list.ShopListViewModel" />
     </data>
 
 

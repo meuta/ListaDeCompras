@@ -1,6 +1,9 @@
 package com.obrigada_eu.listadecompras.domain
 
 import com.google.common.truth.Truth.assertThat
+import com.obrigada_eu.listadecompras.domain.shop_item.AddShopItemUseCase
+import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
+import com.obrigada_eu.listadecompras.domain.shop_list.ShopListRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Before

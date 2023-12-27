@@ -1,5 +1,7 @@
 package com.obrigada_eu.listadecompras.domain
 
+import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
+import com.obrigada_eu.listadecompras.domain.shop_list.ShopListRepository
 import kotlinx.coroutines.flow.*
 import java.util.*
 

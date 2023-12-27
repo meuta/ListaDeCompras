@@ -2,7 +2,7 @@ package com.obrigada_eu.listadecompras.presentation
 
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
-import com.obrigada_eu.listadecompras.domain.ShopItem.Companion.UNDEFINED_ID
+import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem.Companion.UNDEFINED_ID
 import com.google.android.material.textfield.TextInputLayout
 import com.obrigada_eu.listadecompras.R
 

@@ -2,11 +2,11 @@ package com.obrigada_eu.listadecompras.di
 
 import android.content.Context
 import androidx.room.Room
-import com.obrigada_eu.listadecompras.data.AppDatabase
-import com.obrigada_eu.listadecompras.data.ShopListDao
-import com.obrigada_eu.listadecompras.data.ShopListMapper
-import com.obrigada_eu.listadecompras.data.ShopListRepositoryImpl
-import com.obrigada_eu.listadecompras.domain.ShopListRepository
+import com.obrigada_eu.listadecompras.data.database.AppDatabase
+import com.obrigada_eu.listadecompras.data.database.ShopListDao
+import com.obrigada_eu.listadecompras.data.mapper.ShopListMapper
+import com.obrigada_eu.listadecompras.data.repositories.ShopListRepositoryImpl
+import com.obrigada_eu.listadecompras.domain.shop_list.ShopListRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
