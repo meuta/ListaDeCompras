@@ -1,4 +1,4 @@
-package com.obrigada_eu.listadecompras.presentation.shop_list
+package com.obrigada_eu.listadecompras.presentation.list_set
 
 import androidx.recyclerview.widget.DiffUtil
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList

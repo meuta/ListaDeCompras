@@ -156,6 +156,13 @@ class ListSetFragment : Fragment() {
         with(binding.rvListSet) {
             adapter = listSetAdapter
 
+            recycledViewPool.setMaxRecycledViews(
+                ListSetAdapter.VIEW_TYPE_ENABLED, ListSetAdapter.MAX_POOL_SIZE
+            )
+            recycledViewPool.setMaxRecycledViews(
+                ListSetAdapter.VIEW_TYPE_DISABLED, ListSetAdapter.MAX_POOL_SIZE
+            )
+
             layoutManager = LinearLayoutManager(
                 this@ListSetFragment.context,
                 LinearLayoutManager.VERTICAL,
@@ -181,7 +188,7 @@ class ListSetFragment : Fragment() {
 
     private fun setupSwipeListener(rvLists: RecyclerView) {
         val callback = object : SimpleCallback(
-            0, RIGHT
+            0, LEFT or RIGHT
         ) {
             var context = requireContext()
 
@@ -194,6 +201,7 @@ class ListSetFragment : Fragment() {
 
             private val clearPaint =
                 Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
+
 
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -209,10 +217,12 @@ class ListSetFragment : Fragment() {
 
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = listSetAdapter.currentList[viewHolder.bindingAdapterPosition]
+                val list = listSetAdapter.currentList[viewHolder.bindingAdapterPosition]
                 if (direction == RIGHT) {
-                    listSetViewModel.deleteShopList(item.id)
-                    Log.d("onSwiped", "delete name = ${item.name}")
+                    listSetViewModel.deleteShopList(list.id)
+                    Log.d("onSwiped", "delete name = ${list.name}")
+                } else {
+                    listSetViewModel.changeEnableState(list)
                 }
             }
 

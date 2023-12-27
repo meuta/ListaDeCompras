@@ -7,7 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.obrigada_eu.listadecompras.di.AppModule
 import com.obrigada_eu.listadecompras.presentation.shop_list.ShopListActivity
-import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemViewHolder
+import com.obrigada_eu.listadecompras.presentation.shop_list.ShopItemViewHolder
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules

@@ -12,7 +12,7 @@ import com.obrigada_eu.listadecompras.data.model.ShopListDbModel
         ShopItemDbModel::class,
         ShopListDbModel::class
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

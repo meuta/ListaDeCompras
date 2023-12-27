@@ -12,10 +12,11 @@ data class ShopListDbModel(
     @ColumnInfo(name = "id")
     val id: Int,
     @ColumnInfo(name = "shop_list_name")
-    val name: String
+    val name: String,
+    val enabled: Boolean
 )
 
-data class ListName (
+data class ListName(
     @ColumnInfo(name = "id")
     val id: Int,
     @ColumnInfo(name = "shop_list_name")

@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class ShopListMapper @Inject constructor() {
 
-    fun mapEntityToDbModel(shopItem: ShopItem) = ShopItemDbModel(
+    fun mapShopItemEntityToDbModel(shopItem: ShopItem) = ShopItemDbModel(
         id = shopItem.id,
         name = shopItem.name,
         count = shopItem.count,
@@ -20,7 +20,7 @@ class ShopListMapper @Inject constructor() {
         shopListId = shopItem.shopListId
     )
 
-    fun mapDbModelToEntity(shopItemDbModel: ShopItemDbModel) = ShopItem(
+    fun mapShopItemDbModelToEntity(shopItemDbModel: ShopItemDbModel) = ShopItem(
         id = shopItemDbModel.id,
         name = shopItemDbModel.name,
         count = shopItemDbModel.count,
@@ -28,13 +28,19 @@ class ShopListMapper @Inject constructor() {
         shopListId = shopItemDbModel.shopListId
     )
 
-    fun mapListDbModelToEntity(list: List<ShopItemDbModel>) = list.map { mapDbModelToEntity(it) }
+    fun mapListDbModelToEntity(list: List<ShopItemDbModel>) = list.map { mapShopItemDbModelToEntity(it) }
 
+    fun mapShopListEntityToDbModel(shopList: ShopList) = ShopListDbModel(
+        id = shopList.id,
+        name = shopList.name,
+        enabled = shopList.enabled,
+    )
 
     fun mapShopListDbModelToEntity(
         shopListDbModel: ShopListDbModel
     ) : ShopList = ShopList(
         shopListDbModel.name,
+        shopListDbModel.enabled,
         shopListDbModel.id
     )
 
@@ -43,7 +49,7 @@ class ShopListMapper @Inject constructor() {
         shopListWithShopItemsDbModel: ShopListWithShopItemsDbModel
     ) : ShopListWithItems = ShopListWithItems(
         shopListWithShopItemsDbModel.shopListDbModel.name,
-        shopListWithShopItemsDbModel.shopList.map { mapDbModelToEntity(it) },
+        shopListWithShopItemsDbModel.shopList.map { mapShopItemDbModelToEntity(it) },
         shopListWithShopItemsDbModel.shopListDbModel.id
     )
 

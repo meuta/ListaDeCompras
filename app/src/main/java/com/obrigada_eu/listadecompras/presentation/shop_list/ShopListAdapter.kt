@@ -9,8 +9,6 @@ import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ItemShopDisabledBinding
 import com.obrigada_eu.listadecompras.databinding.ItemShopEnabledBinding
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
-import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemDiffCallback
-import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemViewHolder
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 

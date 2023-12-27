@@ -32,13 +32,13 @@ class ShopItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addShopItem(shopItem: ShopItem) {
-        val dbModel = mapper.mapEntityToDbModel(shopItem)
+        val dbModel = mapper.mapShopItemEntityToDbModel(shopItem)
         dbModel.position = (shopItemDao.getLargestOrder(shopItem.shopListId) ?: -1) + 1
         shopItemDao.addShopItem(dbModel)
     }
 
     override suspend fun editShopItem(shopItem: ShopItem) {
-        val dbModel = mapper.mapEntityToDbModel(shopItem)
+        val dbModel = mapper.mapShopItemEntityToDbModel(shopItem)
         val item = shopItemDao.getShopItem(shopItem.id)
         dbModel.position = item?.position ?: ((shopItemDao.getLargestOrder(shopItem.shopListId) ?: -1) + 1)
         shopItemDao.addShopItem(dbModel)
@@ -58,7 +58,7 @@ class ShopItemRepositoryImpl @Inject constructor(
     override suspend fun getShopItem(itemId: Int): ShopItem? {
         val dbModel = shopItemDao.getShopItem(itemId)
         return if (dbModel != null) {
-            mapper.mapDbModelToEntity(dbModel)
+            mapper.mapShopItemDbModelToEntity(dbModel)
         } else null
     }
 

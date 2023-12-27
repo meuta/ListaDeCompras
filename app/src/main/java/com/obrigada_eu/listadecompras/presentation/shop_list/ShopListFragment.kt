@@ -16,6 +16,10 @@ import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.DOWN
+import androidx.recyclerview.widget.ItemTouchHelper.LEFT
+import androidx.recyclerview.widget.ItemTouchHelper.RIGHT
+import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.obrigada_eu.listadecompras.R
@@ -164,7 +168,7 @@ class ShopListFragment: Fragment()  {
 
     private fun setupSwipeAndDragListener(rvShopList: RecyclerView) {
         val callback = object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            UP or DOWN, LEFT or RIGHT
         ) {
             var context = requireContext()
 
@@ -238,7 +242,7 @@ class ShopListFragment: Fragment()  {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.bindingAdapterPosition]
-                if (direction == ItemTouchHelper.RIGHT) {
+                if (direction == RIGHT) {
                     shopListViewModel.deleteShopItem(item)
 
                 } else {

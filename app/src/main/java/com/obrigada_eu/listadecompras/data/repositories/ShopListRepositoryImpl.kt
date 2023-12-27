@@ -38,7 +38,7 @@ class ShopListRepositoryImpl @Inject constructor(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     override suspend fun addShopList(shopListName: String) {
-        val dbModel = ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID)
+        val dbModel = ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = true)
         shopListDao.insertShopList(dbModel)
     }
 
@@ -55,6 +55,11 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override suspend fun deleteShopList(id: Int) {
         shopListDao.deleteShopList(id)
+    }
+
+    override suspend fun editShopList(shopList: ShopList) {
+        val dbModel = mapper.mapShopListEntityToDbModel(shopList)
+        shopListDao.insertShopList(dbModel)
     }
 
     override suspend fun updateListName(id: Int, name: String) {
