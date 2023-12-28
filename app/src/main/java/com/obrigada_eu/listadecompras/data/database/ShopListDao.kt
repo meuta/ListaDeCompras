@@ -26,6 +26,9 @@ interface ShopListDao {
     suspend fun updateListName(name: ListName)
 
     @Query("SELECT * FROM shop_lists WHERE id=:shopListId")
-    fun getShopListWithItems(shopListId: Int): Flow<ShopListWithShopItemsDbModel>
+    fun getShopListWithItemsFlow(shopListId: Int): Flow<ShopListWithShopItemsDbModel>
+
+    @Query("SELECT * FROM shop_lists WHERE id=:shopListId")
+    fun getShopListWithItems(shopListId: Int): ShopListWithShopItemsDbModel
 
 }

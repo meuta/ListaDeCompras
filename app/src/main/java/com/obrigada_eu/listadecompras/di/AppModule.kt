@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.di
 
+import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -59,12 +60,18 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideContext(application: Application): Context = application.applicationContext
+
+
+    @Singleton
+    @Provides
     fun provideShopListRepository(
         shopListDao: ShopListDao,
         mapper: ShopListMapper,
-        dataStore: DataStore<Preferences>
+        dataStore: DataStore<Preferences>,
+        context: Context
     ): ShopListRepository {
-        return ShopListRepositoryImpl(shopListDao, mapper, dataStore)
+        return ShopListRepositoryImpl(shopListDao, mapper, dataStore, context)
     }
 
     @Singleton

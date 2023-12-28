@@ -11,6 +11,7 @@ import com.obrigada_eu.listadecompras.domain.shop_item.DragShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.EditShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.GetShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
+import com.obrigada_eu.listadecompras.domain.shop_list.ExportListToTxtUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetShopListNameUseCase
@@ -33,7 +34,8 @@ class ShopListViewModel @Inject constructor(
     private val getShopListNameUseCase: GetShopListNameUseCase,
     private val updateShopListNameUseCase: UpdateShopListNameUseCase,
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
-    getCurrentListIdUseCase: GetCurrentListIdUseCase
+    getCurrentListIdUseCase: GetCurrentListIdUseCase,
+    private val exportListToTxtUseCase: ExportListToTxtUseCase
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -130,5 +132,11 @@ class ShopListViewModel @Inject constructor(
 
     fun resetErrorInputName() {
         _errorInputName.value = false
+    }
+
+    fun exportListToTxt(listId: Int) {
+        scope.launch {
+            exportListToTxtUseCase(listId)
+        }
     }
 }

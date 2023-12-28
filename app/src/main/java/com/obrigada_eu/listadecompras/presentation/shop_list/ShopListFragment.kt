@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginTop
@@ -112,11 +113,20 @@ class ShopListFragment: Fragment()  {
 
     private fun setupButtons() {
         with(binding) {
-            buttonAddShopItem.setOnClickListener {
 
+            buttonAddShopItem.setOnClickListener {
                 onFabClickListener.onFabClick(listId)
             }
+
+            buttonExportToTxt.setOnClickListener {
+                exportListToTxt(listId)
+                Toast.makeText(requireActivity(), "List has been saved", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    private fun exportListToTxt(listId: Int) {
+        shopListViewModel.exportListToTxt(listId)
     }
 
 

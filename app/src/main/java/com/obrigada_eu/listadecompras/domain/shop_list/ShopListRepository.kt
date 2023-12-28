@@ -23,4 +23,5 @@ interface ShopListRepository {
 
     fun getCurrentListId(): StateFlow<Int>
 
+    suspend fun exportListToTxt(listId: Int)
 }
