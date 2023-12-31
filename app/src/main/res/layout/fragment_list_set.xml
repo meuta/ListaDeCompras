@@ -63,7 +63,7 @@
                     android:textColor="@color/grayish"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:inputType="text"
+                    android:inputType="textCapSentences"
                     android:autofillHints="list name"
                     tools:ignore="LabelFor"
                     tools:text="@string/new_list" />

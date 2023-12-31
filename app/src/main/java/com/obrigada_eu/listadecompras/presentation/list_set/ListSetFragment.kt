@@ -104,7 +104,7 @@ class ListSetFragment : Fragment() {
                     cardNewList.visibility = View.VISIBLE
                     etListName.setText(requireContext().resources.getString(R.string.new_list))
                     etListName.requestFocus()
-                    etListName.setSelection(etListName.text.length)
+                    etListName.setSelection(0, etListName.text.length)
 
                     val inputMethodManager =
                         activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
