@@ -134,9 +134,9 @@ class ShopListViewModel @Inject constructor(
         _errorInputName.value = false
     }
 
-    fun exportListToTxt(listId: Int) {
+    fun exportListToTxt() {
         scope.launch {
-            exportListToTxtUseCase(listId)
+            exportListToTxtUseCase(shopListIdFlow.value)
         }
     }
 }
