@@ -13,7 +13,7 @@ interface ShopListRepository {
 
     suspend fun deleteShopList(id: Int)
 
-    suspend fun editShopList(shopList: ShopList)
+    suspend fun updateListEnabled(shopList: ShopList)
 
     suspend fun updateListName(id: Int, name: String)
 
@@ -24,4 +24,6 @@ interface ShopListRepository {
     fun getCurrentListId(): StateFlow<Int>
 
     suspend fun exportListToTxt(listId: Int)
+
+    suspend fun loadTxtList(listName: String)
 }

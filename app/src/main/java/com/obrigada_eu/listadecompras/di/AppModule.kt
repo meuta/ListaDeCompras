@@ -67,11 +67,12 @@ object AppModule {
     @Provides
     fun provideShopListRepository(
         shopListDao: ShopListDao,
+        shopItemDao: ShopItemDao,
         mapper: ShopListMapper,
         dataStore: DataStore<Preferences>,
         context: Context
     ): ShopListRepository {
-        return ShopListRepositoryImpl(shopListDao, mapper, dataStore, context)
+        return ShopListRepositoryImpl(shopListDao, shopItemDao, mapper, dataStore, context)
     }
 
     @Singleton

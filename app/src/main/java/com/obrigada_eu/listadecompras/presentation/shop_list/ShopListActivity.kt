@@ -93,8 +93,17 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 Toast.makeText(this, "List has been saved", Toast.LENGTH_SHORT).show()
                 return true
             }
+            R.id.action_load_txt -> {
+                loadTxtFile(binding.etToolbarShopListActivity.text.toString())
+                Toast.makeText(this, "action_load_txt", Toast.LENGTH_SHORT).show()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun loadTxtFile(listName: String) {
+        shopListViewModel.loadTxtList(listName)
     }
 
     private fun exportListToTxt() {

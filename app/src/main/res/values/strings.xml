@@ -11,4 +11,5 @@
     <string name="create_list">Create List</string>
     <string name="save_name">Save Name</string>
     <string name="save_as_text_file">Save as text file</string>
+    <string name="load_text_file">Load file</string>
 </resources>

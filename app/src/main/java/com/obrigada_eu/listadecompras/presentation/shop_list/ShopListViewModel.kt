@@ -15,6 +15,7 @@ import com.obrigada_eu.listadecompras.domain.shop_list.ExportListToTxtUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetShopListNameUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.LoadTxtListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListNameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,7 +36,8 @@ class ShopListViewModel @Inject constructor(
     private val updateShopListNameUseCase: UpdateShopListNameUseCase,
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     getCurrentListIdUseCase: GetCurrentListIdUseCase,
-    private val exportListToTxtUseCase: ExportListToTxtUseCase
+    private val exportListToTxtUseCase: ExportListToTxtUseCase,
+    private val loadTxtListUseCase: LoadTxtListUseCase
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -137,6 +139,12 @@ class ShopListViewModel @Inject constructor(
     fun exportListToTxt() {
         scope.launch {
             exportListToTxtUseCase(shopListIdFlow.value)
+        }
+    }
+
+    fun loadTxtList(listName: String) {
+        scope.launch {
+            loadTxtListUseCase(listName)
         }
     }
 }

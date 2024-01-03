@@ -8,11 +8,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.obrigada_eu.listadecompras.data.database.ShopItemDao
 import com.obrigada_eu.listadecompras.data.database.ShopListDao
 import com.obrigada_eu.listadecompras.data.datastore.ShopListPreferences
 import com.obrigada_eu.listadecompras.data.mapper.ShopListMapper
+import com.obrigada_eu.listadecompras.data.model.ListEnabled
 import com.obrigada_eu.listadecompras.data.model.ListName
 import com.obrigada_eu.listadecompras.data.model.ShopListDbModel
+import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopListRepository
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopListWithItems
@@ -26,6 +29,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -35,6 +39,7 @@ import javax.inject.Singleton
 @Singleton
 class ShopListRepositoryImpl @Inject constructor(
     private val shopListDao: ShopListDao,
+    private val shopItemDao: ShopItemDao,
     private val mapper: ShopListMapper,
     private val shopListPreferences: DataStore<Preferences>,
     private val context: Context
@@ -43,7 +48,8 @@ class ShopListRepositoryImpl @Inject constructor(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     override suspend fun addShopList(shopListName: String) {
-        val dbModel = ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = true)
+        val dbModel =
+            ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = true)
         shopListDao.insertShopList(dbModel)
     }
 
@@ -62,9 +68,8 @@ class ShopListRepositoryImpl @Inject constructor(
         shopListDao.deleteShopList(id)
     }
 
-    override suspend fun editShopList(shopList: ShopList) {
-        val dbModel = mapper.mapShopListEntityToDbModel(shopList)
-        shopListDao.insertShopList(dbModel)
+    override suspend fun updateListEnabled(shopList: ShopList) {
+        shopListDao.updateListEnabled(ListEnabled(shopList.id, shopList.enabled))
     }
 
     override suspend fun updateListName(id: Int, name: String) {
@@ -85,11 +90,11 @@ class ShopListRepositoryImpl @Inject constructor(
 
         val shopListWithItems = shopListDao.getShopListWithItems(listId)
 
-        val name = shopListWithItems.shopListDbModel.name
-        val fileName = "$name.txt"
+        val listName = shopListWithItems.shopListDbModel.name
+        val fileName = "$listName.txt"
 
         val list = shopListWithItems.shopList
-        var content = "$name\n\n"
+        var content = "$listName\n\n"
         list.forEach {
             val row = String.format(
                 "%-4s %-30s %s",
@@ -115,10 +120,58 @@ class ShopListRepositoryImpl @Inject constructor(
             println("An error occurred: ${e.message}")
         }
 
-        Log.d("exportListToTxt", "fileName = $fileName\n" +
-                "content:\n$content\n" +
-                "extDir = $extDir")
+        Log.d(
+            "exportListToTxt", "fileName = $fileName\n" +
+                    "content:\n$content\n" +
+                    "extDir = $extDir"
+        )
     }
+
+    override suspend fun loadTxtList(listName: String) {
+        val fileName = "$listName.txt"
+        Log.d("loadTxtList", "fileName = $fileName")
+        val path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath
+        val file = File(path, "$listName.txt")
+        val exists = file.exists()
+        Log.d("loadTxtList", "exists = $exists")
+        if (exists) {
+            val bufferedReader: BufferedReader = file.bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            Log.d("loadTxtList", "content:\n$inputString")
+            val lines = inputString.split("\n")
+            Log.d("loadTxtList", "title = ${lines.first()}")
+            val list = mutableListOf<ShopItem>()
+            lines.takeLast(lines.size - 2).forEach { line ->
+                val firstSymbol = line.first()
+                val enabled = firstSymbol != '+'
+
+                val count = line.takeLastWhile { it.isDigit() || it == '.' }
+
+                val range = line.length - count.length
+                val itemName = line.slice(1 until range).trim { it == ' ' }
+
+                val item = ShopItem(itemName, count.toDouble(), enabled)
+                Log.d("loadTxtList", "item = $item")
+                list.add(item)
+            }
+            Log.d("loadTxtList", "currentTimestamp = ${System.currentTimeMillis()}")
+            var newName =
+                if (listName.contains("___")) listName.take(listName.length - 16) else listName
+            Log.d("loadTxtList", "newName = $newName")
+            newName = newName + "___" + System.currentTimeMillis()
+            addShopList(newName)
+
+            shopListDao.getShopListId(newName)?.let { listId ->
+                list.withIndex().forEach {
+                    shopItemDao.addShopItem(mapper
+                        .mapShopItemEntityToDbModel(it.value)
+                        .copy(shopListId = listId, position = it.index)
+                    )
+                }
+            }
+        }
+    }
+
 
 
     private val shopListIdFlow: StateFlow<Int> = shopListPreferences.data
@@ -138,8 +191,7 @@ class ShopListRepositoryImpl @Inject constructor(
         }.stateIn(scope, SharingStarted.Eagerly, ShopList.UNDEFINED_ID)
 
 
-
-    override suspend fun setCurrentListId(listId: Int){
+    override suspend fun setCurrentListId(listId: Int) {
         shopListPreferences.edit { preferences ->
             preferences[KEY_LIST_ID] = listId
         }

@@ -13,6 +13,7 @@ data class ShopListDbModel(
     val id: Int,
     @ColumnInfo(name = "shop_list_name")
     val name: String,
+    @ColumnInfo(name = "shop_list_enabled")
     val enabled: Boolean
 )
 
@@ -21,6 +22,13 @@ data class ListName(
     val id: Int,
     @ColumnInfo(name = "shop_list_name")
     var name: String
+)
+
+data class ListEnabled(
+    @ColumnInfo(name = "id")
+    val id: Int,
+    @ColumnInfo(name = "shop_list_enabled")
+    val enabled: Boolean
 )
 
 data class ShopListWithShopItemsDbModel(

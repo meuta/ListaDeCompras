@@ -8,7 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_list.AddShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.DeleteShopListUseCase
-import com.obrigada_eu.listadecompras.domain.shop_list.EditShopListUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListEnabledUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
@@ -24,7 +24,7 @@ class ListSetViewModel @Inject constructor(
     getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase,
     private val deleteShopListUseCase: DeleteShopListUseCase,
-    private val editShopListUseCase: EditShopListUseCase,
+    private val changeEnabledUseCase: UpdateShopListEnabledUseCase,
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     private val getCurrentListIdUseCase: GetCurrentListIdUseCase
 ) : ViewModel() {
@@ -105,7 +105,7 @@ class ListSetViewModel @Inject constructor(
     fun changeEnableState(shopList: ShopList) {
         viewModelScope.launch {
             val newItem = shopList.copy(enabled = !shopList.enabled)
-            editShopListUseCase(newItem)
+            changeEnabledUseCase(newItem)
         }
     }
 }
