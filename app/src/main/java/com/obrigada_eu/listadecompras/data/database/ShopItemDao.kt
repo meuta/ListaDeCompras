@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.obrigada_eu.listadecompras.data.model.ItemOrder
 import com.obrigada_eu.listadecompras.data.model.ShopItemDbModel
 import kotlinx.coroutines.flow.Flow
 
@@ -32,8 +31,5 @@ interface ShopItemDao {
 
     @Update(entity = ShopItemDbModel::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateList(shopListBbModel: List<ShopItemDbModel>)
-
-    @Update(entity = ShopItemDbModel::class)
-    suspend fun updateItemOrder(order: ItemOrder)
 
 }

@@ -12,4 +12,6 @@
     <string name="save_name">Save Name</string>
     <string name="save_as_text_file">Save as text file</string>
     <string name="load_text_file">Load file</string>
+    <string name="snack_bar_undo_delete_item_text">Item deleted</string>
+    <string name="undo">UNDO</string>
 </resources>

@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ]
-    )
+)
 data class ShopItemDbModel(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "shop_item_id")
@@ -27,11 +27,4 @@ data class ShopItemDbModel(
     var position: Int = -1,
     @ColumnInfo(name = "shop_list_id")
     val shopListId: Int
-)
-
-data class ItemOrder (
-    @ColumnInfo(name = "shop_item_id")
-    val id: Int,
-    @ColumnInfo(name = "shop_item_order")
-    var position: Int
 )

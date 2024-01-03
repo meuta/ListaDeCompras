@@ -11,6 +11,7 @@ import com.obrigada_eu.listadecompras.domain.shop_item.DragShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.EditShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.GetShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
+import com.obrigada_eu.listadecompras.domain.shop_item.UndoDeleteUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.ExportListToTxtUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
@@ -37,7 +38,8 @@ class ShopListViewModel @Inject constructor(
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     getCurrentListIdUseCase: GetCurrentListIdUseCase,
     private val exportListToTxtUseCase: ExportListToTxtUseCase,
-    private val loadTxtListUseCase: LoadTxtListUseCase
+    private val loadTxtListUseCase: LoadTxtListUseCase,
+    private val undoDeleteUseCase: UndoDeleteUseCase,
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -58,6 +60,7 @@ class ShopListViewModel @Inject constructor(
         get() = _errorInputName
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
+
 
 
     fun updateShopListIdState(listId: Int) {
@@ -145,6 +148,12 @@ class ShopListViewModel @Inject constructor(
     fun loadTxtList(listName: String) {
         scope.launch {
             loadTxtListUseCase(listName)
+        }
+    }
+
+    fun undoDelete() {
+        scope.launch {
+            undoDeleteUseCase()
         }
     }
 }

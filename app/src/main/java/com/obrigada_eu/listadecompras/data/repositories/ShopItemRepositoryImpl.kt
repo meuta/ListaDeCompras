@@ -1,7 +1,6 @@
 package com.obrigada_eu.listadecompras.data.repositories
 
 import android.util.Log
-import com.obrigada_eu.listadecompras.data.model.ItemOrder
 import com.obrigada_eu.listadecompras.data.model.ShopItemDbModel
 import com.obrigada_eu.listadecompras.data.mapper.ShopListMapper
 import com.obrigada_eu.listadecompras.data.database.ShopItemDao
@@ -21,7 +20,8 @@ class ShopItemRepositoryImpl @Inject constructor(
 
 
     private lateinit var shopListDbModel: MutableList<ShopItemDbModel>
-
+    private var recentlyDeletedShopItem: ShopItem? = null
+    private var recentlyDeletedShopItemPosition: Int? = null
 
     override fun getShopList(listId: Int): Flow<List<ShopItem>> {
         return shopItemDao.getShopList(listId).map {
@@ -46,13 +46,21 @@ class ShopItemRepositoryImpl @Inject constructor(
 
     override suspend fun deleteShopItem(shopItem: ShopItem) {
         val itemIndex = shopListDbModel.indexOfFirst { it.id == shopItem.id }
-        shopListDbModel.removeAt(itemIndex)
+
+        recentlyDeletedShopItem = shopItem
+        recentlyDeletedShopItemPosition = itemIndex
+
         shopItemDao.deleteShopItem(shopItem.id)
-        shopListDbModel.drop(itemIndex).forEach {
-            it.position--
-            shopItemDao.updateItemOrder(ItemOrder(it.id, it.position))
-        }
+
         Log.d("deleteShopItem", " list = ${shopListDbModel.map { it.id }}")
+    }
+
+    override suspend fun undoDelete() {
+        recentlyDeletedShopItemPosition?.let {
+            recentlyDeletedShopItem?.let { it1 ->
+                shopItemDao.addShopItem(mapper.mapShopItemEntityToDbModel(it1).copy(position = it))
+            }
+        }
     }
 
     override suspend fun getShopItem(itemId: Int): ShopItem? {
@@ -63,7 +71,7 @@ class ShopItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun dragShopItem(from: Int, to: Int) {
-        shopListDbModel[from].position = to
+        shopListDbModel[from].position = shopListDbModel[to].position
         if (from < to) {
             shopListDbModel
                 .slice(to downTo from + 1)
