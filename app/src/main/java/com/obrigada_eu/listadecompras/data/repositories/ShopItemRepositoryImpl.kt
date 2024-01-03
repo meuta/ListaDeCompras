@@ -20,8 +20,7 @@ class ShopItemRepositoryImpl @Inject constructor(
 
 
     private lateinit var shopListDbModel: MutableList<ShopItemDbModel>
-    private var recentlyDeletedShopItem: ShopItem? = null
-    private var recentlyDeletedShopItemPosition: Int? = null
+    private var recentlyDeletedShopItemDbModel: ShopItemDbModel? = null
 
     override fun getShopList(listId: Int): Flow<List<ShopItem>> {
         return shopItemDao.getShopList(listId).map {
@@ -45,10 +44,7 @@ class ShopItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteShopItem(shopItem: ShopItem) {
-        val itemIndex = shopListDbModel.indexOfFirst { it.id == shopItem.id }
-
-        recentlyDeletedShopItem = shopItem
-        recentlyDeletedShopItemPosition = itemIndex
+        recentlyDeletedShopItemDbModel = shopItemDao.getShopItem(shopItem.id)
 
         shopItemDao.deleteShopItem(shopItem.id)
 
@@ -56,10 +52,8 @@ class ShopItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun undoDelete() {
-        recentlyDeletedShopItemPosition?.let {
-            recentlyDeletedShopItem?.let { it1 ->
-                shopItemDao.addShopItem(mapper.mapShopItemEntityToDbModel(it1).copy(position = it))
-            }
+        recentlyDeletedShopItemDbModel?.let {
+            shopItemDao.addShopItem(it)
         }
     }
 

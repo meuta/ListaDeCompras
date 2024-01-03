@@ -13,6 +13,7 @@ import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUs
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
+import com.obrigada_eu.listadecompras.domain.shop_list.UndoDeleteListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,8 @@ class ListSetViewModel @Inject constructor(
     private val deleteShopListUseCase: DeleteShopListUseCase,
     private val changeEnabledUseCase: UpdateShopListEnabledUseCase,
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
-    private val getCurrentListIdUseCase: GetCurrentListIdUseCase
+    private val getCurrentListIdUseCase: GetCurrentListIdUseCase,
+    private val undoDeleteListUseCase: UndoDeleteListUseCase
 ) : ViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -106,6 +108,12 @@ class ListSetViewModel @Inject constructor(
         viewModelScope.launch {
             val newItem = shopList.copy(enabled = !shopList.enabled)
             changeEnabledUseCase(newItem)
+        }
+    }
+
+    fun undoDelete() {
+        scope.launch {
+            undoDeleteListUseCase()
         }
     }
 }

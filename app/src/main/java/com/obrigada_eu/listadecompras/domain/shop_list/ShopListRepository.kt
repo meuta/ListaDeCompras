@@ -26,4 +26,6 @@ interface ShopListRepository {
     suspend fun exportListToTxt(listId: Int)
 
     suspend fun loadTxtList(listName: String)
+
+    suspend fun undoDelete()
 }

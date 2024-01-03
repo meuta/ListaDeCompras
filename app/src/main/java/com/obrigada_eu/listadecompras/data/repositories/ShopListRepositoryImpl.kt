@@ -15,6 +15,7 @@ import com.obrigada_eu.listadecompras.data.mapper.ShopListMapper
 import com.obrigada_eu.listadecompras.data.model.ListEnabled
 import com.obrigada_eu.listadecompras.data.model.ListName
 import com.obrigada_eu.listadecompras.data.model.ShopListDbModel
+import com.obrigada_eu.listadecompras.data.model.ShopListWithShopItemsDbModel
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopListRepository
@@ -47,6 +48,8 @@ class ShopListRepositoryImpl @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
+    private var recentlyDeletedShopListWithShopItemsDbModel: ShopListWithShopItemsDbModel? = null
+
     override suspend fun addShopList(shopListName: String) {
         val dbModel =
             ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = true)
@@ -65,7 +68,17 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteShopList(id: Int) {
+        recentlyDeletedShopListWithShopItemsDbModel = shopListDao.getShopListWithItems(id)
         shopListDao.deleteShopList(id)
+    }
+
+    override suspend fun undoDelete() {
+        recentlyDeletedShopListWithShopItemsDbModel?.let { it1 ->
+            shopListDao.insertShopList(it1.shopListDbModel)
+            it1.shopList.forEach {
+                shopItemDao.addShopItem(it)
+            }
+        }
     }
 
     override suspend fun updateListEnabled(shopList: ShopList) {
@@ -163,15 +176,15 @@ class ShopListRepositoryImpl @Inject constructor(
 
             shopListDao.getShopListId(newName)?.let { listId ->
                 list.withIndex().forEach {
-                    shopItemDao.addShopItem(mapper
-                        .mapShopItemEntityToDbModel(it.value)
-                        .copy(shopListId = listId, position = it.index)
+                    shopItemDao.addShopItem(
+                        mapper
+                            .mapShopItemEntityToDbModel(it.value)
+                            .copy(shopListId = listId, position = it.index)
                     )
                 }
             }
         }
     }
-
 
 
     private val shopListIdFlow: StateFlow<Int> = shopListPreferences.data

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
@@ -220,6 +221,8 @@ class ListSetFragment : Fragment() {
                 val list = listSetAdapter.currentList[viewHolder.bindingAdapterPosition]
                 if (direction == RIGHT) {
                     listSetViewModel.deleteShopList(list.id)
+                    showUndoSnackbar()
+
                     Log.d("onSwiped", "delete name = ${list.name}")
                 } else {
                     listSetViewModel.changeEnableState(list)
@@ -306,6 +309,22 @@ class ListSetFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(rvLists)
     }
 
+    private fun showUndoSnackbar() {
+        val view: View = binding.rvListSet
+        val snackbar: Snackbar = Snackbar.make(
+            view,
+            R.string.snack_bar_undo_delete_list_text,
+            Snackbar.LENGTH_LONG
+        )
+        snackbar
+            .setActionTextColor(requireActivity().getColor(R.color.white))
+            .setAction(R.string.undo) { undoDelete() }
+        snackbar.show()
+    }
+
+    private fun undoDelete() {
+        listSetViewModel.undoDelete()
+    }
 
     companion object {
         fun newInstance() = ListSetFragment()
