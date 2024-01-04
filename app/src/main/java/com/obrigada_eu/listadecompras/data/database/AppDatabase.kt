@@ -1,6 +1,7 @@
 package com.obrigada_eu.listadecompras.data.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -12,8 +13,11 @@ import com.obrigada_eu.listadecompras.data.model.ShopListDbModel
         ShopItemDbModel::class,
         ShopListDbModel::class
     ],
-    version = 11,
-    exportSchema = false
+    version = 12,
+    autoMigrations = [
+        AutoMigration (from = 11, to = 12)
+    ],
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
 

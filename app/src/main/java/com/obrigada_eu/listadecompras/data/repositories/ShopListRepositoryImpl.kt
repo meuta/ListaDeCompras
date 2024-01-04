@@ -50,18 +50,24 @@ class ShopListRepositoryImpl @Inject constructor(
 
     private var recentlyDeletedShopListWithShopItemsDbModel: ShopListWithShopItemsDbModel? = null
 
+    private lateinit var listSet: MutableList<ShopListDbModel>
+
     override suspend fun addShopList(shopListName: String) {
         val dbModel =
             ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = true)
+        dbModel.position = (shopListDao.getLargestOrder() ?: -1) + 1
         shopListDao.insertShopList(dbModel)
     }
 
 
     override fun getAllListsWithoutItems(): Flow<List<ShopList>> {
-        return shopListDao.getShopListsWithoutShopItems().map { list ->
-            list.map { mapper.mapShopListDbModelToEntity(it) }
+        return shopListDao.getShopListsWithoutShopItems().map { set ->
+            Log.d("getAllListsWithoutItems", "ListSet = ${set.map{it.name to it.position}}")
+            listSet = set.toMutableList()
+            mapper.mapListSetToEntity(set)
         }
     }
+
 
     override suspend fun getShopListName(listId: Int): String {
         return shopListDao.getShopListName(listId) ?: ""
@@ -85,6 +91,23 @@ class ShopListRepositoryImpl @Inject constructor(
         shopListDao.updateListEnabled(ListEnabled(shopList.id, shopList.enabled))
     }
 
+    override suspend fun dragShopList(from: Int, to: Int) {
+
+        val lastPosition = listSet[to].position
+        if (from < to) {
+            for (i in to downTo from + 1) {
+                listSet[i].position = listSet[i - 1].position
+            }
+        } else if (from > to) {
+            for (i in to until from) {
+                listSet[i].position = listSet[i + 1].position
+            }
+        }
+        listSet[from].position = lastPosition
+        listSet.sortBy { it.position }
+        shopListDao.updateListSet(listSet)
+    }
+
     override suspend fun updateListName(id: Int, name: String) {
         shopListDao.updateListName(ListName(id, name))
     }
@@ -92,7 +115,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getShopListWithItems(listId: Int): Flow<ShopListWithItems> {
         return shopListDao.getShopListWithItemsFlow(listId).map { list ->
-            Log.d("getShopListWithItems", "shopList = $list")
+            Log.d("getShopListWithItems", "shopList = ${list.shopList.map{it.name to it.position}}")
             val newList = list.shopList.sortedBy { it.position }.toMutableList()
             mapper.mapShopListWithItemsDbModelToShopList(list.copy(shopList = newList))
         }
@@ -217,9 +240,9 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     suspend fun fetchInitialPreferences() =
-        mapLoopPreferences(shopListPreferences.data.first().toPreferences())
+        mapShopListPreferences(shopListPreferences.data.first().toPreferences())
 
-    private fun mapLoopPreferences(preferences: Preferences): ShopListPreferences {
+    private fun mapShopListPreferences(preferences: Preferences): ShopListPreferences {
         val listId = preferences[KEY_LIST_ID] ?: ShopList.UNDEFINED_ID
 
         return ShopListPreferences(listId)

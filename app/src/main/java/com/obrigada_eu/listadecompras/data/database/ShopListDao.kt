@@ -13,7 +13,7 @@ interface ShopListDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertShopList(shopListDbModel: ShopListDbModel)
 
-    @Query("SELECT * FROM shop_lists")
+    @Query("SELECT * FROM shop_lists ORDER BY shop_list_order ASC")
     fun getShopListsWithoutShopItems(): Flow<List<ShopListDbModel>>
 
     @Query("SELECT shop_list_name FROM shop_lists WHERE id=:shopListId LIMIT 1")
@@ -29,13 +29,20 @@ interface ShopListDao {
     @Update(entity = ShopListDbModel::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateListName(name: ListName)
 
-   @Update(entity = ShopListDbModel::class, onConflict = OnConflictStrategy.REPLACE)
+    @Update(entity = ShopListDbModel::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateListEnabled(enabled: ListEnabled)
 
+    @Transaction
     @Query("SELECT * FROM shop_lists WHERE id=:shopListId")
     fun getShopListWithItemsFlow(shopListId: Int): Flow<ShopListWithShopItemsDbModel>
 
+    @Transaction
     @Query("SELECT * FROM shop_lists WHERE id=:shopListId")
     fun getShopListWithItems(shopListId: Int): ShopListWithShopItemsDbModel
 
+    @Query("SELECT MAX(shop_list_order) FROM shop_lists")
+    suspend fun getLargestOrder(): Int?
+
+    @Update(entity = ShopListDbModel::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateListSet(listSet: List<ShopListDbModel>)
 }

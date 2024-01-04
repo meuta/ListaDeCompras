@@ -14,7 +14,9 @@ data class ShopListDbModel(
     @ColumnInfo(name = "shop_list_name")
     val name: String,
     @ColumnInfo(name = "shop_list_enabled")
-    val enabled: Boolean
+    val enabled: Boolean,
+    @ColumnInfo(name = "shop_list_order", defaultValue = "-1")
+    var position: Int = -1,
 )
 
 data class ListName(

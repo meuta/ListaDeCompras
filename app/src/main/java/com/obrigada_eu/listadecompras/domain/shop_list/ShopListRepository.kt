@@ -28,4 +28,6 @@ interface ShopListRepository {
     suspend fun loadTxtList(listName: String)
 
     suspend fun undoDelete()
+
+    suspend fun dragShopList(from: Int, to: Int)
 }

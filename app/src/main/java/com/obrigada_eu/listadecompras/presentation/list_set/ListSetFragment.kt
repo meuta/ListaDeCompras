@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginTop
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
@@ -39,6 +40,11 @@ class ListSetFragment : Fragment() {
     private val binding: FragmentListSetBinding
         get() = _binding ?: throw RuntimeException("FragmentListSetBinding == null")
 
+    private lateinit var layoutManager: LinearLayoutManager
+
+    private var fromGlobal: Int? = null
+    private var toGlobal: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setOnBackPressedCallback()
@@ -61,7 +67,7 @@ class ListSetFragment : Fragment() {
                     if (cardNewList.visibility == View.VISIBLE) {
                         etListName.setText("")
                         cardNewList.visibility = View.GONE
-                    }else{
+                    } else {
                         requireActivity().finish()
                     }
                 }
@@ -80,7 +86,10 @@ class ListSetFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         setupRecyclerView()
-        setupClickListener()
+
+        layoutManager = binding.rvListSet.layoutManager as LinearLayoutManager
+
+
         addTextChangedListeners()
         setupButtons()
         observeViewModel()
@@ -89,10 +98,11 @@ class ListSetFragment : Fragment() {
     private fun observeViewModel() {
         listSetViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
             listSetAdapter.submitList(it)
+            Log.d("ListSetFragment", "listSet.observe = ${it.map { it.name}}")
         }
         listSetViewModel.shopListIdLD.observe(viewLifecycleOwner) {
             Log.d("ListSetFragment", "shopListIdLD.observe = $it")
-            if (it != ShopList.UNDEFINED_ID){
+            if (it != ShopList.UNDEFINED_ID) {
                 startShopListActivity()
             }
         }
@@ -169,11 +179,29 @@ class ListSetFragment : Fragment() {
                 LinearLayoutManager.VERTICAL,
                 false
             )
-
-        setupSwipeListener(this)
+            setupScrollController()
+            setupSwipeAndDragListener(this)
+            setupClickListener()
         }
     }
 
+    private fun setupScrollController() {
+        listSetAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+
+                val firstPos = layoutManager.findFirstCompletelyVisibleItemPosition()
+                if (firstPos >= 0) {
+                    val firstView = layoutManager.findViewByPosition(firstPos)
+                    firstView?.let {
+                        val offsetTop = layoutManager.getDecoratedTop(it) -
+                                layoutManager.getTopDecorationHeight(it) -
+                                it.marginTop
+                        layoutManager.scrollToPositionWithOffset(firstPos, offsetTop)
+                    }
+                }
+            }
+        })
+    }
 
     private fun setupClickListener() {
         listSetAdapter.onListItemClickListener = {
@@ -182,14 +210,17 @@ class ListSetFragment : Fragment() {
     }
 
     private fun startShopListActivity() {
-        Log.d("ListSetFragment", "startShopListActivity listId = ${listSetViewModel.shopListIdLD.value}")
+        Log.d(
+            "ListSetFragment",
+            "startShopListActivity listId = ${listSetViewModel.shopListIdLD.value}"
+        )
         val intent = ShopListActivity.newIntent(this.requireContext())
         startActivity(intent)
     }
 
-    private fun setupSwipeListener(rvLists: RecyclerView) {
+    private fun setupSwipeAndDragListener(rvLists: RecyclerView) {
         val callback = object : SimpleCallback(
-            0, LEFT or RIGHT
+            UP or DOWN, LEFT or RIGHT
         ) {
             var context = requireContext()
 
@@ -209,8 +240,56 @@ class ListSetFragment : Fragment() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                TODO("Not yet implemented")
+
+                //the position from where item has been moved
+                val from = viewHolder.bindingAdapterPosition
+
+                //the position where the item is moved
+                val to = target.bindingAdapterPosition
+                toGlobal = to
+
+                val list = listSetAdapter.currentList.toMutableList()
+                val item = list[from]
+
+                list.removeAt(from)
+                list.add(to, item)
+
+                listSetAdapter.submitList(list)
+
+                return true
             }
+
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+                when (actionState) {
+                    ACTION_STATE_DRAG -> {
+                        viewHolder?.itemView?.alpha = 0.7f
+                        fromGlobal = viewHolder?.bindingAdapterPosition
+                    }
+
+                    ACTION_STATE_IDLE -> {
+                        fromGlobal?.let { from ->
+                            toGlobal?.let { to ->
+                                if (fromGlobal != toGlobal) {
+                                    listSetViewModel.dragShopList(from, to)
+                                    fromGlobal = null
+                                    toGlobal = null
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun clearView(
+                recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder
+            ) {
+                super.clearView(recyclerView, viewHolder)
+                viewHolder.itemView.alpha = 1.0f
+            }
+
+
 
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
                 return 0.7f
@@ -280,7 +359,12 @@ class ListSetFragment : Fragment() {
                     val deleteIconBottom = deleteIconTop + intrinsicHeightDelete
 
                     // Draw the delete icon
-                    deleteIcon!!.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom)
+                    deleteIcon!!.setBounds(
+                        deleteIconLeft,
+                        deleteIconTop,
+                        deleteIconRight,
+                        deleteIconBottom
+                    )
                     deleteIcon.draw(c)
                 }
 
@@ -308,6 +392,8 @@ class ListSetFragment : Fragment() {
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(rvLists)
     }
+
+
 
     private fun showUndoSnackbar() {
         val view: View = binding.rvListSet

@@ -1,0 +1,115 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 12,
+    "identityHash": "a2706d1e071d3e32c95ab2fda9c52a4b",
+    "entities": [
+      {
+        "tableName": "shop_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`shop_item_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `count` REAL NOT NULL, `enabled` INTEGER NOT NULL, `shop_item_order` INTEGER NOT NULL, `shop_list_id` INTEGER NOT NULL, FOREIGN KEY(`shop_list_id`) REFERENCES `shop_lists`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "shop_item_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "count",
+            "columnName": "count",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "enabled",
+            "columnName": "enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "shop_item_order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shopListId",
+            "columnName": "shop_list_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "shop_item_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "shop_lists",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "shop_list_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "shop_lists",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `shop_list_name` TEXT NOT NULL, `shop_list_enabled` INTEGER NOT NULL, `shop_list_order` INTEGER NOT NULL DEFAULT -1)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "shop_list_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "enabled",
+            "columnName": "shop_list_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "shop_list_order",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "-1"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a2706d1e071d3e32c95ab2fda9c52a4b')"
+    ]
+  }
+}

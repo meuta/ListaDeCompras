@@ -101,7 +101,7 @@ class ShopListFragment: Fragment()  {
 
         shopListViewModel.shopList.observe(viewLifecycleOwner) {
             shopListAdapter.submitList(it)
-            Log.d("ShopListFragment", "shopList.observe = ${it.map { it.name to it.shopListId }}")
+            Log.d("ShopListFragment", "shopList.observe = ${it.map { it.name}}")
         }
 
     }
@@ -135,13 +135,13 @@ class ShopListFragment: Fragment()  {
                 LinearLayoutManager.VERTICAL,
                 false
             )
+
+            setupScrollController()
+            setupSwipeAndDragListener(this)
+            setupClickListener()
         }
 
-        setupScrollController()
 
-        setupClickListener()
-
-        setupSwipeAndDragListener(binding.rvShopList)
     }
 
     private fun setupScrollController() {
@@ -179,9 +179,6 @@ class ShopListFragment: Fragment()  {
             private val clearPaint =
                 Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
-            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                return 0.7f
-            }
 
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -236,6 +233,10 @@ class ShopListFragment: Fragment()  {
                 viewHolder.itemView.alpha = 1.0f
             }
 
+
+            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                return 0.7f
+            }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.bindingAdapterPosition]

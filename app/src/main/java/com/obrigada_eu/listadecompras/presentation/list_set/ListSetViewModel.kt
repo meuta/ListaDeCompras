@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_list.AddShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.DeleteShopListUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.DragShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListEnabledUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
@@ -26,6 +27,7 @@ class ListSetViewModel @Inject constructor(
     private val addShopListUseCase: AddShopListUseCase,
     private val deleteShopListUseCase: DeleteShopListUseCase,
     private val changeEnabledUseCase: UpdateShopListEnabledUseCase,
+    private val dragShopListUseCase: DragShopListUseCase,
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     private val getCurrentListIdUseCase: GetCurrentListIdUseCase,
     private val undoDeleteListUseCase: UndoDeleteListUseCase
@@ -104,6 +106,12 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
+    fun undoDelete() {
+        scope.launch {
+            undoDeleteListUseCase()
+        }
+    }
+
     fun changeEnableState(shopList: ShopList) {
         viewModelScope.launch {
             val newItem = shopList.copy(enabled = !shopList.enabled)
@@ -111,9 +119,10 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
-    fun undoDelete() {
-        scope.launch {
-            undoDeleteListUseCase()
+
+    fun dragShopList(from: Int, to: Int) {
+        viewModelScope.launch {
+            dragShopListUseCase(from, to)
         }
     }
 }
