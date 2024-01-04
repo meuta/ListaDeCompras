@@ -65,18 +65,19 @@ class ShopItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun dragShopItem(from: Int, to: Int) {
-        shopListDbModel[from].position = shopListDbModel[to].position
+
+        val lastPosition = shopListDbModel[to].position
         if (from < to) {
-            shopListDbModel
-                .slice(to downTo from + 1)
-                .forEach { it.position-- }
+            for (i in to downTo from + 1) {
+                shopListDbModel[i].position = shopListDbModel[i - 1].position
+            }
         } else if (from > to) {
-            shopListDbModel
-                .slice(to until from)
-                .forEach { it.position++ }
+            for (i in to until from) {
+                shopListDbModel[i].position = shopListDbModel[i + 1].position
+            }
         }
+        shopListDbModel[from].position = lastPosition
         shopListDbModel.sortBy { it.position }
         shopItemDao.updateList(shopListDbModel)
     }
-
 }
