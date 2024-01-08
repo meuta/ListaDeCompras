@@ -39,12 +39,15 @@ abstract class AppDatabase : RoomDatabase() {
                     c.use {
                         createNewShopListsTable(db)
                         if (c.moveToFirst()) {
+                            var position = -1
+                            val cv = ContentValues()
                             while (!c.isAfterLast) {
-                                val cv = ContentValues()
+                                position++
+                                cv.clear()
                                 cv.put("id", c.getInt(c.getColumnIndex("id")))
                                 cv.put("shop_list_name", c.getString(c.getColumnIndex("shop_list_name")))
                                 cv.put("shop_list_enabled", c.getInt(c.getColumnIndex("shop_list_enabled")))
-                                cv.put("shop_list_order", c.getInt(c.getColumnIndex("id")))
+                                cv.put("shop_list_order", position)
                                 db.insert("shop_lists_new", 0, cv)
                                 c.moveToNext()
                             }
