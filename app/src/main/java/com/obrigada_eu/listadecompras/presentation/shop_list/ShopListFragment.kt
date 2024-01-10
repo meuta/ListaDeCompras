@@ -1,9 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation.shop_list
 
 import android.content.Context
-import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,14 +26,12 @@ class ShopListFragment : SwipeSwapListFragment<
 
     override lateinit var fragmentListAdapter: SwipeSwapAdapter<ShopItem>
 
-    override lateinit var layoutManager: LinearLayoutManager
+    override lateinit var listLayoutManager: LinearLayoutManager
 
     private var listId = ShopList.UNDEFINED_ID
 
 
     override fun onAttach(context: Context) {
-
-
         super.onAttach(context)
         if (context is OnFabClickListener && context is OnListItemClickListener) {
             onFabClickListener = context
@@ -43,15 +39,6 @@ class ShopListFragment : SwipeSwapListFragment<
         } else {
             throw java.lang.RuntimeException("Activity must implement OnEditingFinishedListener")
         }
-    }
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.viewModel = fragmentListViewModel
-
-        layoutManager = binding.rvShopList.layoutManager as LinearLayoutManager
     }
 
     override fun observeViewModel() {

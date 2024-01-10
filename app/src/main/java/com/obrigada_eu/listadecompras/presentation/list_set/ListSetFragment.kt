@@ -29,15 +29,11 @@ class ListSetFragment : SwipeSwapListFragment<
 
     override lateinit var fragmentListAdapter: SwipeSwapAdapter<ShopList>
 
-    override lateinit var layoutManager: LinearLayoutManager
+    override lateinit var listLayoutManager: LinearLayoutManager
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.viewModel = fragmentListViewModel
-
-        layoutManager = binding.rvListSet.layoutManager as LinearLayoutManager
 
         addTextChangedListeners()
     }
