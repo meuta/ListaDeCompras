@@ -3,7 +3,6 @@ package com.obrigada_eu.listadecompras.presentation.shop_list
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_item.DeleteShopItemUseCase
@@ -19,6 +18,7 @@ import com.obrigada_eu.listadecompras.domain.shop_list.GetShopListNameUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.LoadTxtListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListNameUseCase
+import com.obrigada_eu.listadecompras.presentation.SwipeSwapViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +40,7 @@ class ShopListViewModel @Inject constructor(
     private val exportListToTxtUseCase: ExportListToTxtUseCase,
     private val loadTxtListUseCase: LoadTxtListUseCase,
     private val undoDeleteItemUseCase: UndoDeleteItemUseCase,
-) : ViewModel() {
+) : SwipeSwapViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
