@@ -32,32 +32,6 @@ class ListSetFragment : SwipeSwapListFragment<
     override lateinit var layoutManager: LinearLayoutManager
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setOnBackPressedCallback()
-    }
-
-    private fun setOnBackPressedCallback() {
-        val callback = object : OnBackPressedCallback(
-            true // default to enabled
-        ) {
-            override fun handleOnBackPressed() {
-                with(binding) {
-                    if (cardNewList.visibility == View.VISIBLE) {
-                        etListName.setText("")
-                        cardNewList.visibility = View.GONE
-                    } else {
-                        requireActivity().finish()
-                    }
-                }
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            this,
-            callback
-        )
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -66,11 +40,9 @@ class ListSetFragment : SwipeSwapListFragment<
         layoutManager = binding.rvListSet.layoutManager as LinearLayoutManager
 
         addTextChangedListeners()
-        setupButtons()
-        observeViewModel()
     }
 
-    private fun observeViewModel() {
+    override fun observeViewModel() {
         fragmentListViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
             fragmentListAdapter.submitList(it)
             Log.d("ListSetFragment", "listSet.observe = ${it.map { it.name}}")
@@ -83,7 +55,7 @@ class ListSetFragment : SwipeSwapListFragment<
         }
     }
 
-    private fun setupButtons() {
+    override fun setupButtons() {
         with(binding) {
             buttonAddShopList.setOnClickListener {
                 if (cardNewList.visibility == View.GONE) {
@@ -135,11 +107,7 @@ class ListSetFragment : SwipeSwapListFragment<
         }
     }
 
-    override fun setupClickListener() {
-        fragmentListAdapter.onItemClickListener = {
-            fragmentListViewModel.openShopList(it.id)
-        }
-    }
+
 
     private fun startShopListActivity() {
         Log.d(
@@ -155,6 +123,12 @@ class ListSetFragment : SwipeSwapListFragment<
         return ListSetAdapter()
     }
 
+    override fun setupClickListener() {
+        fragmentListAdapter.onItemClickListener = {
+            fragmentListViewModel.openShopList(it.id)
+        }
+    }
+
     override fun changeEnableState(item: ShopList) {
         fragmentListViewModel.changeEnableState(item)
     }
@@ -163,13 +137,35 @@ class ListSetFragment : SwipeSwapListFragment<
         fragmentListViewModel.deleteShopList(item.id)
     }
 
+    override fun undoDelete() {
+        fragmentListViewModel.undoDelete()
+    }
+
     override fun dragListItem(from: Int, to: Int) {
         fragmentListViewModel.dragShopList(from, to)
     }
 
-    override fun undoDelete() {
-        fragmentListViewModel.undoDelete()
+    override fun setOnBackPressedCallback() {
+        val callback = object : OnBackPressedCallback(
+            true // default to enabled
+        ) {
+            override fun handleOnBackPressed() {
+                with(binding) {
+                    if (cardNewList.visibility == View.VISIBLE) {
+                        etListName.setText("")
+                        cardNewList.visibility = View.GONE
+                    } else {
+                        requireActivity().finish()
+                    }
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            callback
+        )
     }
+
 
     companion object {
         fun newInstance() = ListSetFragment()

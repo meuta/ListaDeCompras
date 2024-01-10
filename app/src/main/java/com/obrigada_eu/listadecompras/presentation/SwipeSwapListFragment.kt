@@ -46,6 +46,13 @@ abstract class SwipeSwapListFragment<
     private var fromGlobal: Int? = null
     private var toGlobal: Int? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setOnBackPressedCallback()
+    }
+
+    abstract fun setOnBackPressedCallback()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,8 +72,13 @@ abstract class SwipeSwapListFragment<
         binding.lifecycleOwner = viewLifecycleOwner
         fragmentListAdapter = createAdapter(requireContext())
         setupRecyclerView()
-
+        setupButtons()
+        observeViewModel()
     }
+
+    abstract fun setupButtons()
+
+    abstract fun observeViewModel()
 
     private fun setupRecyclerView(){
         val recyclerView = when(binding) {

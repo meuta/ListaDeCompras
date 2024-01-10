@@ -45,12 +45,6 @@ class ShopListFragment : SwipeSwapListFragment<
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setOnBackPressedCallback()
-    }
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,14 +52,9 @@ class ShopListFragment : SwipeSwapListFragment<
         binding.viewModel = fragmentListViewModel
 
         layoutManager = binding.rvShopList.layoutManager as LinearLayoutManager
-
-        setupButtons()
-
-        observeViewModel()
     }
 
-    private fun observeViewModel() {
-
+    override fun observeViewModel() {
         fragmentListViewModel.shopListIdLD.observe(viewLifecycleOwner){
             Log.d("ShopListFragment", "shopListIdLD.observe = $it")
             listId = it
@@ -78,10 +67,8 @@ class ShopListFragment : SwipeSwapListFragment<
 
     }
 
-
-    private fun setupButtons() {
+    override fun setupButtons() {
         with(binding) {
-
             buttonAddShopItem.setOnClickListener {
                 onFabClickListener.onFabClick(listId)
             }
@@ -92,6 +79,12 @@ class ShopListFragment : SwipeSwapListFragment<
         return ShopListAdapter()
     }
 
+    override fun setupClickListener() {
+        fragmentListAdapter.onItemClickListener = {
+            onListItemClickListener.onListItemClick(it.id)
+        }
+    }
+
     override fun changeEnableState(item: ShopItem) {
         fragmentListViewModel.changeEnableState(item)
     }
@@ -100,19 +93,14 @@ class ShopListFragment : SwipeSwapListFragment<
         fragmentListViewModel.deleteShopItem(item)
     }
 
-    override fun dragListItem(from: Int, to: Int) {
-        fragmentListViewModel.dragShopItem(from, to)
-    }
-
     override fun undoDelete() {
         fragmentListViewModel.undoDelete()
     }
 
-    override fun setupClickListener() {
-        fragmentListAdapter.onItemClickListener = {
-            onListItemClickListener.onListItemClick(it.id)
-        }
+    override fun dragListItem(from: Int, to: Int) {
+        fragmentListViewModel.dragShopItem(from, to)
     }
+
 
 
     interface OnListItemClickListener {
@@ -139,7 +127,7 @@ class ShopListFragment : SwipeSwapListFragment<
         }
     }
 
-    private fun setOnBackPressedCallback() {
+    override fun setOnBackPressedCallback() {
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
