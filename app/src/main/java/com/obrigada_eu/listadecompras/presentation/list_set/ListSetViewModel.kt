@@ -3,18 +3,18 @@ package com.obrigada_eu.listadecompras.presentation.list_set
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_list.AddShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.DeleteShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.DragShopListUseCase
-import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListEnabledUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.domain.shop_list.UndoDeleteListUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListEnabledUseCase
+import com.obrigada_eu.listadecompras.presentation.SwipeSwapViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +31,7 @@ class ListSetViewModel @Inject constructor(
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     private val getCurrentListIdUseCase: GetCurrentListIdUseCase,
     private val undoDeleteListUseCase: UndoDeleteListUseCase
-) : ViewModel() {
+) : SwipeSwapViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 

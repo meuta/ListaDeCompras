@@ -29,7 +29,7 @@ abstract class SwipeSwapListFragment<
     private val inflateMethod : (LayoutInflater, ViewGroup?, Boolean) -> VB
 ) : Fragment(){
 
-    protected abstract val fragmentViewModel: VM
+    protected abstract val fragmentListViewModel: VM
 
     protected abstract var fragmentListAdapter: SwipeSwapAdapter<T>
 
@@ -171,7 +171,7 @@ abstract class SwipeSwapListFragment<
                         fromGlobal?.let { from ->
                             toGlobal?.let { to ->
                                 if (fromGlobal != toGlobal) {
-                                    dragShopItem(from, to)
+                                    dragListItem(from, to)
                                     fromGlobal = null
                                     toGlobal = null
                                 }
@@ -196,7 +196,7 @@ abstract class SwipeSwapListFragment<
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = fragmentListAdapter.currentList[viewHolder.bindingAdapterPosition]
                 if (direction == ItemTouchHelper.RIGHT) {
-                    deleteShopItem(item)
+                    deleteListItem(item)
                     showUndoSnackbar()
 
                 } else {
@@ -309,9 +309,9 @@ abstract class SwipeSwapListFragment<
 
     abstract fun changeEnableState(item: T)
 
-    abstract fun deleteShopItem(item: T)
+    abstract fun deleteListItem(item: T)
 
-    abstract fun dragShopItem(from: Int, to: Int)
+    abstract fun dragListItem(from: Int, to: Int)
 
 
     override fun onDestroyView() {
