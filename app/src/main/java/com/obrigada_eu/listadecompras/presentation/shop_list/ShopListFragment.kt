@@ -21,8 +21,8 @@ class ShopListFragment : SwipeSwapListFragment<
 
     override val fragmentListViewModel: ShopListViewModel by viewModels()
 
-    private lateinit var onFabClickListener: OnFabClickListener
-    private lateinit var onListItemClickListener: OnListItemClickListener
+    override lateinit var onFabClickListener: OnFabClickListener
+    override lateinit var onListItemClickListener: OnListItemClickListener
 
     override lateinit var fragmentListAdapter: SwipeSwapAdapter<ShopItem>
 
@@ -51,25 +51,19 @@ class ShopListFragment : SwipeSwapListFragment<
             fragmentListAdapter.submitList(it)
             Log.d("ShopListFragment", "shopList.observe = ${it.map { it.name}}")
         }
-
     }
 
     override fun setupButtons() {
         with(binding) {
-            buttonAddShopItem.setOnClickListener {
+            buttonAddItem.setOnClickListener {
                 onFabClickListener.onFabClick(listId)
             }
         }
     }
 
+
     override fun createAdapter(context: Context?): SwipeSwapAdapter<ShopItem> {
         return ShopListAdapter()
-    }
-
-    override fun setupClickListener() {
-        fragmentListAdapter.onItemClickListener = {
-            onListItemClickListener.onListItemClick(it.id)
-        }
     }
 
     override fun changeEnableState(item: ShopItem) {
@@ -86,16 +80,6 @@ class ShopListFragment : SwipeSwapListFragment<
 
     override fun dragListItem(from: Int, to: Int) {
         fragmentListViewModel.dragShopItem(from, to)
-    }
-
-
-
-    interface OnListItemClickListener {
-        fun onListItemClick(itemId: Int)
-    }
-
-    interface OnFabClickListener {
-        fun onFabClick(listId: Int)
     }
 
     private val callback = object : OnBackPressedCallback(

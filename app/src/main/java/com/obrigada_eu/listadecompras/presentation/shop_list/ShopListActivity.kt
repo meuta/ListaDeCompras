@@ -17,13 +17,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityShopListBinding
+import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemActivity
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener,
-    ShopListFragment.OnFabClickListener, ShopListFragment.OnListItemClickListener {
+    SwipeSwapListFragment.OnFabClickListener, SwipeSwapListFragment.OnListItemClickListener {
 
     private val shopListViewModel: ShopListViewModel by viewModels()
 
@@ -188,13 +189,15 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         }
     }
 
-    override fun onFabClick(listId: Int) {
-        if (isOnePaneMode()) {
-            val intent = ShopItemActivity.newIntentAddItem(this@ShopListActivity, listId)
-            startActivity(intent)
-        } else {
-            val fragment = ShopItemFragment.newInstanceAddItem(listId)
-            launchFragment(fragment)
+    override fun onFabClick(listId: Int?) {
+        listId?.let {
+            if (isOnePaneMode()) {
+                val intent = ShopItemActivity.newIntentAddItem(this@ShopListActivity, it)
+                startActivity(intent)
+            } else {
+                val fragment = ShopItemFragment.newInstanceAddItem(it)
+                launchFragment(fragment)
+            }
         }
     }
 

@@ -20,6 +20,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
 import com.obrigada_eu.listadecompras.databinding.FragmentShopListBinding
+import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
+import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.list_set.ListSetViewModel
 import com.obrigada_eu.listadecompras.presentation.shop_list.ShopListViewModel
 
@@ -36,6 +38,11 @@ abstract class SwipeSwapListFragment<
     protected abstract var fragmentListAdapter: SwipeSwapAdapter<T>
 
     protected abstract fun createAdapter(context: Context?): SwipeSwapAdapter<T>
+
+
+    protected abstract var onFabClickListener: OnFabClickListener
+    protected abstract var onListItemClickListener: OnListItemClickListener
+
 
     private var _binding: VB? = null
     val binding: VB
@@ -70,9 +77,13 @@ abstract class SwipeSwapListFragment<
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        when(binding) {
-            is FragmentShopListBinding -> (binding as FragmentShopListBinding).viewModel = fragmentListViewModel as ShopListViewModel
-            is FragmentListSetBinding -> (binding as FragmentListSetBinding).viewModel = fragmentListViewModel as ListSetViewModel
+        when (binding) {
+            is FragmentShopListBinding -> (binding as FragmentShopListBinding).viewModel =
+                fragmentListViewModel as ShopListViewModel
+
+            is FragmentListSetBinding -> (binding as FragmentListSetBinding).viewModel =
+                fragmentListViewModel as ListSetViewModel
+
             else -> throw RuntimeException("Unknown binding: $binding")
         }
         binding.lifecycleOwner = viewLifecycleOwner
@@ -115,9 +126,6 @@ abstract class SwipeSwapListFragment<
             setupClickListener()
         }
     }
-
-    abstract fun setupClickListener()
-
 
     private fun setupScrollController() {
         fragmentListAdapter.registerAdapterDataObserver(object :
@@ -332,14 +340,34 @@ abstract class SwipeSwapListFragment<
         }
     }
 
-    abstract fun undoDelete()
+
+    private fun setupClickListener() {
+        fragmentListAdapter.onItemClickListener = {
+            val id = when (it) {
+                is ShopItem -> (it as ShopItem).id
+                is ShopList -> (it as ShopList).id
+
+                else -> throw RuntimeException("Unknown binding: $binding")
+            }
+            onListItemClickListener.onListItemClick(id)
+        }
+    }
 
     abstract fun changeEnableState(item: T)
 
     abstract fun deleteListItem(item: T)
 
+    abstract fun undoDelete()
+
     abstract fun dragListItem(from: Int, to: Int)
 
+    interface OnListItemClickListener {
+        fun onListItemClick(itemId: Int)
+    }
+
+    interface OnFabClickListener {
+        fun onFabClick(listId: Int? = null)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
