@@ -38,14 +38,10 @@ class ListSetFragment(
 
     override lateinit var listLayoutManager: LinearLayoutManager
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        onFabClickListener = this
-        onListItemClickListener = this
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onFabClickListener = this
+        onListItemClickListener = this
         addTextChangedListeners()
     }
 

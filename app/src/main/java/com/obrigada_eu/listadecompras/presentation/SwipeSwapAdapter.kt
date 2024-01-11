@@ -20,8 +20,8 @@ abstract class SwipeSwapAdapter<T>(diff: DiffUtil.ItemCallback<T>) :
 
     var onItemClickListener: ((T) -> Unit)? = null
 
-    abstract fun getLayoutEnabled() : Int
-    abstract fun getLayoutDisabled() : Int
+    abstract fun getLayoutEnabled(): Int
+    abstract fun getLayoutDisabled(): Int
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         val layout = when (viewType) {
@@ -49,30 +49,18 @@ abstract class SwipeSwapAdapter<T>(diff: DiffUtil.ItemCallback<T>) :
         }
 
         when (binding) {
-            is ItemListDisabledBinding -> {
-                binding.listItem = item as ShopList
-            }
-
-            is ItemListEnabledBinding -> {
-                binding.listItem = item as ShopList
-            }
-
-            is ItemShopDisabledBinding -> {
-                binding.shopItem = item as ShopItem
-            }
-
-            is ItemShopEnabledBinding -> {
-                binding.shopItem = item as ShopItem
-            }
-
+            is ItemListDisabledBinding -> binding.listItem = item as ShopList
+            is ItemListEnabledBinding -> binding.listItem = item as ShopList
+            is ItemShopDisabledBinding -> binding.shopItem = item as ShopItem
+            is ItemShopEnabledBinding -> binding.shopItem = item as ShopItem
         }
     }
 
 
     override fun getItemViewType(position: Int): Int {
-        return when (getItem(position)) {
-            is ShopItem -> if ((getItem(position) as ShopItem).enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
-            is ShopList -> if ((getItem(position) as ShopList).enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
+        return when (val item = getItem(position)) {
+            is ShopItem -> if (item.enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
+            is ShopList -> if (item.enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
             else -> throw RuntimeException("Unknown item type")
         }.also { Log.d("getItemViewType", "type = $it") }
     }

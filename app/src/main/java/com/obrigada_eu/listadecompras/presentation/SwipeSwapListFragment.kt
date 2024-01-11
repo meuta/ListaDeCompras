@@ -77,14 +77,12 @@ abstract class SwipeSwapListFragment<
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        when (binding) {
-            is FragmentShopListBinding -> (binding as FragmentShopListBinding).viewModel =
-                fragmentListViewModel as ShopListViewModel
 
-            is FragmentListSetBinding -> (binding as FragmentListSetBinding).viewModel =
-                fragmentListViewModel as ListSetViewModel
+        when (val b = binding) {
+            is FragmentShopListBinding -> b.viewModel = fragmentListViewModel as ShopListViewModel
+            is FragmentListSetBinding -> b.viewModel = fragmentListViewModel as ListSetViewModel
 
-            else -> throw RuntimeException("Unknown binding: $binding")
+            else -> throw RuntimeException("Unknown binding: $b")
         }
         binding.lifecycleOwner = viewLifecycleOwner
         fragmentListAdapter = createAdapter(requireContext())
@@ -98,10 +96,10 @@ abstract class SwipeSwapListFragment<
     abstract fun observeViewModel()
 
     private fun setupRecyclerView() {
-        val recyclerView = when (binding) {
-            is FragmentShopListBinding -> (binding as FragmentShopListBinding).rvShopList
-            is FragmentListSetBinding -> (binding as FragmentListSetBinding).rvListSet
-            else -> throw RuntimeException("Unknown binding: $binding")
+        val recyclerView = when (val b = binding) {
+            is FragmentShopListBinding -> b.rvShopList
+            is FragmentListSetBinding -> b.rvListSet
+            else -> throw RuntimeException("Unknown binding: $b")
         }
 
         with(recyclerView) {
@@ -319,35 +317,29 @@ abstract class SwipeSwapListFragment<
     }
 
     private fun showUndoSnackbar() {
-        var stringResId: Int?
-        val view = when (binding) {
-            is FragmentShopListBinding -> (binding as FragmentShopListBinding).rvShopList.also {
-                stringResId = R.string.snack_bar_undo_delete_item_text
-            }
 
-            is FragmentListSetBinding -> (binding as FragmentListSetBinding).rvListSet.also {
-                stringResId = R.string.snack_bar_undo_delete_list_text
-            }
+        val viewAndString =  when (val b = binding) {
+            is FragmentShopListBinding -> b.rvShopList to R.string.snack_bar_undo_delete_item_text
+            is FragmentListSetBinding -> b.rvListSet to R.string.snack_bar_undo_delete_list_text
 
             else -> throw RuntimeException("Unknown binding: $binding")
         }
-        stringResId?.let {
-            val snackbar: Snackbar = Snackbar.make(view, it, Snackbar.LENGTH_LONG)
-            snackbar
-                .setActionTextColor(requireActivity().getColor(R.color.white))
-                .setAction(R.string.undo) { undoDelete() }
-            snackbar.show()
-        }
+
+        val snackbar: Snackbar = Snackbar.make(viewAndString.first, viewAndString.second, Snackbar.LENGTH_LONG)
+        snackbar
+            .setActionTextColor(requireActivity().getColor(R.color.white))
+            .setAction(R.string.undo) { undoDelete() }
+        snackbar.show()
     }
 
 
     private fun setupClickListener() {
         fragmentListAdapter.onItemClickListener = {
-            val id = when (it) {
-                is ShopItem -> (it as ShopItem).id
-                is ShopList -> (it as ShopList).id
+            val id = when (val item = it) {
+                is ShopItem -> item.id
+                is ShopList -> item.id
 
-                else -> throw RuntimeException("Unknown binding: $binding")
+                else -> throw RuntimeException("Unknown item type: $item")
             }
             onListItemClickListener.onListItemClick(id)
         }
