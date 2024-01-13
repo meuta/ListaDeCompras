@@ -1,7 +1,11 @@
 package com.obrigada_eu.listadecompras.data.repositories
 
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -29,11 +33,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
-import java.io.FileWriter
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -127,13 +131,12 @@ class ShopListRepositoryImpl @Inject constructor(
         val shopListWithItems = shopListDao.getShopListWithItems(listId)
 
         val listName = shopListWithItems.shopListDbModel.name
-        val fileName = "$listName.txt"
 
         val list = shopListWithItems.shopList
         var content = "$listName\n\n"
         list.forEach {
             val row = String.format(
-                "%-4s %-30s %s",
+                "%-4s\t%-30s\t%s",
                 (if (it.enabled) "-" else "+"),
                 it.name,
                 it.count
@@ -142,26 +145,33 @@ class ShopListRepositoryImpl @Inject constructor(
         }
         content = content.dropLast(1)
 
-        val extDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath
+        saveFile(context, listName,  content,"txt")
+    }
 
-        try {
-            val file = File(extDir, fileName)
-
-            withContext(Dispatchers.IO) {
-                val writer = FileWriter(file)
-                writer.write(content)
-                writer.close()
+    @Throws(IOException::class)
+    private fun saveFile(context: Context, fileName: String, text: String, extension: String) {
+        val outputStream: OutputStream? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = ContentValues()
+            values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS)
+            val extVolumeUri: Uri = MediaStore.Files.getContentUri("external")
+            val fileUri: Uri? = context.contentResolver.insert(extVolumeUri, values)
+            context.contentResolver.openOutputStream(fileUri!!)
+        } else {
+            val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            val file = File(directory?.absolutePath, "$fileName.$extension")
+            if (!directory.isDirectory) {
+                directory.mkdir()
             }
-        } catch (e: Exception) {
-            println("An error occurred: ${e.message}")
+            FileOutputStream(file)
         }
 
-        Log.d(
-            "exportListToTxt", "fileName = $fileName\n" +
-                    "content:\n$content\n" +
-                    "extDir = $extDir"
-        )
+        val bytes = text.toByteArray()
+        outputStream?.write(bytes)
+        outputStream?.close()
     }
+
 
     override suspend fun loadTxtList(listName: String) {
         val fileName = "$listName.txt"

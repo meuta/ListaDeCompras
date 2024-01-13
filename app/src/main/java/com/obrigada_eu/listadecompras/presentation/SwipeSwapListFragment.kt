@@ -45,7 +45,7 @@ abstract class SwipeSwapListFragment<
 
 
     private var _binding: VB? = null
-    val binding: VB
+    protected val binding: VB
         get() = _binding ?: throw RuntimeException("ViewBinding == null")
 
 //    abstract fun T.initialize()

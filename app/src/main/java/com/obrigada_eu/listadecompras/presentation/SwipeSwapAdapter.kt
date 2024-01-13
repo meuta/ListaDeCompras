@@ -1,6 +1,5 @@
 package com.obrigada_eu.listadecompras.presentation
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -62,7 +61,7 @@ abstract class SwipeSwapAdapter<T>(diff: DiffUtil.ItemCallback<T>) :
             is ShopItem -> if (item.enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
             is ShopList -> if (item.enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
             else -> throw RuntimeException("Unknown item type")
-        }.also { Log.d("getItemViewType", "type = $it") }
+        }
     }
 
 
