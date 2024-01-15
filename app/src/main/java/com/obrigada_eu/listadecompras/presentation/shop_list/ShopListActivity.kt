@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -26,6 +27,7 @@ import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemActivity
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener,
@@ -147,7 +149,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun exportListToTxt() {
         shopListViewModel.exportListToTxt()
-        Toast.makeText(this, "List has been saved", Toast.LENGTH_SHORT).show()
+        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath + File.separator.toString() + this.resources.getString(R.string.app_name)
+        Toast.makeText(this, "List has been saved to the directory:\n$dir", Toast.LENGTH_LONG).show()
     }
 
     private fun setupEditText() {
