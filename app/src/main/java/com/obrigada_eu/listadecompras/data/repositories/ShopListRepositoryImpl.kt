@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.data.database.ShopItemDao
 import com.obrigada_eu.listadecompras.data.database.ShopListDao
 import com.obrigada_eu.listadecompras.data.datastore.ShopListPreferences
@@ -35,6 +36,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.io.BufferedReader
 import java.io.File
+import java.io.File.separator
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
@@ -150,20 +152,25 @@ class ShopListRepositoryImpl @Inject constructor(
 
     @Throws(IOException::class)
     private fun saveFile(context: Context, fileName: String, text: String, extension: String) {
+        val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val append = separator.toString() + context.resources.getString(R.string.app_name)
+        val dirDocumentsApp = File(dirDocuments.toString() + append)
+        if (!dirDocuments.isDirectory) {
+            dirDocuments.mkdir()
+        }
+        if (!dirDocumentsApp.isDirectory) {
+            dirDocumentsApp.mkdir()
+        }
         val outputStream: OutputStream? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val values = ContentValues()
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
             values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
-            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS)
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS + append)
             val extVolumeUri: Uri = MediaStore.Files.getContentUri("external")
             val fileUri: Uri? = context.contentResolver.insert(extVolumeUri, values)
             context.contentResolver.openOutputStream(fileUri!!)
         } else {
-            val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-            val file = File(directory?.absolutePath, "$fileName.$extension")
-            if (!directory.isDirectory) {
-                directory.mkdir()
-            }
+            val file = File(dirDocumentsApp.absolutePath, "$fileName.$extension")
             FileOutputStream(file)
         }
 
