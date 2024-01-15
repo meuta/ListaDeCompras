@@ -1,8 +1,11 @@
 package com.obrigada_eu.listadecompras.presentation.shop_list
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +17,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityShopListBinding
@@ -45,9 +50,9 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 .commit()
         } else {
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                with(supportFragmentManager){
+                with(supportFragmentManager) {
                     val fragments = fragments
-                    if (fragments.isNotEmpty() && fragments.last() is ShopItemFragment){
+                    if (fragments.isNotEmpty() && fragments.last() is ShopItemFragment) {
                         popBackStack()
                     }
                 }
@@ -64,7 +69,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         }
 
         shopListViewModel.allListsWithoutItems.observe(this) {
-            Log.d("ShopListFragment", "allListsWithItems.observe =\n $it")
+            Log.d("ShopListActivity", "allListsWithItems.observe =\n $it")
         }
     }
 
@@ -88,12 +93,28 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.action_save_txt -> {
-                exportListToTxt()
-                Toast.makeText(this, "List has been saved", Toast.LENGTH_SHORT).show()
-                return true
+
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    + ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ),
+                        STORAGE_PERMISSION_CODE
+                    )
+                } else {
+                    exportListToTxt()
+                    return true
+                }
             }
+
             R.id.action_load_txt -> {
                 loadTxtFile(binding.etToolbarShopListActivity.text.toString())
                 Toast.makeText(this, "action_load_txt", Toast.LENGTH_SHORT).show()
@@ -103,18 +124,36 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty()
+                && grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED
+                ) {
+                Toast.makeText(this, "Storage permissions granted,\nnow you can save the file", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Storage permissions granted,\nyou cannot save the file", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private fun loadTxtFile(listName: String) {
         shopListViewModel.loadTxtList(listName)
     }
 
     private fun exportListToTxt() {
         shopListViewModel.exportListToTxt()
+        Toast.makeText(this, "List has been saved", Toast.LENGTH_SHORT).show()
     }
 
-    private fun setupEditText(){
-        with(binding){
-            etToolbarShopListActivity.setOnFocusChangeListener {view, hasFocus ->
-                if(hasFocus) {
+    private fun setupEditText() {
+        with(binding) {
+            etToolbarShopListActivity.setOnFocusChangeListener { view, hasFocus ->
+                if (hasFocus) {
                     buttonSaveListName.visibility = View.VISIBLE
                 } else {
                     buttonSaveListName.visibility = View.INVISIBLE
@@ -130,7 +169,10 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                         etToolbarShopListActivity.clearFocus()
                         val inputMethodManager =
                             this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        inputMethodManager.hideSoftInputFromWindow(etToolbarShopListActivity.windowToken, 0)
+                        inputMethodManager.hideSoftInputFromWindow(
+                            etToolbarShopListActivity.windowToken,
+                            0
+                        )
                     }
                 }
             }
@@ -202,6 +244,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     }
 
     companion object {
+
+        private const val STORAGE_PERMISSION_CODE = 101
 
         fun newIntent(context: Context): Intent {
             val intent = Intent(context, ShopListActivity::class.java)

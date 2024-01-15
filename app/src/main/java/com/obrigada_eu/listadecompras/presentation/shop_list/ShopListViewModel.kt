@@ -72,6 +72,7 @@ class ShopListViewModel @Inject constructor(
 
     fun getShopListName() {
         viewModelScope.launch {
+            Log.d("getShopListName", "shopListIdFlow.value = ${shopListIdFlow.value}")
             val name = getShopListNameUseCase(shopListIdFlow.value)
             _shopListName.value = name
         }

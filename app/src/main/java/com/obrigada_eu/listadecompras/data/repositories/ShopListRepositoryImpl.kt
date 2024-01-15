@@ -134,7 +134,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
         val list = shopListWithItems.shopList
         var content = "$listName\n\n"
-        list.forEach {
+        list.sortedBy { it.position } .forEach {
             val row = String.format(
                 "%-4s\t%-30s\t%s",
                 (if (it.enabled) "-" else "+"),
