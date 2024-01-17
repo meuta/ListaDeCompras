@@ -213,10 +213,14 @@ class ShopListRepositoryImpl @Inject constructor(
             }
             Log.d("loadTxtList", "currentTimestamp = ${System.currentTimeMillis()}")
             var listName = fileName.dropLast(4)
+            val separator = "____"
             Log.d("loadTxtList", "listName = $listName")
-            if (listName.contains("___")) listName = listName.dropLast(16)
+            if (listName.contains(separator)) {
+                val separatorIndex = listName.indexOf(separator)
+                listName = listName.take(separatorIndex)
+            }
             if (listSet.map{it.name}.contains(listName)) {
-                listName += "___" + System.currentTimeMillis()
+                listName += separator + System.currentTimeMillis()
             }
 
             addShopList(listName)
