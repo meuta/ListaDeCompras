@@ -196,16 +196,16 @@ class ShopListRepositoryImpl @Inject constructor(
             val inputString = bufferedReader.use { it.readText() }
             Log.d("loadTxtList", "content:\n$inputString")
             val lines = inputString.split("\n")
-            Log.d("loadTxtList", "title = ${lines.first()}")
+            Log.d("loadTxtList", "title = ${lines[0]}")
             val list = mutableListOf<ShopItem>()
-            lines.takeLast(lines.size - 2).forEach { line ->
-                val firstSymbol = line.first()
-                val enabled = firstSymbol != '+'
+            lines.drop(2).forEach { line ->
+                val values = line.split("\t")
 
-                val count = line.takeLastWhile { it.isDigit() || it == '.' }
+                val enabled = line.first() != '+'
 
-                val range = line.length - count.length
-                val itemName = line.slice(1 until range).trim { it == ' ' }
+                val count = values[2].trim { it == ' ' }
+
+                val itemName = values[1].trim { it == ' ' }
 
                 val item = ShopItem(itemName, count.toDouble(), enabled)
                 Log.d("loadTxtList", "item = $item")
