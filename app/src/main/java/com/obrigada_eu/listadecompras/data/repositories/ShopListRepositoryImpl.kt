@@ -202,10 +202,8 @@ class ShopListRepositoryImpl @Inject constructor(
                 val values = line.split("\t")
 
                 val enabled = line.first() != '+'
-
-                val count = values[2].trim { it == ' ' }
-
                 val itemName = values[1].trim { it == ' ' }
+                val count = values[2].trim { it == ' ' }
 
                 val item = ShopItem(itemName, count.toDouble(), enabled)
                 Log.d("loadTxtList", "item = $item")
