@@ -15,7 +15,6 @@ import com.obrigada_eu.listadecompras.domain.shop_list.ExportListToTxtUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetShopListNameUseCase
-import com.obrigada_eu.listadecompras.domain.shop_list.LoadTxtListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListNameUseCase
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapViewModel
@@ -38,7 +37,6 @@ class ShopListViewModel @Inject constructor(
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     getCurrentListIdUseCase: GetCurrentListIdUseCase,
     private val exportListToTxtUseCase: ExportListToTxtUseCase,
-    private val loadTxtListUseCase: LoadTxtListUseCase,
     private val undoDeleteItemUseCase: UndoDeleteItemUseCase,
 ) : SwipeSwapViewModel() {
 
@@ -147,11 +145,6 @@ class ShopListViewModel @Inject constructor(
         }
     }
 
-    fun loadTxtList(listName: String) {
-        scope.launch {
-            loadTxtListUseCase(listName)
-        }
-    }
 
     fun undoDelete() {
         scope.launch {

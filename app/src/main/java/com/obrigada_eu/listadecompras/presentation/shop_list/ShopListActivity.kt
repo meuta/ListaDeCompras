@@ -113,15 +113,10 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                     )
                 } else {
                     exportListToTxt()
-                    return true
                 }
-            }
-
-            R.id.action_load_txt -> {
-                loadTxtFile(binding.etToolbarShopListActivity.text.toString())
-                Toast.makeText(this, "action_load_txt", Toast.LENGTH_SHORT).show()
                 return true
             }
+
         }
         return super.onOptionsItemSelected(item)
     }
@@ -136,16 +131,13 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             if (grantResults.isNotEmpty()
                 && grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED
                 ) {
-                Toast.makeText(this, "Storage permissions granted,\nnow you can save the file", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Storage permissions granted,\nnow you can save the file", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(this, "Storage permissions granted,\nyou cannot save the file", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Storage permissions denied,\nyou cannot save the file", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    private fun loadTxtFile(listName: String) {
-        shopListViewModel.loadTxtList(listName)
-    }
 
     private fun exportListToTxt() {
         shopListViewModel.exportListToTxt()

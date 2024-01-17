@@ -180,11 +180,15 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun loadTxtList(listName: String) {
-        val fileName = "$listName.txt"
+    override suspend fun loadFromTxtFile(fileName: String) {
+
+        val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val append = separator.toString() + context.resources.getString(R.string.app_name)
+        val dirDocumentsApp = File(dirDocuments.toString() + append)
+
         Log.d("loadTxtList", "fileName = $fileName")
-        val path = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath
-        val file = File(path, "$listName.txt")
+
+        val file = File(dirDocumentsApp, fileName)
         val exists = file.exists()
         Log.d("loadTxtList", "exists = $exists")
         if (exists) {
@@ -208,13 +212,16 @@ class ShopListRepositoryImpl @Inject constructor(
                 list.add(item)
             }
             Log.d("loadTxtList", "currentTimestamp = ${System.currentTimeMillis()}")
-            var newName =
-                if (listName.contains("___")) listName.take(listName.length - 16) else listName
-            Log.d("loadTxtList", "newName = $newName")
-            newName = newName + "___" + System.currentTimeMillis()
-            addShopList(newName)
+            var listName = fileName.dropLast(4)
+            Log.d("loadTxtList", "listName = $listName")
+            if (listName.contains("___")) listName = listName.dropLast(16)
+            if (listSet.map{it.name}.contains(listName)) {
+                listName += "___" + System.currentTimeMillis()
+            }
 
-            shopListDao.getShopListId(newName)?.let { listId ->
+            addShopList(listName)
+
+            shopListDao.getShopListId(listName)?.let { listId ->
                 list.withIndex().forEach {
                     shopItemDao.addShopItem(
                         mapper
@@ -226,6 +233,19 @@ class ShopListRepositoryImpl @Inject constructor(
         }
     }
 
+
+    override suspend fun loadFilesList(): List<String>? {
+        val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val append = separator.toString() + context.resources.getString(R.string.app_name)
+        val dirDocumentsApp = File(dirDocuments.toString() + append)
+        if (!dirDocumentsApp.isDirectory) {
+            Log.d("loadFilesList", "!dirDocumentsApp.isDirectory")
+        }
+
+        val filesTxtList = dirDocumentsApp.list{ _, filename -> filename.endsWith(".txt")}?.toList()
+
+        return filesTxtList
+    }
 
     private val shopListIdFlow: StateFlow<Int> = shopListPreferences.data
         .catch { exception ->

@@ -1,9 +1,22 @@
 package com.obrigada_eu.listadecompras.presentation.list_set
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityListSetBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -12,6 +25,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class ListSetActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityListSetBinding
+
+    private val listSetViewModel: ListSetViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,10 +37,123 @@ class ListSetActivity : AppCompatActivity() {
                 .replace(R.id.list_set_container, ListSetFragment.newInstance())
                 .commit()
         }
+        setupActionBar()
+        setOnBackPressedCallback()
+    }
+
+    private fun setupActionBar() {
+        with (binding){
+            setSupportActionBar(toolbarListSetActivity)
+            toolbarListSetActivity.setOnClickListener {
+                if (filesList.visibility == View.VISIBLE){
+                    filesList.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.list_set_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+
+            R.id.action_load_txt -> {
+
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ),
+                        STORAGE_PERMISSION_CODE
+                    )
+                } else {
+                    loadFilesList()
+                }
+
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty()
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            ) {
+                Toast.makeText(this, "Storage permissions granted,\nnow you can see the list of files", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Storage permissions denied,\nyou cannot see the list of files", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun loadFilesList() {
+
+        setupFilesListView()
+        binding.filesList.visibility = View.VISIBLE
+    }
+
+    private fun setupFilesListView(){
+        listSetViewModel.loadFilesList()
+        listSetViewModel.filesList.observe(this) {
+            it?.let {
+                val listAdapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, it)
+                binding.filesList.adapter = listAdapter
+                binding.filesList.setOnItemClickListener{parent, _, position, _ ->
+                    val fileName = listAdapter.getItem(position) // The item that was clicked
+                    Log.d("filesList.setOnItemClickListener", "element = $fileName")
+                    fileName?.let { loadFromTxtFile(fileName) }
+                    parent.visibility = View.GONE
+                }
+            }
+            Log.d("ListSetActivity", "filesList.observe = $it")
+        }
+    }
+
+    private fun loadFromTxtFile(fileName: String) {
+
+        listSetViewModel.loadFromTxtFile(fileName)
+    }
+
+
+    private fun setOnBackPressedCallback() {
+        val callback = object : OnBackPressedCallback(
+            true // default to enabled
+        ) {
+            override fun handleOnBackPressed() {
+                with(binding) {
+                    if (filesList.visibility == View.VISIBLE) {
+                        filesList.visibility = View.GONE
+                    } else {
+                        this@ListSetActivity.finish()
+                    }
+                }
+            }
+        }
+        onBackPressedDispatcher.addCallback(
+            this,
+            callback
+        )
+    }
+
     companion object {
+
+        private const val STORAGE_PERMISSION_CODE = 101
+
         fun newIntent(context: Context): Intent {
             return Intent(context, ListSetActivity::class.java)
         }

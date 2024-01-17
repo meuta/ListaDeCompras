@@ -25,9 +25,12 @@ interface ShopListRepository {
 
     suspend fun exportListToTxt(listId: Int)
 
-    suspend fun loadTxtList(listName: String)
+    suspend fun loadFilesList(): List<String>?
+
+    suspend fun loadFromTxtFile(fileName: String)
 
     suspend fun undoDelete()
 
     suspend fun dragShopList(from: Int, to: Int)
+
 }

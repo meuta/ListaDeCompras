@@ -10,6 +10,8 @@ import com.obrigada_eu.listadecompras.domain.shop_list.DeleteShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.DragShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.LoadFilesListUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.LoadFromTxtFileUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.domain.shop_list.UndoDeleteListUseCase
@@ -30,7 +32,9 @@ class ListSetViewModel @Inject constructor(
     private val dragShopListUseCase: DragShopListUseCase,
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     private val getCurrentListIdUseCase: GetCurrentListIdUseCase,
-    private val undoDeleteListUseCase: UndoDeleteListUseCase
+    private val undoDeleteListUseCase: UndoDeleteListUseCase,
+    private val loadFilesListUseCase: LoadFilesListUseCase,
+    private val loadFromTxtFileUseCase: LoadFromTxtFileUseCase,
 ) : SwipeSwapViewModel() {
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -44,6 +48,12 @@ class ListSetViewModel @Inject constructor(
         get() = _shopListIdLD
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext)
+
+
+    private var _filesList = MutableLiveData<List<String>?>()
+    val filesList: LiveData<List<String>?>
+        get() = _filesList
+
 
     init {
         viewModelScope.launch {
@@ -123,6 +133,19 @@ class ListSetViewModel @Inject constructor(
     fun dragShopList(from: Int, to: Int) {
         viewModelScope.launch {
             dragShopListUseCase(from, to)
+        }
+    }
+
+
+    fun loadFilesList() {
+        viewModelScope.launch {
+            _filesList.value = loadFilesListUseCase()
+        }
+    }
+
+    fun loadFromTxtFile(fileName: String){
+        scope.launch {
+            loadFromTxtFileUseCase(fileName)
         }
     }
 }

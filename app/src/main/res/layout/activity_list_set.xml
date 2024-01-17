@@ -27,10 +27,26 @@
 
 
         <FrameLayout
-            android:id="@+id/list_set_container"
-            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:layout="@layout/fragment_list_set" />
+            android:layout_width="match_parent">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/list_set_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".presentation.list_set.ListSetActivity"
+                tools:layout="@layout/fragment_list_set" />
+
+            <ListView
+                android:id="@+id/files_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/whitish"
+                android:visibility="gone"/>
+
+        </FrameLayout>
+
+
 
     </LinearLayout>
 </layout>
