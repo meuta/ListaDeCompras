@@ -118,10 +118,12 @@ class ListSetActivity : AppCompatActivity() {
                     Log.d("filesList.setOnItemClickListener", "element = $fileName")
                     fileName?.let { loadFromTxtFile(fileName) }
                     parent.visibility = View.GONE
+                    filesListBackPressedCallback.isEnabled = false
                 }
             }
             Log.d("ListSetActivity", "filesList.observe = $it")
         }
+        filesListBackPressedCallback.isEnabled = true
     }
 
     private fun loadFromTxtFile(fileName: String) {
@@ -129,24 +131,23 @@ class ListSetActivity : AppCompatActivity() {
         listSetViewModel.loadFromTxtFile(fileName)
     }
 
-
-    private fun setOnBackPressedCallback() {
-        val callback = object : OnBackPressedCallback(
-            true // default to enabled
-        ) {
-            override fun handleOnBackPressed() {
-                with(binding) {
-                    if (filesList.visibility == View.VISIBLE) {
-                        filesList.visibility = View.GONE
-                    } else {
-                        this@ListSetActivity.finish()
-                    }
+    private val filesListBackPressedCallback = object : OnBackPressedCallback(
+        false // default to enabled
+    ) {
+        override fun handleOnBackPressed() {
+            with(binding) {
+                if (filesList.visibility == View.VISIBLE) {
+                    filesList.visibility = View.GONE
+                    isEnabled = false
                 }
             }
         }
+    }
+
+    private fun setOnBackPressedCallback() {
         onBackPressedDispatcher.addCallback(
             this,
-            callback
+            filesListBackPressedCallback
         )
     }
 

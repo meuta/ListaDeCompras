@@ -144,6 +144,7 @@ class ListSetFragment(
                         etListName.setText("")
                         cardNewList.visibility = View.GONE
                     } else {
+                        isEnabled = false
                         requireActivity().finish()
                     }
                 }
@@ -155,9 +156,14 @@ class ListSetFragment(
         )
     }
 
-
     override fun onListItemClick(itemId: Int) {
         fragmentListViewModel.openShopList(itemId)
+        with(binding) {
+            if (cardNewList.visibility == View.VISIBLE) {
+                etListName.setText("")
+                cardNewList.visibility = View.GONE
+            }
+        }
     }
 
     override fun onFabClick(listId: Int?) {
