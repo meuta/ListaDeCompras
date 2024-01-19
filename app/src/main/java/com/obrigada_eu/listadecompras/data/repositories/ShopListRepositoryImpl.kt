@@ -58,9 +58,9 @@ class ShopListRepositoryImpl @Inject constructor(
 
     private lateinit var listSet: MutableList<ShopListDbModel>
 
-    override suspend fun addShopList(shopListName: String) {
+    override suspend fun addShopList(shopListName: String, enabled: Boolean) {
         val dbModel =
-            ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = true)
+            ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = enabled)
         dbModel.position = (shopListDao.getLargestOrder() ?: -1) + 1
         shopListDao.insertShopList(dbModel)
     }
@@ -133,9 +133,13 @@ class ShopListRepositoryImpl @Inject constructor(
         val shopListWithItems = shopListDao.getShopListWithItems(listId)
 
         val listName = shopListWithItems.shopListDbModel.name
-
+        val listEnabled = if (shopListWithItems.shopListDbModel.enabled) "-" else "+"
+        var content = String.format(
+            "%-4s\t%s\n\n",
+            listEnabled,
+            listName
+        )
         val list = shopListWithItems.shopList
-        var content = "$listName\n\n"
         list.sortedBy { it.position } .forEach {
             val row = String.format(
                 "%-4s\t%-30s\t%s",
@@ -189,14 +193,11 @@ class ShopListRepositoryImpl @Inject constructor(
         Log.d("loadTxtList", "fileName = $fileName")
 
         val file = File(dirDocumentsApp, fileName)
-        val exists = file.exists()
-        Log.d("loadTxtList", "exists = $exists")
-        if (exists) {
+        if (file.exists()) {
             val bufferedReader: BufferedReader = file.bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
             Log.d("loadTxtList", "content:\n$inputString")
             val lines = inputString.split("\n")
-            Log.d("loadTxtList", "title = ${lines[0]}")
             val list = mutableListOf<ShopItem>()
             lines.drop(2).forEach { line ->
                 val values = line.split("\t")
@@ -209,9 +210,10 @@ class ShopListRepositoryImpl @Inject constructor(
                 Log.d("loadTxtList", "item = $item")
                 list.add(item)
             }
-            Log.d("loadTxtList", "currentTimestamp = ${System.currentTimeMillis()}")
+            val listEnabled = lines[0].first() != '+'
+
             var listName = fileName.dropLast(4)
-            val separator = "____"
+                        val separator = "____"
             Log.d("loadTxtList", "listName = $listName")
             if (listName.contains(separator)) {
                 val separatorIndex = listName.indexOf(separator)
@@ -221,7 +223,7 @@ class ShopListRepositoryImpl @Inject constructor(
                 listName += separator + System.currentTimeMillis()
             }
 
-            addShopList(listName)
+            addShopList(listName, listEnabled)
 
             shopListDao.getShopListId(listName)?.let { listId ->
                 list.withIndex().forEach {
