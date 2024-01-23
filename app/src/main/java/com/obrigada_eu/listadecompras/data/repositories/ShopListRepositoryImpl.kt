@@ -184,15 +184,16 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun loadFromTxtFile(fileName: String) {
+    override suspend fun loadFromTxtFile(fileName: String, newFileName: String?) {
 
         val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = separator.toString() + context.resources.getString(R.string.app_name)
         val dirDocumentsApp = File(dirDocuments.toString() + append)
 
-        Log.d("loadTxtList", "fileName = $fileName")
+        Log.d("loadTxtList", "fileName = $fileName, newFileName = $newFileName")
 
-        val file = File(dirDocumentsApp, fileName)
+        val file = File(dirDocumentsApp, "$fileName.txt")
+
         if (file.exists()) {
             val bufferedReader: BufferedReader = file.bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
@@ -212,16 +213,9 @@ class ShopListRepositoryImpl @Inject constructor(
             }
             val listEnabled = lines[0].first() != '+'
 
-            var listName = fileName.dropLast(4)
-                        val separator = "____"
+            val listName = newFileName ?: fileName
+
             Log.d("loadTxtList", "listName = $listName")
-            if (listName.contains(separator)) {
-                val separatorIndex = listName.indexOf(separator)
-                listName = listName.take(separatorIndex)
-            }
-            if (listSet.map{it.name}.contains(listName)) {
-                listName += separator + System.currentTimeMillis()
-            }
 
             addShopList(listName, listEnabled)
 

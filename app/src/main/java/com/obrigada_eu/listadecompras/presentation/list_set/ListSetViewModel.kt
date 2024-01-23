@@ -20,6 +20,8 @@ import com.obrigada_eu.listadecompras.presentation.SwipeSwapViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,6 +51,28 @@ class ListSetViewModel @Inject constructor(
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext)
 
+    private var _showCreateListForFile = MutableStateFlow(false)
+    val showCreateListForFile: LiveData<Boolean>
+        get() = _showCreateListForFile.asLiveData()
+
+    private var _oldFileName: MutableLiveData<String?> = MutableLiveData(null)
+    val oldFileName: LiveData<String?>
+        get() = _oldFileName
+
+    fun updateUiState(uiState: Boolean, oldFileName: String? = null) {
+        _showCreateListForFile.update { uiState }
+
+        if (this._oldFileName.value == null) {
+            this._oldFileName.value = oldFileName
+        } else {
+            if (oldFileName == null) {
+                this._oldFileName.value = null
+            }
+        }
+
+        Log.d("ListSetViewModel","oldFileName = $oldFileName")
+    }
+
 
     private var _filesList = MutableLiveData<List<String>?>()
     val filesList: LiveData<List<String>?>
@@ -71,19 +95,33 @@ class ListSetViewModel @Inject constructor(
     }
 
 
-    fun addShopList(inputName: String?) {
+    fun addShopList(inputName: String?, fromTxtFile: Boolean = false) {
         val name = parseName(inputName)
         val fieldsValid = validateInput(name)
-        if (fieldsValid) {
+        Log.d("addShopList check", "fromTxtFile = $fromTxtFile, fieldsValid = $fieldsValid")
+        if (!fromTxtFile && fieldsValid) {
 
             viewModelScope.launch {
                 addShopListUseCase(name)
             }
         }
+        if (fromTxtFile && fieldsValid) {
+
+            val oldName = _oldFileName.value ?: name
+            val newName = if (_oldFileName.value != null) name else null
+            scope.launch {
+                loadFromTxtFileUseCase(oldName, newName)
+            }
+            updateUiState(false, null)
+        }
+
+        if (fromTxtFile && !fieldsValid) {
+            updateUiState(true, name)
+        }
     }
 
-
     private fun validateInput(name: String): Boolean {
+        Log.d("validateInput", "name = $name")
         var result = true
         if (name.isBlank()) {
             _errorInputName.value = true
@@ -91,6 +129,7 @@ class ListSetViewModel @Inject constructor(
         }
 
         val names = allListsWithoutItems.value?.map { it.name }
+
         Log.d("validateInput", "names = $names")
         names?.let {
             if (names.contains(name)) {
@@ -99,6 +138,7 @@ class ListSetViewModel @Inject constructor(
                 result = false
             }
         }
+        Log.d("validateInput", "result = $result")
         return result
     }
 
@@ -143,9 +183,4 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
-    fun loadFromTxtFile(fileName: String){
-        scope.launch {
-            loadFromTxtFileUseCase(fileName)
-        }
-    }
 }

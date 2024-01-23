@@ -4,5 +4,5 @@ import javax.inject.Inject
 
 class LoadFromTxtFileUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
-    suspend operator fun invoke(fileName: String) = shopListRepository.loadFromTxtFile(fileName)
+    suspend operator fun invoke(fileName: String, newFileName: String? = null) = shopListRepository.loadFromTxtFile(fileName, newFileName)
 }

@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
@@ -32,7 +32,7 @@ class ListSetFragment(
     override lateinit var onFabClickListener: OnFabClickListener
     override lateinit var onListItemClickListener: OnListItemClickListener
 
-    override val fragmentListViewModel: ListSetViewModel by viewModels()
+    override val fragmentListViewModel: ListSetViewModel by activityViewModels()
 
     override lateinit var fragmentListAdapter: SwipeSwapAdapter<ShopList>
 
@@ -56,6 +56,23 @@ class ListSetFragment(
                 startShopListActivity()
             }
         }
+
+        fragmentListViewModel.showCreateListForFile.observe(viewLifecycleOwner){
+            Log.d("ListSetFragment", "showCreateListForFile.observe = $it")
+            if (it) {
+                onFabClick()
+            }
+        }
+
+        fragmentListViewModel.oldFileName.observe(viewLifecycleOwner){ fileName ->
+            Log.d("ListSetFragment", "oldFileName.observe = $fileName")
+            fileName?.let {
+                with(binding){
+                    etListName.setText(it)
+                    etListName.setSelection(0, etListName.text.length)
+                }
+            }
+        }
     }
 
     override fun setupButtons() {
@@ -66,7 +83,11 @@ class ListSetFragment(
 
             buttonCreateList.setOnClickListener { view ->
                 if (etListName.text.isNotEmpty()) {
-                    fragmentListViewModel.addShopList(etListName.text?.toString())
+                    var fromFile = false
+                    if (fragmentListViewModel.showCreateListForFile.value == true){
+                        fromFile = true
+                    }
+                    fragmentListViewModel.addShopList(etListName.text?.toString(), fromFile)
                     val isError = fragmentListViewModel.errorInputName.value ?: true
                     if (!isError) {
                         etListName.setText("")
@@ -143,6 +164,9 @@ class ListSetFragment(
                     if (cardNewList.visibility == View.VISIBLE) {
                         etListName.setText("")
                         cardNewList.visibility = View.GONE
+
+                        fragmentListViewModel.updateUiState(false, null)
+
                     } else {
                         isEnabled = false
                         requireActivity().finish()

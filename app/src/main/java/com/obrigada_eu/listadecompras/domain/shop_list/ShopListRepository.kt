@@ -27,7 +27,7 @@ interface ShopListRepository {
 
     suspend fun loadFilesList(): List<String>?
 
-    suspend fun loadFromTxtFile(fileName: String)
+    suspend fun loadFromTxtFile(fileName: String, newFileName: String? = null)
 
     suspend fun undoDelete()
 
