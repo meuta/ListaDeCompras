@@ -71,8 +71,11 @@ class ShopListViewModel @Inject constructor(
     fun getShopListName() {
         viewModelScope.launch {
             shopListIdFlow.collect {
-                val name = getShopListNameUseCase(it)
-                _shopListName.value = name
+                Log.d("getShopListName", "shopListId = $it")
+                if (it > 0) {
+                    val name = getShopListNameUseCase(it)
+                    _shopListName.value = name
+                }
             }
         }
     }

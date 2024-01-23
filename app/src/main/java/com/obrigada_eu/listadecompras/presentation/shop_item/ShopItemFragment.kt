@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.obrigada_eu.listadecompras.databinding.FragmentShopItemBinding
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
@@ -19,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ShopItemFragment : Fragment() {
 
-    private val shopItemViewModel: ShopItemViewModel by viewModels()
+    private val shopItemViewModel: ShopItemViewModel by activityViewModels()
 
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 

@@ -82,7 +82,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_24)
-            binding.etToolbarShopListActivity.setText(name)
+            if (name.isNotEmpty()) binding.etToolbarShopListActivity.setText(name)
         }
         binding.toolbarShopListActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 

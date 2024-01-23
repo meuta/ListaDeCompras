@@ -3,7 +3,7 @@ package com.obrigada_eu.listadecompras.presentation.shop_list
 import android.content.Context
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.databinding.FragmentShopListBinding
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
@@ -19,7 +19,7 @@ class ShopListFragment : SwipeSwapListFragment<
         ShopListViewModel
         > (FragmentShopListBinding::inflate) {
 
-    override val fragmentListViewModel: ShopListViewModel by viewModels()
+    override val fragmentListViewModel: ShopListViewModel by activityViewModels()
 
     override lateinit var onFabClickListener: OnFabClickListener
     override lateinit var onListItemClickListener: OnListItemClickListener
