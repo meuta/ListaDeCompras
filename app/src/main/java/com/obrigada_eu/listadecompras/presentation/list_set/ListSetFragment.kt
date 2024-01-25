@@ -69,7 +69,7 @@ class ListSetFragment(
             fileName?.let {
                 with(binding){
                     etListName.setText(it)
-                    etListName.setSelection(0, etListName.text.length)
+                    etListName.setSelection(etListName.text.length)
                 }
             }
         }

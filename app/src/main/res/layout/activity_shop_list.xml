@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:background="@color/blackish"
         android:orientation="vertical"
-        tools:context=".presentation.shop_list.ShopListFragment">
+        tools:context=".presentation.shop_list.ShopListActivity">
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -31,18 +31,37 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal">
-                <EditText
-                    android:id="@+id/et_toolbar_shop_list_activity"
+                android:orientation="horizontal"
+                >
+
+                <FrameLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="4"
-                    android:background="@color/blackish"
-                    android:inputType="textCapSentences"
-                    android:autofillHints="list name"
-                    tools:ignore="LabelFor" />
+                    >
+                    <TextView
+                        android:id="@+id/tv_toolbar_shop_list_activity"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/blackish"
+                        android:gravity="center|start"
+                        android:textIsSelectable="true"
+                        android:textSize="16sp"
+                        />
+
+                    <EditText
+                        android:id="@+id/et_toolbar_shop_list_activity"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:background="@color/blackish"
+                        android:inputType="textCapSentences"
+                        android:autofillHints="list name"
+                        tools:ignore="LabelFor,Suspicious0dp" />
+
+                </FrameLayout>
+
+
                 <ImageButton
                     android:id="@+id/button_save_list_name"
                     android:layout_width="wrap_content"

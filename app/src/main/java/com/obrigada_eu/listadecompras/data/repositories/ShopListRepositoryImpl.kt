@@ -75,8 +75,8 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun getShopListName(listId: Int): String {
-        return shopListDao.getShopListName(listId) ?: ""
+    override fun getShopListName(listId: Int): Flow<String> {
+        return shopListDao.getShopListName(listId)
     }
 
     override suspend fun deleteShopList(id: Int) {

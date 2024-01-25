@@ -47,7 +47,7 @@ class ShopListFragment : SwipeSwapListFragment<
             listId = it
         }
 
-        fragmentListViewModel.shopList.observe(viewLifecycleOwner) {
+        fragmentListViewModel.shopListLD.observe(viewLifecycleOwner) {
             fragmentListAdapter.submitList(it)
             Log.d("ShopListFragment", "shopList.observe = ${it.map { it.name}}")
         }

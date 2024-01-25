@@ -9,7 +9,7 @@ interface ShopListRepository {
 
     fun getAllListsWithoutItems(): Flow<List<ShopList>>
 
-    suspend fun getShopListName(listId: Int): String
+    fun getShopListName(listId: Int): Flow<String>
 
     suspend fun deleteShopList(id: Int)
 

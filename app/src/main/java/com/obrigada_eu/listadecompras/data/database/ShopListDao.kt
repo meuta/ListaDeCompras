@@ -17,7 +17,7 @@ interface ShopListDao {
     fun getShopListsWithoutShopItems(): Flow<List<ShopListDbModel>>
 
     @Query("SELECT shop_list_name FROM shop_lists WHERE id=:shopListId LIMIT 1")
-    suspend fun getShopListName(shopListId: Int): String?
+    fun getShopListName(shopListId: Int): Flow<String>
 
     @Query("SELECT id FROM shop_lists WHERE shop_list_name=:shopListName LIMIT 1")
     suspend fun getShopListId(shopListName: String): Int?

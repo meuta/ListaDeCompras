@@ -32,7 +32,7 @@ class ShopListViewModel @Inject constructor(
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,
     private val dragShopItemUseCase: DragShopItemUseCase,
-    private val getShopListNameUseCase: GetShopListNameUseCase,
+    getShopListNameUseCase: GetShopListNameUseCase,
     private val updateShopListNameUseCase: UpdateShopListNameUseCase,
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     getCurrentListIdUseCase: GetCurrentListIdUseCase,
@@ -45,13 +45,9 @@ class ShopListViewModel @Inject constructor(
     private val shopListIdFlow: StateFlow<Int> = getCurrentListIdUseCase()
     val shopListIdLD = shopListIdFlow.asLiveData(scope.coroutineContext)
 
-    private val _shopListName = MutableLiveData<String>()
-    val shopListName: LiveData<String>
-        get() = _shopListName
+    val shopListNameLD = getShopListNameUseCase(shopListIdFlow.value).asLiveData()
 
-    private val _shopList = getShopListUseCase(shopListIdFlow.value).asLiveData(scope.coroutineContext, 500)
-    val shopList: LiveData<List<ShopItem>>
-        get() = _shopList
+    val shopListLD = getShopListUseCase(shopListIdFlow.value).asLiveData(scope.coroutineContext, 500)
 
     private var _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
@@ -67,18 +63,6 @@ class ShopListViewModel @Inject constructor(
         }
     }
 
-
-    fun getShopListName() {
-        viewModelScope.launch {
-            shopListIdFlow.collect {
-                Log.d("getShopListName", "shopListId = $it")
-                if (it > 0) {
-                    val name = getShopListNameUseCase(it)
-                    _shopListName.value = name
-                }
-            }
-        }
-    }
 
     fun deleteShopItem(shopItem: ShopItem) {
         viewModelScope.launch {

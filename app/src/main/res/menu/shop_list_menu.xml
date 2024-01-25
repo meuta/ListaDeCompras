@@ -9,4 +9,10 @@
         android:title="@string/save_as_text_file"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_rename_list"
+        android:orderInCategory="100"
+        android:title="@string/rename_list"
+        app:showAsAction="never"/>
+
 </menu>

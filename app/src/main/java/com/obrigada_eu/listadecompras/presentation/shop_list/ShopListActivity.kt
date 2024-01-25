@@ -14,12 +14,16 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityShopListBinding
@@ -36,13 +40,13 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private val shopListViewModel: ShopListViewModel by viewModels()
 
     private lateinit var binding: ActivityShopListBinding
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         binding = ActivityShopListBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setupActionBar()
 
         observeViewModel()
 
@@ -64,10 +68,9 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun observeViewModel() {
 
-        shopListViewModel.getShopListName()
-        shopListViewModel.shopListName.observe(this) {
-            Log.d("ShopListActivity", "shopListNameobserve = $it")
-            setupActionBar(it)
+        shopListViewModel.shopListNameLD.observe(this) {
+            Log.d("ShopListActivity", "shopListName.observe = $it")
+            if (it.isNotEmpty()) binding.tvToolbarShopListActivity.text = it
         }
 
         shopListViewModel.allListsWithoutItems.observe(this) {
@@ -76,16 +79,14 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     }
 
 
-    private fun setupActionBar(name: String) {
+    private fun setupActionBar() {
         setSupportActionBar(binding.toolbarShopListActivity)
         val actionBar = supportActionBar
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_24)
-            if (name.isNotEmpty()) binding.etToolbarShopListActivity.setText(name)
         }
         binding.toolbarShopListActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
-
         setupEditText()
     }
 
@@ -114,6 +115,21 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 } else {
                     exportListToTxt()
                 }
+                return true
+            }
+
+            R.id.action_rename_list -> {
+
+                with(binding) {
+
+                    etToolbarShopListActivity.setText(tvToolbarShopListActivity.text)
+                    etToolbarShopListActivity.setSelection(etToolbarShopListActivity.text.length)
+                    etToolbarShopListActivity.requestFocus()
+
+                    WindowCompat.getInsetsController(window, etToolbarShopListActivity).show(
+                        WindowInsetsCompat.Type.ime())
+                }
+
                 return true
             }
 
@@ -148,10 +164,18 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun setupEditText() {
         with(binding) {
             etToolbarShopListActivity.setOnFocusChangeListener { view, hasFocus ->
+                val layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+
                 if (hasFocus) {
                     buttonSaveListName.visibility = View.VISIBLE
+                    tvToolbarShopListActivity.visibility = View.INVISIBLE
+                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                    etToolbarShopListActivity.layoutParams = layoutParams
                 } else {
                     buttonSaveListName.visibility = View.INVISIBLE
+                    tvToolbarShopListActivity.visibility = View.VISIBLE
+                    layoutParams.width = 0
+                    view.layoutParams = layoutParams
                 }
             }
 
@@ -160,8 +184,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                     shopListViewModel.updateShopListName(etToolbarShopListActivity.text.toString())
                     val isError = shopListViewModel.errorInputName.value ?: true
                     if (!isError) {
-                        it.visibility = View.INVISIBLE
                         etToolbarShopListActivity.clearFocus()
+                        etToolbarShopListActivity.setText("")
                         val inputMethodManager =
                             this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         inputMethodManager.hideSoftInputFromWindow(
