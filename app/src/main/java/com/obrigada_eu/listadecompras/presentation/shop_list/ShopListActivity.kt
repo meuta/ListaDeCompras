@@ -22,8 +22,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityShopListBinding
@@ -40,6 +38,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private val shopListViewModel: ShopListViewModel by viewModels()
 
     private lateinit var binding: ActivityShopListBinding
+
+    private var showRenameListView = false
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -70,7 +70,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
         shopListViewModel.shopListNameLD.observe(this) {
             Log.d("ShopListActivity", "shopListName.observe = $it")
-            if (it.isNotEmpty()) binding.tvToolbarShopListActivity.text = it
+            if (it?.isNotEmpty() == true) binding.tvToolbarShopListActivity.text = it
         }
 
         shopListViewModel.allListsWithoutItems.observe(this) {
@@ -120,15 +120,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
             R.id.action_rename_list -> {
 
-                with(binding) {
-
-                    etToolbarShopListActivity.setText(tvToolbarShopListActivity.text)
-                    etToolbarShopListActivity.setSelection(etToolbarShopListActivity.text.length)
-                    etToolbarShopListActivity.requestFocus()
-
-                    WindowCompat.getInsetsController(window, etToolbarShopListActivity).show(
-                        WindowInsetsCompat.Type.ime())
-                }
+                showRenameListView = true
 
                 return true
             }
@@ -161,6 +153,20 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         Toast.makeText(this, "List has been saved to the directory:\n$dir", Toast.LENGTH_LONG).show()
     }
 
+
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (showRenameListView && hasFocus) {
+            showRenameListView = false
+            with(binding) {
+                etToolbarShopListActivity.setText(tvToolbarShopListActivity.text)
+                etToolbarShopListActivity.setSelection(etToolbarShopListActivity.text.length)
+                etToolbarShopListActivity.requestFocus()
+            }
+        }
+    }
+
     private fun setupEditText() {
         with(binding) {
             etToolbarShopListActivity.setOnFocusChangeListener { view, hasFocus ->
@@ -171,6 +177,12 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                     tvToolbarShopListActivity.visibility = View.INVISIBLE
                     layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
                     etToolbarShopListActivity.layoutParams = layoutParams
+
+                    val inputMethodManager =
+                        this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.showSoftInput(etToolbarShopListActivity, 0)
+
+
                 } else {
                     buttonSaveListName.visibility = View.INVISIBLE
                     tvToolbarShopListActivity.visibility = View.VISIBLE
