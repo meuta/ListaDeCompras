@@ -16,6 +16,7 @@ class ShopListMapper @Inject constructor() {
         id = shopItem.id,
         name = shopItem.name,
         count = shopItem.count,
+        units = shopItem.units,
         enabled = shopItem.enabled,
         shopListId = shopItem.shopListId
     )
@@ -24,6 +25,7 @@ class ShopListMapper @Inject constructor() {
         id = shopItemDbModel.id,
         name = shopItemDbModel.name,
         count = shopItemDbModel.count,
+        units = shopItemDbModel.units,
         enabled = shopItemDbModel.enabled,
         shopListId = shopItemDbModel.shopListId
     )

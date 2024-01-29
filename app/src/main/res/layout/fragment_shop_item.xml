@@ -45,9 +45,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             app:layout_constraintBottom_toTopOf="@+id/bottom_buttons"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/til_units"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/til_name"
             app:setErrorInputCount="@{viewModel.errorInputCount}">
@@ -59,7 +59,28 @@
                 android:hint="@string/count_hint"
                 android:inputType="numberDecimal"
                 app:itemId="@{viewModel.shopItem.id}"
-                app:setCount="@{viewModel.shopItem.count}" />
+                app:setCountToEditText="@{viewModel.shopItem.count}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_units"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/til_count"
+            app:layout_constraintTop_toTopOf="@id/til_count"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_units"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/units_hint"
+                android:inputType="text"
+                app:itemId="@{viewModel.shopItem.id}"
+                app:setUnitsToEditText="@{viewModel.shopItem.units}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout

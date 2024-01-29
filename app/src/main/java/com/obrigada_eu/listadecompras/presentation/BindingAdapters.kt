@@ -1,6 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation
 
 import android.widget.EditText
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem.Companion.UNDEFINED_ID
 import com.google.android.material.textfield.TextInputLayout
@@ -26,12 +27,26 @@ fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
     til.error = message
 }
 
-@BindingAdapter("itemId", "setCount")
-fun bindCount(editText: EditText, itemId: Int, itemCount: Double){
-    val count = if (itemId == UNDEFINED_ID){
-        1.0
-    } else {
-        itemCount
+@BindingAdapter("itemId", "setCountToEditText")
+fun bindCount(editText: EditText, itemId: Int, itemCount: Double?){
+    if (itemId != UNDEFINED_ID){
+        itemCount?.let { editText.setText(it.toString()) }
     }
-    editText.setText(count.toString())
+}
+
+@BindingAdapter("setCount")
+fun bindCount(textView: TextView, itemCount: Double?) {
+    textView.text = itemCount?.toString() ?: ""
+}
+
+@BindingAdapter("setUnits")
+fun bindUnits(textView: TextView, itemUnits: String?) {
+    textView.text = itemUnits ?: ""
+}
+
+@BindingAdapter("itemId", "setUnitsToEditText")
+fun bindUnits(editText: EditText, itemId: Int, itemUnits: String?){
+    if (itemId != UNDEFINED_ID) {
+        itemUnits?.let { editText.setText(it) }
+    }
 }

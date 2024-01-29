@@ -207,7 +207,7 @@ class ShopListRepositoryImpl @Inject constructor(
                 val itemName = values[1].trim { it == ' ' }
                 val count = values[2].trim { it == ' ' }
 
-                val item = ShopItem(itemName, count.toDouble(), enabled)
+                val item = ShopItem(itemName, count.toDouble(), null, enabled)
                 Log.d("loadTxtList", "item = $item")
                 list.add(item)
             }

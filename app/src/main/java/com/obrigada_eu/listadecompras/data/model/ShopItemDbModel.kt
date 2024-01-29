@@ -21,7 +21,8 @@ data class ShopItemDbModel(
     @ColumnInfo(name = "shop_item_id")
     val id: Int,
     val name: String,
-    val count: Double,
+    val count: Double?,
+    val units: String?,
     val enabled: Boolean,
     @ColumnInfo(name = "shop_item_order")
     var position: Int = -1,

@@ -40,29 +40,31 @@ class ShopItemViewModel @Inject constructor(
     val closeScreen: LiveData<Unit>
         get() = _closeScreen
 
-    fun addShopItem(inputName: String?, inputCount: String?, listId: Int) {
+    fun addShopItem(inputName: String?, inputCount: String?, inputUnits: String?, listId: Int) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
-        val fieldsValid = validateInput(name, count)
+        val units = parseUnits(inputUnits)
+        val fieldsValid = validateInput(name, count, units)
         if (fieldsValid) {
 
             viewModelScope.launch {
-                val shopItem = ShopItem(name, count, true, shopListId = listId)
+                val shopItem = ShopItem(name, count, units, true, shopListId = listId)
                 addItemToShopListUseCase(shopItem)
                 finishScreen()
             }
         }
     }
 
-    fun editShopItem(inputName: String?, inputCount: String?) {
+    fun editShopItem(inputName: String?, inputCount: String?, inputUnits: String?) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
-        val fieldsValid = validateInput(name, count)
+        val units = parseUnits(inputUnits)
+        val fieldsValid = validateInput(name, count, units)
         if (fieldsValid) {
             _shopItem.value?.let {
 
                 viewModelScope.launch {
-                    val item = it.copy(name = name, count = count)
+                    val item = it.copy(name = name, count = count, units = units)
                     editShopItemUseCase(item)
                     finishScreen()
                 }
@@ -79,24 +81,34 @@ class ShopItemViewModel @Inject constructor(
         return inputName?.trim() ?: ""
     }
 
-    private fun parseCount(inputCount: String?): Double {
+    private fun parseCount(inputCount: String?): Double? {
         return try {
-            inputCount?.trim()?.toDouble() ?: -1.0
+           return inputCount?.trim()?.toDouble()
         } catch (e: Exception) {
-            -1.0
+            null
         }
     }
+    private fun parseUnits(inputUnits: String?): String? {
+        val units = inputUnits?.trim()
+        return if (!units.isNullOrBlank()) units else null
+    }
 
-    private fun validateInput(name: String, count: Double): Boolean {
+    private fun validateInput(name: String, count: Double?, units: String?): Boolean {
         var result = true
         if (name.isBlank()) {
             _errorInputName.value = true
             result = false
         }
-        if (count < 0) {
+        if (units != null && count == null) {
             _errorInputCount.value = true
             result = false
         }
+        if (count != null && count <= 0){
+            _errorInputCount.value = true
+            result = false
+        }
+
+
         return result
     }
 

@@ -163,6 +163,7 @@ class ShopItemFragment : Fragment() {
                 shopItemViewModel.addShopItem(
                     etName.text?.toString(),
                     etCount.text?.toString(),
+                    etUnits.text?.toString(),
                     listId
                 )
             }
@@ -175,7 +176,8 @@ class ShopItemFragment : Fragment() {
             btnSave.setOnClickListener {
                 shopItemViewModel.editShopItem(
                     etName.text?.toString(),
-                    etCount.text?.toString()
+                    etCount.text?.toString(),
+                    etUnits.text?.toString()
                 )
             }
         }

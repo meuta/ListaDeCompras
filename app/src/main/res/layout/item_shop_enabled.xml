@@ -45,8 +45,19 @@
                 android:textColor="@color/grayish"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:text="@{String.valueOf(shopItem.count)}"
-                tools:text="0" />
+                app:setCount="@{shopItem.count}"
+                tools:text="1.0" />
+
+            <TextView
+                android:id="@+id/tv_units"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/grayish"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:setUnits="@{shopItem.units}"
+                tools:text="kg" />
 
         </LinearLayout>
 
