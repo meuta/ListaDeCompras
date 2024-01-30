@@ -114,7 +114,7 @@ class ShopItemFragment : Fragment() {
                 with(binding) {
                     if (etName.text.hashCode() == s.hashCode()) {
                         shopItemViewModel.resetErrorInputName()
-                    } else if (etCount.text.hashCode() == s.hashCode()) {
+                    } else if (etCount.text.hashCode() == s.hashCode() || etUnits.text.hashCode() == s.hashCode()) {
                         shopItemViewModel.resetErrorInputCount()
                     }
                 }
@@ -126,6 +126,7 @@ class ShopItemFragment : Fragment() {
         with(binding) {
             etName.addTextChangedListener(inputErrorListener)
             etCount.addTextChangedListener(inputErrorListener)
+            etUnits.addTextChangedListener(inputErrorListener)
         }
     }
 

@@ -6,6 +6,7 @@ import androidx.databinding.BindingAdapter
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem.Companion.UNDEFINED_ID
 import com.google.android.material.textfield.TextInputLayout
 import com.obrigada_eu.listadecompras.R
+import kotlin.math.roundToInt
 
 @BindingAdapter("setErrorInputName")
 fun bindErrorInputName(til: TextInputLayout, isError: Boolean){
@@ -30,14 +31,27 @@ fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
 @BindingAdapter("itemId", "setCountToEditText")
 fun bindCount(editText: EditText, itemId: Int, itemCount: Double?){
     if (itemId != UNDEFINED_ID){
-        itemCount?.let { editText.setText(it.toString()) }
+        itemCount?.let {
+            if (it.rem(1).equals(0.0)) {
+                editText.setText(it.roundToInt().toString())
+            } else {
+                editText.setText(it.toString())
+            }
+        }
     }
 }
 
 @BindingAdapter("setCount")
 fun bindCount(textView: TextView, itemCount: Double?) {
-    textView.text = itemCount?.toString() ?: ""
+    if (itemCount == null) {
+        textView.text = ""
+    } else if (itemCount.rem(1).equals(0.0)) {
+        textView.text = itemCount.roundToInt().toString()
+    } else {
+        textView.text = itemCount.toString()
+    }
 }
+
 
 @BindingAdapter("setUnits")
 fun bindUnits(textView: TextView, itemUnits: String?) {
