@@ -142,10 +142,11 @@ class ShopListRepositoryImpl @Inject constructor(
         val list = shopListWithItems.shopList
         list.sortedBy { it.position } .forEach {
             val row = String.format(
-                "%-4s\t%-30s\t%s",
+                "%-4s\t%-30s\t%-9s\t%-9s",
                 (if (it.enabled) "-" else "+"),
                 it.name,
-                it.count
+                it.count ?: "",
+                it.units ?: ""
             )
             content += row + "\n"
         }
@@ -204,10 +205,11 @@ class ShopListRepositoryImpl @Inject constructor(
                 val values = line.split("\t")
 
                 val enabled = line.first() != '+'
-                val itemName = values[1].trim { it == ' ' }
-                val count = values[2].trim { it == ' ' }
+                val itemName = values[1].trim()
+                val count = values[2].trim().ifEmpty { null }
+                val units = values[3].trim().ifEmpty { null }
 
-                val item = ShopItem(itemName, count.toDouble(), null, enabled)
+                val item = ShopItem(itemName, count?.toDouble(), units, enabled)
                 Log.d("loadTxtList", "item = $item")
                 list.add(item)
             }

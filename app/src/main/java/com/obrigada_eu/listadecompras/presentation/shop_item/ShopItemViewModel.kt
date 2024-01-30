@@ -82,15 +82,11 @@ class ShopItemViewModel @Inject constructor(
     }
 
     private fun parseCount(inputCount: String?): Double? {
-        return try {
-           return inputCount?.trim()?.toDouble()
-        } catch (e: Exception) {
-            null
-        }
+        return inputCount?.trim()?.ifEmpty { null }?.toDouble()
     }
+
     private fun parseUnits(inputUnits: String?): String? {
-        val units = inputUnits?.trim()
-        return if (!units.isNullOrBlank()) units else null
+        return inputUnits?.trim()?.ifEmpty { null }
     }
 
     private fun validateInput(name: String, count: Double?, units: String?): Boolean {
