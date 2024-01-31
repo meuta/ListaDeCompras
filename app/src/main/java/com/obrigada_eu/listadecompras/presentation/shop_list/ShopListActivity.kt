@@ -14,9 +14,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -162,6 +160,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             with(binding) {
                 etToolbarShopListActivity.setText(tvToolbarShopListActivity.text)
                 etToolbarShopListActivity.setSelection(etToolbarShopListActivity.text.length)
+                etToolbarShopListActivity.visibility = View.VISIBLE
+
                 etToolbarShopListActivity.requestFocus()
             }
         }
@@ -170,24 +170,19 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun setupEditText() {
         with(binding) {
             etToolbarShopListActivity.setOnFocusChangeListener { view, hasFocus ->
-                val layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
                 if (hasFocus) {
                     buttonSaveListName.visibility = View.VISIBLE
                     tvToolbarShopListActivity.visibility = View.INVISIBLE
-                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-                    etToolbarShopListActivity.layoutParams = layoutParams
 
                     val inputMethodManager =
                         this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.showSoftInput(etToolbarShopListActivity, 0)
 
-
                 } else {
-                    buttonSaveListName.visibility = View.INVISIBLE
                     tvToolbarShopListActivity.visibility = View.VISIBLE
-                    layoutParams.width = 0
-                    view.layoutParams = layoutParams
+                    buttonSaveListName.visibility = View.INVISIBLE
+                    view.visibility = View.INVISIBLE
                 }
             }
 

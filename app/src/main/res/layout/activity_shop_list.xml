@@ -51,13 +51,14 @@
 
                     <EditText
                         android:id="@+id/et_toolbar_shop_list_activity"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:background="@color/blackish"
                         android:inputType="textCapSentences"
                         android:autofillHints="list name"
-                        tools:ignore="LabelFor,Suspicious0dp" />
+                        android:visibility="invisible"
+                        tools:ignore="LabelFor" />
 
                 </FrameLayout>
 
