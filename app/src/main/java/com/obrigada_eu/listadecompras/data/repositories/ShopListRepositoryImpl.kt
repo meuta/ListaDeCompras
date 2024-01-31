@@ -68,7 +68,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getAllListsWithoutItems(): Flow<List<ShopList>> {
         return shopListDao.getShopListsWithoutShopItems().map { set ->
-            Log.d("getAllListsWithoutItems", "ListSet = ${set.map{it.name to it.position}}")
+            Log.d("getAllListsWithoutItems", "ListSet = ${set.map { it.name to it.position }}")
             listSet = set.toMutableList()
             mapper.mapListSetToEntity(set)
         }
@@ -121,7 +121,10 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getShopListWithItems(listId: Int): Flow<ShopListWithItems> {
         return shopListDao.getShopListWithItemsFlow(listId).map { list ->
-            Log.d("getShopListWithItems", "shopList = ${list.shopList.map{it.name to it.position}}")
+            Log.d(
+                "getShopListWithItems",
+                "shopList = ${list.shopList.map { it.name to it.position }}"
+            )
             val newList = list.shopList.sortedBy { it.position }.toMutableList()
             mapper.mapShopListWithItemsDbModelToShopList(list.copy(shopList = newList))
         }
@@ -140,7 +143,7 @@ class ShopListRepositoryImpl @Inject constructor(
             listName
         )
         val list = shopListWithItems.shopList
-        list.sortedBy { it.position } .forEach {
+        list.sortedBy { it.position }.forEach {
             val row = String.format(
                 "%-4s\t%-30s\t%-9s\t%-9s",
                 (if (it.enabled) "-" else "+"),
@@ -152,12 +155,13 @@ class ShopListRepositoryImpl @Inject constructor(
         }
         content = content.dropLast(1)
 
-        saveFile(context, listName,  content,"txt")
+        saveFile(context, listName, content, "txt")
     }
 
     @Throws(IOException::class)
     private fun saveFile(context: Context, fileName: String, text: String, extension: String) {
-        val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val dirDocuments =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = separator.toString() + context.resources.getString(R.string.app_name)
         val dirDocumentsApp = File(dirDocuments.toString() + append)
         if (!dirDocuments.isDirectory) {
@@ -170,7 +174,10 @@ class ShopListRepositoryImpl @Inject constructor(
             val values = ContentValues()
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
             values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
-            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS + append)
+            values.put(
+                MediaStore.MediaColumns.RELATIVE_PATH,
+                Environment.DIRECTORY_DOCUMENTS + append
+            )
             val extVolumeUri: Uri = MediaStore.Files.getContentUri("external")
             val fileUri: Uri? = context.contentResolver.insert(extVolumeUri, values)
             context.contentResolver.openOutputStream(fileUri!!)
@@ -185,9 +192,10 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun loadFromTxtFile(fileName: String, newFileName: String?) {
+    override suspend fun loadFromTxtFile(fileName: String, newFileName: String?): Boolean {
 
-        val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val dirDocuments =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = separator.toString() + context.resources.getString(R.string.app_name)
         val dirDocumentsApp = File(dirDocuments.toString() + append)
 
@@ -196,53 +204,61 @@ class ShopListRepositoryImpl @Inject constructor(
         val file = File(dirDocumentsApp, "$fileName.txt")
 
         if (file.exists()) {
-            val bufferedReader: BufferedReader = file.bufferedReader()
-            val inputString = bufferedReader.use { it.readText() }
-            Log.d("loadTxtList", "content:\n$inputString")
-            val lines = inputString.split("\n")
-            val list = mutableListOf<ShopItem>()
-            lines.drop(2).forEach { line ->
-                val values = line.split("\t")
+            try {
 
-                val enabled = line.first() != '+'
-                val itemName = values[1].trim()
-                val count = values[2].trim().ifEmpty { null }
-                val units = values[3].trim().ifEmpty { null }
+                val bufferedReader: BufferedReader = file.bufferedReader()
+                val inputString = bufferedReader.use { it.readText() }
+                Log.d("loadTxtList", "content:\n$inputString")
+                val lines = inputString.split("\n")
+                val list = mutableListOf<ShopItem>()
+                lines.drop(2).forEach { line ->
+                    val values = line.split("\t")
 
-                val item = ShopItem(itemName, count?.toDouble(), units, enabled)
-                Log.d("loadTxtList", "item = $item")
-                list.add(item)
-            }
-            val listEnabled = lines[0].first() != '+'
+                    val enabled = line.first() != '+'
+                    val itemName = values[1].trim()
+                    val count = values[2].trim().ifEmpty { null }
+                    val units = values[3].trim().ifEmpty { null }
 
-            val listName = newFileName ?: fileName
-
-            Log.d("loadTxtList", "listName = $listName")
-
-            addShopList(listName, listEnabled)
-
-            shopListDao.getShopListId(listName)?.let { listId ->
-                list.withIndex().forEach {
-                    shopItemDao.addShopItem(
-                        mapper
-                            .mapShopItemEntityToDbModel(it.value)
-                            .copy(shopListId = listId, position = it.index)
-                    )
+                    val item = ShopItem(itemName, count?.toDouble(), units, enabled)
+                    Log.d("loadTxtList", "item = $item")
+                    list.add(item)
                 }
+                val listEnabled = lines[0].first() != '+'
+
+                val listName = newFileName ?: fileName
+
+                Log.d("loadTxtList", "listName = $listName")
+
+                addShopList(listName, listEnabled)
+
+                shopListDao.getShopListId(listName)?.let { listId ->
+                    list.withIndex().forEach {
+                        shopItemDao.addShopItem(
+                            mapper
+                                .mapShopItemEntityToDbModel(it.value)
+                                .copy(shopListId = listId, position = it.index)
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                return false
             }
         }
+        return true
     }
 
 
     override suspend fun loadFilesList(): List<String>? {
-        val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val dirDocuments =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = separator.toString() + context.resources.getString(R.string.app_name)
         val dirDocumentsApp = File(dirDocuments.toString() + append)
         if (!dirDocumentsApp.isDirectory) {
             Log.d("loadFilesList", "!dirDocumentsApp.isDirectory")
         }
 
-        val filesTxtList = dirDocumentsApp.list{ _, filename -> filename.endsWith(".txt")}?.toList()
+        val filesTxtList =
+            dirDocumentsApp.list { _, filename -> filename.endsWith(".txt") }?.toList()
 
         return filesTxtList
     }

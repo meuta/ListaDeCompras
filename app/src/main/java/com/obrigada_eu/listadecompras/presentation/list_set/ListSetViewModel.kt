@@ -59,6 +59,11 @@ class ListSetViewModel @Inject constructor(
     val oldFileName: LiveData<String?>
         get() = _oldFileName
 
+    private var _fileWithoutErrors = MutableStateFlow(true)
+    val fileWithoutErrors: LiveData<Boolean>
+        get() = _fileWithoutErrors.asLiveData()
+
+
     fun updateUiState(uiState: Boolean, oldFileName: String? = null) {
         _showCreateListForFile.update { uiState }
 
@@ -110,9 +115,10 @@ class ListSetViewModel @Inject constructor(
             val oldName = _oldFileName.value ?: name
             val newName = if (_oldFileName.value != null) name else null
             scope.launch {
-                loadFromTxtFileUseCase(oldName, newName)
+                _fileWithoutErrors.value = loadFromTxtFileUseCase(oldName, newName)
             }
             updateUiState(false, null)
+            if (!_fileWithoutErrors.value) _fileWithoutErrors.value = true
         }
 
         if (fromTxtFile && !fieldsValid) {

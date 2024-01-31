@@ -39,6 +39,15 @@ class ListSetActivity : AppCompatActivity() {
         }
         setupActionBar()
         setOnBackPressedCallback()
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        listSetViewModel.fileWithoutErrors.observe(this){
+            if (!it) {
+                Toast.makeText(this, "File reading error", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun setupActionBar() {
