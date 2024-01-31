@@ -123,6 +123,7 @@ class ListSetViewModel @Inject constructor(
 
         if (fromTxtFile && !fieldsValid) {
             updateUiState(true, name)
+            _errorInputName.value = true
         }
     }
 

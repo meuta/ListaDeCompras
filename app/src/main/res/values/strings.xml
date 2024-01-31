@@ -7,6 +7,7 @@
     <string name="save_btn">SAVE</string>
     <string name="error_input_name">please enter a name</string>
     <string name="error_input_count">please enter a positive value</string>
+    <string name="error_input_list_name">please enter a unique name</string>
     <string name="new_list">New List</string>
     <string name="my_lists">My Lists</string>
     <string name="create_list">Create List</string>

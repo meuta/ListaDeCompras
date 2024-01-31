@@ -18,6 +18,16 @@ fun bindErrorInputName(til: TextInputLayout, isError: Boolean){
     til.error = message
 }
 
+@BindingAdapter("setErrorInputListName")
+fun bindErrorInputListName(til: TextInputLayout, isError: Boolean){
+    val message = if (isError) {
+        til.context.getString(R.string.error_input_list_name)
+    } else {
+        null
+    }
+    til.error = message
+}
+
 @BindingAdapter("setErrorInputCount")
 fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
     val message = if (isError) {

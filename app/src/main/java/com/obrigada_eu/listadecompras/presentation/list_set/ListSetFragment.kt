@@ -82,7 +82,7 @@ class ListSetFragment(
             }
 
             buttonCreateList.setOnClickListener { view ->
-                if (etListName.text.isNotEmpty()) {
+//                if (etListName.text.isNotEmpty()) {
                     var fromFile = false
                     if (fragmentListViewModel.showCreateListForFile.value == true){
                         fromFile = true
@@ -96,7 +96,7 @@ class ListSetFragment(
                             activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
                     }
-                }
+//                }
             }
         }
     }
