@@ -34,5 +34,9 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="text_selection_appearance" parent="">
+        <item name="colorPrimary">@color/grayish_opaque</item>
+        <item name="colorSecondary">@color/blackish_transparent</item>
+    </style>
 
 </resources>

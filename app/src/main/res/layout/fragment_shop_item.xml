@@ -17,6 +17,7 @@
         tools:context=".presentation.shop_item.ShopItemFragment">
 
         <com.google.android.material.textfield.TextInputLayout
+            android:theme="@style/text_selection_appearance"
             android:id="@+id/til_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -47,6 +48,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:theme="@style/text_selection_appearance"
             android:id="@+id/til_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -76,6 +78,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:theme="@style/text_selection_appearance"
             android:id="@+id/til_units"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
