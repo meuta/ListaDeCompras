@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blackish"
+        android:background="@color/background_dark_gray_color"
         tools:context=".presentation.shop_item.ShopItemFragment">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -28,7 +28,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
-            app:setErrorInputName="@{viewModel.errorInputName}">
+            app:boxStrokeErrorColor="@color/orange_error_color"
+            app:errorTextColor="@color/orange_error_color"
+            app:errorIconTint="@color/orange_error_color"
+            app:cursorErrorColor="@color/grayish"
+            app:errorTextAppearance="@style/error_appearance"
+            app:setErrorInputName="@{viewModel.errorInputName}"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_name"
@@ -51,6 +57,11 @@
             app:layout_constraintEnd_toStartOf="@+id/til_units"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/til_name"
+            app:boxStrokeErrorColor="@color/orange_error_color"
+            app:errorTextColor="@color/orange_error_color"
+            app:errorIconTint="@color/orange_error_color"
+            app:cursorErrorColor="@color/grayish"
+            app:errorTextAppearance="@style/error_appearance"
             app:setErrorInputCount="@{viewModel.errorInputCount}">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -90,7 +101,6 @@
             android:id="@+id/bottom_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

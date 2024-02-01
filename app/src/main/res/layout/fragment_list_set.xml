@@ -66,8 +66,10 @@
                     app:boxStrokeColor="@color/whitish"
                     app:boxStrokeErrorColor="@color/whitish"
                     app:boxBackgroundColor="@color/whitish"
-                    app:errorTextColor="@color/background_color_delete"
-                    app:errorIconTint="@color/background_color_delete">
+                    app:errorTextColor="@color/orange_error_color"
+                    app:errorIconTint="@color/whitish"
+                    app:errorTextAppearance="@style/error_appearance"
+                    app:cursorErrorColor="@color/grayish">
 
                 <EditText
                     android:id="@+id/et_list_name"

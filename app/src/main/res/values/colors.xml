@@ -10,13 +10,17 @@
 
     <color name="grayish">#A51F1B1B</color>
     <color name="blackish">#F4363635</color>
+    <color name="background_dark_gray_color">#F44A4A49</color>
     <color name="input_text_color">#56686868</color>
+    <color name="background_light_gray_color">#17686868</color>
     <color name="whitish">#BCBCBC</color>
     <color name="item_background_color">#9776D0</color>
     <color name="item_list_background_color">#D85EBC8D</color>
 
     <color name="background_color_toggle">#6D8E6E</color>
     <color name="background_color_delete">#A7424D</color>
+    <color name="error_text_color">#E8FE4E4F</color>
+    <color name="orange_error_color">#D9665B</color>
 
 
 
