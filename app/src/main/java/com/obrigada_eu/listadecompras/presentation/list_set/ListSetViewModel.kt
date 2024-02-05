@@ -132,7 +132,7 @@ class ListSetViewModel @Inject constructor(
         var result = true
         if (name.isBlank()) {
             _errorInputName.value = true
-            result = false
+            return false
         }
 
         val names = allListsWithoutItems.value?.map { it.name }

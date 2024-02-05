@@ -39,4 +39,9 @@
         <item name="colorSecondary">@color/blackish_transparent</item>
     </style>
 
+    <style name="text_selection_dark_appearance" parent="">
+        <item name="colorPrimary">@color/item_background_color</item>
+        <item name="colorSecondary">@color/item_background_color</item>
+    </style>
+
 </resources>

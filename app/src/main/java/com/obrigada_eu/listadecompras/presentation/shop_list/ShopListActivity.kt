@@ -74,6 +74,20 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         shopListViewModel.allListsWithoutItems.observe(this) {
             Log.d("ShopListActivity", "allListsWithItems.observe =\n $it")
         }
+
+        shopListViewModel.errorInputName.observe(this) {
+            Log.d("ShopListActivity", "errorInputName.observe = $it")
+            with(binding) {
+                if (it) {
+                    tvErrorToolbarShopListActivity.text =
+                        this@ShopListActivity.getString(R.string.error_input_list_name)
+                    tvErrorToolbarShopListActivity.visibility = View.VISIBLE
+                } else {
+                    tvErrorToolbarShopListActivity.text = ""
+                    tvErrorToolbarShopListActivity.visibility = View.GONE
+                }
+            }
+        }
     }
 
 
@@ -98,8 +112,14 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             R.id.action_save_txt -> {
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    + ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    && ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
+                    + ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
                     != PackageManager.PERMISSION_GRANTED
                 ) {
                     ActivityCompat.requestPermissions(
@@ -136,10 +156,18 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.isNotEmpty()
                 && grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED
-                ) {
-                Toast.makeText(this, "Storage permissions granted,\nnow you can save the file", Toast.LENGTH_LONG).show()
+            ) {
+                Toast.makeText(
+                    this,
+                    "Storage permissions granted,\nnow you can save the file",
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
-                Toast.makeText(this, "Storage permissions denied,\nyou cannot save the file", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Storage permissions denied,\nyou cannot save the file",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -147,10 +175,13 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun exportListToTxt() {
         shopListViewModel.exportListToTxt()
-        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath + File.separator.toString() + this.resources.getString(R.string.app_name)
-        Toast.makeText(this, "List has been saved to the directory:\n$dir", Toast.LENGTH_LONG).show()
+        val dir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath + File.separator.toString() + this.resources.getString(
+                R.string.app_name
+            )
+        Toast.makeText(this, "List has been saved to the directory:\n$dir", Toast.LENGTH_LONG)
+            .show()
     }
-
 
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -187,19 +218,17 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             }
 
             buttonSaveListName.setOnClickListener {
-                if (etToolbarShopListActivity.text?.isNotEmpty() == true) {
-                    shopListViewModel.updateShopListName(etToolbarShopListActivity.text.toString())
-                    val isError = shopListViewModel.errorInputName.value ?: true
-                    if (!isError) {
-                        etToolbarShopListActivity.clearFocus()
-                        etToolbarShopListActivity.setText("")
-                        val inputMethodManager =
-                            this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        inputMethodManager.hideSoftInputFromWindow(
-                            etToolbarShopListActivity.windowToken,
-                            0
-                        )
-                    }
+                shopListViewModel.updateShopListName(etToolbarShopListActivity.text.toString())
+                val isError = shopListViewModel.errorInputName.value ?: true
+                if (!isError) {
+                    etToolbarShopListActivity.clearFocus()
+                    etToolbarShopListActivity.setText("")
+                    val inputMethodManager =
+                        this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.hideSoftInputFromWindow(
+                        etToolbarShopListActivity.windowToken,
+                        0
+                    )
                 }
             }
         }

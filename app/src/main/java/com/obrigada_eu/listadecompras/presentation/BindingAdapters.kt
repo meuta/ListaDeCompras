@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation
 
+import android.util.Log
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -18,16 +19,6 @@ fun bindErrorInputName(til: TextInputLayout, isError: Boolean){
     til.error = message
 }
 
-@BindingAdapter("setErrorInputListName")
-fun bindErrorInputListName(til: TextInputLayout, isError: Boolean){
-    val message = if (isError) {
-        til.context.getString(R.string.error_input_list_name)
-    } else {
-        null
-    }
-    til.error = message
-}
-
 @BindingAdapter("setErrorInputCount")
 fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
     val message = if (isError) {
@@ -36,6 +27,28 @@ fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
         null
     }
     til.error = message
+}
+
+@BindingAdapter("setErrorInputListName")
+fun bindErrorInputListName(til: TextInputLayout, isError: Boolean){
+    Log.d("BindingAdapter", "isError = $isError ")
+    val message = if (isError) {
+        til.context.getString(R.string.error_input_list_name)
+    } else {
+        null
+    }
+    til.error = message
+}
+
+@BindingAdapter("setTextViewErrorInputListName")
+fun bindTextViewErrorInputListName(textView: TextView, isError: Boolean){
+    Log.d("BindingAdapter", "isError = $isError ")
+    val message = if (isError) {
+        textView.context.getString(R.string.error_input_list_name)
+    } else {
+        ""
+    }
+    textView.text = message
 }
 
 @BindingAdapter("itemId", "setCountToEditText")

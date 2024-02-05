@@ -55,8 +55,8 @@
                 >
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:theme="@style/text_selection_appearance"
                     android:id="@+id/til_list_name"
+                    android:theme="@style/text_selection_appearance"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

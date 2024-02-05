@@ -44,9 +44,10 @@
                             android:layout_height="match_parent"
                             android:background="@color/blackish"
                             android:gravity="center|start"
+                            android:textColor="@color/white"
                             android:textIsSelectable="true"
-                            android:textSize="16sp"
-                            />
+                            android:textSize="20sp"
+                            tools:text="My List" />
 
                         <EditText
                             android:id="@+id/et_toolbar_shop_list_activity"
@@ -63,17 +64,28 @@
                     <ImageButton
                         android:id="@+id/button_save_list_name"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_margin="16dp"
+                        android:layout_height="wrap_content"
                         android:padding="16dp"
-                        android:background="@color/blackish"
-                        app:srcCompat="@drawable/ic_check_24"
+                        android:layout_marginEnd="16dp"
+                        android:layout_gravity="center"
+                        android:background="@color/item_background_color"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:srcCompat="@drawable/ic_check_24_black"
                         android:visibility="invisible"
                         tools:visibility="visible"
                         android:contentDescription="@string/save_name"/>
                 </LinearLayout>
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:id="@+id/tv_error_toolbar_shop_list_activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/orange_error_color"
+            android:gravity="center"
+            android:visibility="gone"
+            />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
