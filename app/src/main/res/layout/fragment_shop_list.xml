@@ -22,7 +22,13 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/button_add_item"
+            app:fastScrollEnabled="true"
+            app:fastScrollHorizontalThumbDrawable="@drawable/shop_list_thumb_drawable"
+            app:fastScrollHorizontalTrackDrawable="@drawable/shop_list_track_drawable"
+            app:fastScrollVerticalThumbDrawable="@drawable/shop_list_thumb_drawable"
+            app:fastScrollVerticalTrackDrawable="@drawable/shop_list_track_drawable"
+            android:fastScrollAlwaysVisible="true"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,10 +42,10 @@
             android:clickable="true"
             android:contentDescription="@string/add_shop_item_content_description"
             android:focusable="true"
-            app:backgroundTint="@color/item_background_color"
+            app:backgroundTint="@color/shop_list_fab_color"
+            android:outlineProvider="none"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rv_shop_list"
             app:srcCompat="@drawable/ic_add" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
