@@ -68,8 +68,10 @@ class ListSetFragment(
             Log.d("ListSetFragment", "oldFileName.observe = $fileName")
             fileName?.let {
                 with(binding){
+                    etListName.tag = TAG_ERROR_INPUT_NAME
                     etListName.setText(it)
                     etListName.setSelection(etListName.text.length)
+                    etListName.tag = null
                 }
             }
         }
@@ -82,7 +84,6 @@ class ListSetFragment(
             }
 
             buttonCreateList.setOnClickListener { view ->
-//                if (etListName.text.isNotEmpty()) {
                     var fromFile = false
                     if (fragmentListViewModel.showCreateListForFile.value == true){
                         fromFile = true
@@ -96,7 +97,6 @@ class ListSetFragment(
                             activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
                     }
-//                }
             }
         }
     }
@@ -110,7 +110,17 @@ class ListSetFragment(
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 with(binding) {
                     if (etListName.text.hashCode() == s.hashCode()) {
-                        fragmentListViewModel.resetErrorInputName()
+                        Log.d(TAG, "onTextChanged: etListName.tag = ${etListName.tag}")
+                        if( etListName.tag == null ) {
+                            // Value changed by user
+                            fragmentListViewModel.resetErrorInputName()
+                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
+                        }
+                        else{
+                            // Value changed by program
+                            fragmentListViewModel.showErrorInputName()
+                            Log.d(TAG, "onTextChanged: show errorInputName")
+                        }
                     }
                 }
             }
@@ -164,8 +174,7 @@ class ListSetFragment(
                     if (cardNewList.visibility == View.VISIBLE) {
                         etListName.setText("")
                         cardNewList.visibility = View.GONE
-
-                        fragmentListViewModel.updateUiState(false, null)
+                        fragmentListViewModel.updateUiState(false, null, null)
 
                     } else {
                         isEnabled = false
@@ -206,6 +215,10 @@ class ListSetFragment(
     }
 
     companion object {
+
+        private const val TAG = "ListSetFragment"
+        private const val TAG_ERROR_INPUT_NAME = 101
+
         fun newInstance() = ListSetFragment()
     }
 

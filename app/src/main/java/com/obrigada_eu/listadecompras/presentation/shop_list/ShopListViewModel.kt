@@ -12,7 +12,7 @@ import com.obrigada_eu.listadecompras.domain.shop_item.GetShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import com.obrigada_eu.listadecompras.domain.shop_item.UndoDeleteItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.ExportListToTxtUseCase
-import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsFlowUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetShopListNameUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShopListViewModel @Inject constructor(
-    getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
+    getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsFlowUseCase,
     getShopListUseCase: GetShopListUseCase,
     private val deleteShopItemUseCase: DeleteShopItemUseCase,
     private val editShopItemUseCase: EditShopItemUseCase,

@@ -22,27 +22,48 @@
         <activity
             android:name=".presentation.list_set.ListSetActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.ListaDeCompras.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:mimeType="text/plain"
+                    android:scheme="file"/>
+            </intent-filter>
+
+            <intent-filter >
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+
+            </intent-filter>
+
         </activity>
 
         <activity
             android:name=".presentation.shop_item.ShopItemActivity"
             android:exported="false"
+            android:launchMode="singleTop"
+
             android:windowSoftInputMode="stateVisible|adjustResize" />
 
         <activity
             android:name=".presentation.shop_list.ShopListActivity"
             android:exported="false"
+            android:launchMode="singleTop"
+
             android:theme="@style/Theme.ListaDeCompras.NoActionBar" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
+
 
     </application>
 

@@ -7,7 +7,9 @@ interface ShopListRepository {
 
     suspend fun addShopList(shopListName: String, enabled: Boolean = true)
 
-    fun getAllListsWithoutItems(): Flow<List<ShopList>>
+    fun getAllListsWithoutItemsFlow(): Flow<List<ShopList>>
+
+    suspend fun getAllListsWithoutItems(): List<ShopList>
 
     fun getShopListName(listId: Int): Flow<String>
 
@@ -27,7 +29,7 @@ interface ShopListRepository {
 
     suspend fun loadFilesList(): List<String>?
 
-    suspend fun loadFromTxtFile(fileName: String, newFileName: String? = null): Boolean
+    suspend fun loadFromTxtFile(fileName: String, newFileName: String? = null, myFilePath: String? = null): Boolean
 
     suspend fun undoDelete()
 

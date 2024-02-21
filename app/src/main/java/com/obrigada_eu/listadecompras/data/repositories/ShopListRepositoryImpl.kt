@@ -66,12 +66,16 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override fun getAllListsWithoutItems(): Flow<List<ShopList>> {
-        return shopListDao.getShopListsWithoutShopItems().map { set ->
+    override fun getAllListsWithoutItemsFlow(): Flow<List<ShopList>> {
+        return shopListDao.getShopListsWithoutShopItemsFlow().map { set ->
             Log.d("getAllListsWithoutItems", "ListSet = ${set.map { it.name to it.position }}")
             listSet = set.toMutableList()
             mapper.mapListSetToEntity(set)
         }
+    }
+
+    override suspend fun getAllListsWithoutItems(): List<ShopList> {
+        return mapper.mapListSetToEntity(shopListDao.getShopListsWithoutShopItems())
     }
 
 
@@ -192,16 +196,24 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun loadFromTxtFile(fileName: String, newFileName: String?): Boolean {
+    override suspend fun loadFromTxtFile(fileName: String, newFileName: String?, myFilePath: String?): Boolean {
 
         val dirDocuments =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = separator.toString() + context.resources.getString(R.string.app_name)
         val dirDocumentsApp = File(dirDocuments.toString() + append)
 
-        Log.d("loadTxtList", "fileName = $fileName, newFileName = $newFileName")
+        Log.d("loadTxtList", "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath")
 
         val file = File(dirDocumentsApp, "$fileName.txt")
+
+
+        if (myFilePath != null){
+
+        // TODO
+
+        }
+
 
         if (file.exists()) {
             try {
@@ -302,6 +314,8 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
     private companion object {
+
+        private const val TAG = "ShopListRepositoryImpl"
 
         val KEY_LIST_ID = intPreferencesKey(name = "listId")
 

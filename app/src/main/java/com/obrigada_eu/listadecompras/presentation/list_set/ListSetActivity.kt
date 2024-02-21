@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -36,14 +37,42 @@ class ListSetActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.list_set_container, ListSetFragment.newInstance())
                 .commit()
+
+            intent?.let {
+                handleIntent(it)
+            }
         }
+
         setupActionBar()
         setOnBackPressedCallback()
         observeViewModel()
     }
 
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let {
+            handleIntent(it)
+        }
+    }
+
+    private fun handleIntent(intent: Intent){
+        Log.d(TAG, "handleIntent: intent = $intent")
+
+        val data: Uri? = intent.data
+        if (intent.type == "text/plain") {
+            val myFilePath = data?.lastPathSegment
+            val parts = myFilePath?.split("/")
+            val myFileName = parts?.last()?.dropLast(4)
+            Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
+            Log.d(TAG, "handleIntent: myFileName = $myFileName")
+            listSetViewModel.addShopList(myFileName, true, myFilePath)
+        }
+
+    }
+
     private fun observeViewModel() {
-        listSetViewModel.fileWithoutErrors.observe(this){
+        listSetViewModel.fileWithoutErrors.observe(this) {
             if (!it) {
                 Toast.makeText(this, "File reading error", Toast.LENGTH_LONG).show()
             }
@@ -51,10 +80,10 @@ class ListSetActivity : AppCompatActivity() {
     }
 
     private fun setupActionBar() {
-        with (binding){
+        with(binding) {
             setSupportActionBar(toolbarListSetActivity)
             toolbarListSetActivity.setOnClickListener {
-                if (filesList.visibility == View.VISIBLE){
+                if (filesList.visibility == View.VISIBLE) {
                     filesList.visibility = View.GONE
                 }
             }
@@ -72,7 +101,10 @@ class ListSetActivity : AppCompatActivity() {
             R.id.action_load_txt -> {
 
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
-                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    && ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
                     != PackageManager.PERMISSION_GRANTED
                 ) {
                     ActivityCompat.requestPermissions(
@@ -103,9 +135,17 @@ class ListSetActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty()
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED
             ) {
-                Toast.makeText(this, "Storage permissions granted,\nnow you can see the list of files", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Storage permissions granted,\nnow you can see the list of files",
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
-                Toast.makeText(this, "Storage permissions denied,\nyou cannot see the list of files", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Storage permissions denied,\nyou cannot see the list of files",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -116,16 +156,17 @@ class ListSetActivity : AppCompatActivity() {
         binding.filesList.visibility = View.VISIBLE
     }
 
-    private fun setupFilesListView(){
+    private fun setupFilesListView() {
         listSetViewModel.loadFilesList()
         listSetViewModel.filesList.observe(this) {
             it?.let {
-                val listAdapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, it)
+                val listAdapter =
+                    ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, it)
                 binding.filesList.adapter = listAdapter
-                binding.filesList.setOnItemClickListener{parent, _, position, _ ->
+                binding.filesList.setOnItemClickListener { parent, _, position, _ ->
                     val fileName = listAdapter.getItem(position)?.dropLast(4)
                     Log.d("filesList.setOnItemClickListener", "element = $fileName")
-                    fileName?.let {name ->
+                    fileName?.let { name ->
                         loadFromTxtFile(name)
                     }
 
@@ -166,6 +207,7 @@ class ListSetActivity : AppCompatActivity() {
     companion object {
 
         private const val STORAGE_PERMISSION_CODE = 101
+        private const val TAG = "ListSetActivity"
 
         fun newIntent(context: Context): Intent {
             return Intent(context, ListSetActivity::class.java)

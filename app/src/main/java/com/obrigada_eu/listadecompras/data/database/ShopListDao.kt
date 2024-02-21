@@ -14,7 +14,10 @@ interface ShopListDao {
     suspend fun insertShopList(shopListDbModel: ShopListDbModel)
 
     @Query("SELECT * FROM shop_lists ORDER BY shop_list_order ASC")
-    fun getShopListsWithoutShopItems(): Flow<List<ShopListDbModel>>
+    fun getShopListsWithoutShopItemsFlow(): Flow<List<ShopListDbModel>>
+
+    @Query("SELECT * FROM shop_lists ORDER BY shop_list_order ASC")
+    suspend fun getShopListsWithoutShopItems(): List<ShopListDbModel>
 
     @Query("SELECT shop_list_name FROM shop_lists WHERE id=:shopListId LIMIT 1")
     fun getShopListName(shopListId: Int): Flow<String>
