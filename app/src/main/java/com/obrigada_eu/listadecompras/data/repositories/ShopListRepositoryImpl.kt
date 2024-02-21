@@ -198,22 +198,24 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override suspend fun loadFromTxtFile(fileName: String, newFileName: String?, myFilePath: String?): Boolean {
 
-        val dirDocuments =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val append = separator.toString() + context.resources.getString(R.string.app_name)
-        val dirDocumentsApp = File(dirDocuments.toString() + append)
-
         Log.d("loadTxtList", "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath")
 
-        val file = File(dirDocumentsApp, "$fileName.txt")
+        val path = if (myFilePath == null) {
 
+            val dirDocuments =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
 
-        if (myFilePath != null){
+            val append = separator.toString() + context.resources.getString(R.string.app_name) + separator.toString()
+            val dirDocumentsApp = dirDocuments.toString() + append
 
-        // TODO
+            "$dirDocumentsApp$fileName.txt"
+             } else {
 
+            separator.toString() + myFilePath.drop(8)
         }
 
+        Log.d(TAG, "loadFromTxtFile: path = $path")
+        val file = File(path)
 
         if (file.exists()) {
             try {
