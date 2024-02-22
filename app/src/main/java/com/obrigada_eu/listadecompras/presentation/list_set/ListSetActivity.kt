@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -56,19 +57,65 @@ class ListSetActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleIntent(intent: Intent){
+    private fun handleIntent(intent: Intent) {
         Log.d(TAG, "handleIntent: intent = $intent")
 
         val data: Uri? = intent.data
-        if (intent.type == "text/plain") {
-            val myFilePath = data?.lastPathSegment
-            val parts = myFilePath?.split("/")
-            val myFileName = parts?.last()?.dropLast(4)
-            Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
-            Log.d(TAG, "handleIntent: myFileName = $myFileName")
-            listSetViewModel.addShopList(myFileName, true, myFilePath)
+
+        if (intent.action == Intent.ACTION_SEND) {
+
+            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+            } else {
+                intent.getParcelableExtra(Intent.EXTRA_STREAM)
+            }
+
+            uri?.let {
+                // Update UI to reflect image being shared
+                Log.d(TAG, "handleIntent: uri = $it")
+                val myFilePath = it.path
+                Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
+
+                val fileName = getFileName(it)?.dropLast(4)
+                listSetViewModel.addShopList(fileName, true, null, it)
+            }
+
+        } else {
+            if (intent.action == Intent.ACTION_VIEW && intent.type == "text/plain") {
+                val myFilePath = data?.lastPathSegment
+                val parts = myFilePath?.split("/")
+                val myFileName = parts?.last()?.dropLast(4)
+                Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
+                Log.d(TAG, "handleIntent: myFileName = $myFileName")
+                listSetViewModel.addShopList(myFileName, true, myFilePath)
+            }
         }
 
+    }
+
+
+    private fun getFileName(uri: Uri): String? {
+        var result: String? = null
+        if (uri.scheme == "content") {
+            val cursor = contentResolver.query(uri, null, null, null, null)
+            cursor?.let {
+                it.use { cur ->
+                    val nameIndex = cur.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    cur.moveToFirst()
+                    result = cur.getString(nameIndex)
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.path
+            result?.let{
+                val cut = it.lastIndexOf('/')
+                if (cut != -1) {
+                    result = it.substring(cut + 1)
+                }
+            }
+        }
+        return result
     }
 
     private fun observeViewModel() {

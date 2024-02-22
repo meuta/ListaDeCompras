@@ -174,7 +174,7 @@ class ListSetFragment(
                     if (cardNewList.visibility == View.VISIBLE) {
                         etListName.setText("")
                         cardNewList.visibility = View.GONE
-                        fragmentListViewModel.updateUiState(false, null, null)
+                        fragmentListViewModel.updateUiState(false, null, null, null)
 
                     } else {
                         isEnabled = false

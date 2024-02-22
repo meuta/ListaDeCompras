@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -39,6 +40,7 @@ import java.io.File
 import java.io.File.separator
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -196,33 +198,45 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun loadFromTxtFile(fileName: String, newFileName: String?, myFilePath: String?): Boolean {
+    override suspend fun loadFromTxtFile(fileName: String, newFileName: String?, myFilePath: String?, uri: Uri?): Boolean {
 
-        Log.d("loadTxtList", "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath")
-
+        Log.d(
+            "loadTxtList",
+            "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath"
+        )
         val path = if (myFilePath == null) {
 
             val dirDocuments =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
 
-            val append = separator.toString() + context.resources.getString(R.string.app_name) + separator.toString()
+            val append =
+                separator.toString() + context.resources.getString(R.string.app_name) + separator.toString()
             val dirDocumentsApp = dirDocuments.toString() + append
 
             "$dirDocumentsApp$fileName.txt"
-             } else {
+        } else {
 
             separator.toString() + myFilePath.drop(8)
         }
 
         Log.d(TAG, "loadFromTxtFile: path = $path")
-        val file = File(path)
+        var file = File(path)
+
+        var deleteFile = false
+        if (uri != null){
+            val tempFile: File = createFileFromContentUri(uri)
+            val filePath = tempFile.path
+            Log.d(TAG, "loadFromTxtFile: filePath = $filePath")
+            file = tempFile
+            deleteFile = true
+        }
 
         if (file.exists()) {
             try {
 
                 val bufferedReader: BufferedReader = file.bufferedReader()
                 val inputString = bufferedReader.use { it.readText() }
-                Log.d("loadTxtList", "content:\n$inputString")
+                Log.d("loadTxtList", "content: \n$inputString")
                 val lines = inputString.split("\n")
                 val list = mutableListOf<ShopItem>()
                 lines.drop(2).forEach { line ->
@@ -257,10 +271,45 @@ class ShopListRepositoryImpl @Inject constructor(
             } catch (e: Exception) {
                 return false
             }
+            if (deleteFile) file.delete()
         }
         return true
     }
 
+
+    private fun createFileFromContentUri(fileUri : Uri) : File{
+
+        var fileName : String = ""
+
+        context.contentResolver.query(fileUri,null,null,null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            cursor.moveToFirst()
+            fileName = cursor.getString(nameIndex)
+        }
+
+
+        val iStream : InputStream = context.contentResolver.openInputStream(fileUri)!!
+        val outputDir : File = context.cacheDir!!
+        val outputFile : File = File(outputDir,fileName)
+        copyStreamToFile(iStream, outputFile)
+        iStream.close()
+        return  outputFile
+    }
+
+    private fun copyStreamToFile(inputStream: InputStream, outputFile: File) {
+        inputStream.use { input ->
+            val outputStream = FileOutputStream(outputFile)
+            outputStream.use { output ->
+                val buffer = ByteArray(4 * 1024) // buffer size
+                while (true) {
+                    val byteCount = input.read(buffer)
+                    if (byteCount < 0) break
+                    output.write(buffer, 0, byteCount)
+                }
+                output.flush()
+            }
+        }
+    }
 
     override suspend fun loadFilesList(): List<String>? {
         val dirDocuments =

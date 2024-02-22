@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation.list_set
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -28,7 +29,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListSetViewModel @Inject constructor(
-//    getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val getAllListsWithoutItemsFlowUseCase: GetAllListsWithoutItemsFlowUseCase,
     private val getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase,
@@ -69,6 +69,7 @@ class ListSetViewModel @Inject constructor(
     private var namesList = listOf<String>()
 
     private var filePath: String? = null
+    private var fileUri: Uri? = null
 
     init {
         Log.d("ListSetViewModel", "1. namesList = $namesList ")
@@ -87,7 +88,7 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
-    fun updateUiState(uiState: Boolean, oldFileName: String? = null, filePath: String? = null) {
+    fun updateUiState(uiState: Boolean, oldFileName: String? = null, filePath: String? = null, uri: Uri? = null) {
         _showCreateListForFile.update { uiState }
 
         if (this._oldFileName.value == null) {
@@ -101,6 +102,7 @@ class ListSetViewModel @Inject constructor(
         Log.d("ListSetViewModel","oldFileName = $oldFileName")
 
         this.filePath = filePath
+        this.fileUri = uri
     }
 
 
@@ -117,7 +119,7 @@ class ListSetViewModel @Inject constructor(
     }
 
 
-    fun addShopList(inputName: String?, fromTxtFile: Boolean = false, myFilePath: String? = null) {
+    fun addShopList(inputName: String?, fromTxtFile: Boolean = false, path: String? = null, uri: Uri? =null) {
         val name = parseName(inputName)
         Log.d("addShopList", "namesList = $namesList")
 
@@ -140,20 +142,20 @@ class ListSetViewModel @Inject constructor(
 
                 val oldName = _oldFileName.value ?: name
                 val newName = if (_oldFileName.value != null) name else null
-//            scope.launch {
-                if (filePath == null) {
-                    _fileWithoutErrors.value = loadFromTxtFileUseCase(oldName, newName, myFilePath)
-                } else {
-                    _fileWithoutErrors.value = loadFromTxtFileUseCase(oldName, newName, filePath)
-                }
-//            }
-                updateUiState(false, null, null)
+
+                val myFilePath = filePath ?: path
+                val myFileUri = fileUri ?: uri
+//                scope.launch {
+                _fileWithoutErrors.value = loadFromTxtFileUseCase(oldName, newName, myFilePath, myFileUri)
+//                }
+
+                updateUiState(false, null, null, null)
                 if (!_fileWithoutErrors.value) _fileWithoutErrors.value = true
 
             }
 
             if (fromTxtFile && !fieldsValid) {
-                updateUiState(true, name, myFilePath)
+                updateUiState(true, name, path, uri)
             }
         }
     }
