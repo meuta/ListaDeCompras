@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -41,6 +40,7 @@ import java.io.File.separator
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.io.OutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -198,118 +198,108 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun loadFromTxtFile(fileName: String, newFileName: String?, myFilePath: String?, uri: Uri?): Boolean {
+    override suspend fun loadFromTxtFile(
+        fileName: String,
+        newFileName: String?,
+        myFilePath: String?,
+        uri: Uri?
+    ): Boolean {
 
         Log.d(
             "loadTxtList",
-            "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath"
+            "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath, uri = $uri"
         )
-        val path = if (myFilePath == null) {
+        if (uri == null) {
 
-            val dirDocuments =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            val path = if (myFilePath == null) {
 
-            val append =
-                separator.toString() + context.resources.getString(R.string.app_name) + separator.toString()
-            val dirDocumentsApp = dirDocuments.toString() + append
+                val dirDocuments =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                val append =
+                    separator.toString() + context.resources.getString(R.string.app_name) + separator.toString()
+                val dirDocumentsApp = dirDocuments.toString() + append
+                "$dirDocumentsApp$fileName.txt"
 
-            "$dirDocumentsApp$fileName.txt"
+            } else {
+
+                separator.toString() + myFilePath.drop(8)
+            }
+
+            val file = File(path)
+            if (file.exists()) {
+                try {
+                    val bufferedReader: BufferedReader = file.bufferedReader()
+                    val contentString = bufferedReader.use { it.readText() }
+                    Log.d("loadTxtList", "content: \n$contentString")
+                    readContentStringToShopList(contentString, newFileName, fileName)
+                } catch (e: Exception) {
+                    return false
+                }
+            }
+
         } else {
-
-            separator.toString() + myFilePath.drop(8)
-        }
-
-        Log.d(TAG, "loadFromTxtFile: path = $path")
-        var file = File(path)
-
-        var deleteFile = false
-        if (uri != null){
-            val tempFile: File = createFileFromContentUri(uri)
-            val filePath = tempFile.path
-            Log.d(TAG, "loadFromTxtFile: filePath = $filePath")
-            file = tempFile
-            deleteFile = true
-        }
-
-        if (file.exists()) {
             try {
-
-                val bufferedReader: BufferedReader = file.bufferedReader()
-                val inputString = bufferedReader.use { it.readText() }
-                Log.d("loadTxtList", "content: \n$inputString")
-                val lines = inputString.split("\n")
-                val list = mutableListOf<ShopItem>()
-                lines.drop(2).forEach { line ->
-                    val values = line.split("\t")
-
-                    val enabled = line.first() != '+'
-                    val itemName = values[1].trim()
-                    val count = values[2].trim().ifEmpty { null }
-                    val units = values[3].trim().ifEmpty { null }
-
-                    val item = ShopItem(itemName, count?.toDouble(), units, enabled)
-                    Log.d("loadTxtList", "item = $item")
-                    list.add(item)
-                }
-                val listEnabled = lines[0].first() != '+'
-
-                val listName = newFileName ?: fileName
-
-                Log.d("loadTxtList", "listName = $listName")
-
-                addShopList(listName, listEnabled)
-
-                shopListDao.getShopListId(listName)?.let { listId ->
-                    list.withIndex().forEach {
-                        shopItemDao.addShopItem(
-                            mapper
-                                .mapShopItemEntityToDbModel(it.value)
-                                .copy(shopListId = listId, position = it.index)
-                        )
-                    }
-                }
+                val contentString: String = retrieveContentFromContentUri(uri)
+                readContentStringToShopList(contentString, newFileName, fileName)
             } catch (e: Exception) {
                 return false
             }
-            if (deleteFile) file.delete()
         }
         return true
     }
 
+    private suspend fun readContentStringToShopList(
+        inputString: String,
+        newFileName: String?,
+        fileName: String
+    ) {
+        val lines = inputString.split("\n")
+        val list = mutableListOf<ShopItem>()
+        lines.drop(2).forEach { line ->
+            val values = line.split("\t")
 
-    private fun createFileFromContentUri(fileUri : Uri) : File{
+            val enabled = line.first() != '+'
+            val itemName = values[1].trim()
+            val count = values[2].trim().ifEmpty { null }
+            val units = values[3].trim().ifEmpty { null }
 
-        var fileName : String = ""
-
-        context.contentResolver.query(fileUri,null,null,null, null)?.use { cursor ->
-            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            cursor.moveToFirst()
-            fileName = cursor.getString(nameIndex)
+            val item = ShopItem(itemName, count?.toDouble(), units, enabled)
+            Log.d("loadTxtList", "item = $item")
+            list.add(item)
         }
+        val listEnabled = lines[0].first() != '+'
 
+        val listName = newFileName ?: fileName
 
-        val iStream : InputStream = context.contentResolver.openInputStream(fileUri)!!
-        val outputDir : File = context.cacheDir!!
-        val outputFile : File = File(outputDir,fileName)
-        copyStreamToFile(iStream, outputFile)
-        iStream.close()
-        return  outputFile
-    }
+        Log.d("loadTxtList", "listName = $listName")
 
-    private fun copyStreamToFile(inputStream: InputStream, outputFile: File) {
-        inputStream.use { input ->
-            val outputStream = FileOutputStream(outputFile)
-            outputStream.use { output ->
-                val buffer = ByteArray(4 * 1024) // buffer size
-                while (true) {
-                    val byteCount = input.read(buffer)
-                    if (byteCount < 0) break
-                    output.write(buffer, 0, byteCount)
-                }
-                output.flush()
+        addShopList(listName, listEnabled)
+
+        shopListDao.getShopListId(listName)?.let { listId ->
+            list.withIndex().forEach {
+                shopItemDao.addShopItem(
+                    mapper
+                        .mapShopItemEntityToDbModel(it.value)
+                        .copy(shopListId = listId, position = it.index)
+                )
             }
         }
     }
+
+
+    private fun retrieveContentFromContentUri(fileUri: Uri): String {
+
+
+        val iStream: InputStream? = context.contentResolver.openInputStream(fileUri)
+
+        val inputStreamReader = InputStreamReader(iStream)
+        val inputString = inputStreamReader.use { it.readText() }
+        Log.d(TAG, "createFileFromContentUri: inputString = $inputString")
+
+        return inputString
+
+    }
+
 
     override suspend fun loadFilesList(): List<String>? {
         val dirDocuments =

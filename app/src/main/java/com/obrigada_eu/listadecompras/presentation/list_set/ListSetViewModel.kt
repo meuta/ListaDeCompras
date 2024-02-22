@@ -1,6 +1,9 @@
 package com.obrigada_eu.listadecompras.presentation.list_set
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,6 +23,7 @@ import com.obrigada_eu.listadecompras.domain.shop_list.UndoDeleteListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListEnabledUseCase
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,8 +31,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ListSetViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getAllListsWithoutItemsFlowUseCase: GetAllListsWithoutItemsFlowUseCase,
     private val getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase,
@@ -41,6 +47,7 @@ class ListSetViewModel @Inject constructor(
     private val loadFilesListUseCase: LoadFilesListUseCase,
     private val loadFromTxtFileUseCase: LoadFromTxtFileUseCase,
 ) : SwipeSwapViewModel() {
+
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -179,7 +186,27 @@ class ListSetViewModel @Inject constructor(
         return true
     }
 
+    fun getFileName(uri: Uri): String? {
 
+        var fileName : String? = null
+        if (uri.scheme == "content") {
+            context.contentResolver.query(uri,null,null,null, null)?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                cursor.moveToFirst()
+                fileName = cursor.getString(nameIndex)
+            }
+        }
+        if (fileName == null) {
+            fileName = uri.path
+            fileName?.let{
+                val cut = it.lastIndexOf('/')
+                if (cut != -1) {
+                    fileName = it.substring(cut + 1)
+                }
+            }
+        }
+        return fileName?.dropLast(4)
+    }
 
     private fun parseName(inputName: String?): String {
         return inputName?.trim() ?: ""
