@@ -79,17 +79,17 @@ class ListSetViewModel @Inject constructor(
     private var fileUri: Uri? = null
 
     init {
-        Log.d("ListSetViewModel", "1. namesList = $namesList ")
+        Log.d(TAG, "1. namesList = $namesList ")
         scope.launch {
             getAllListsWithoutItemsFlowUseCase().collect{list ->
                 namesList = list.map { it.name }
-                Log.d("ListSetViewModel", "2. namesList = $namesList ")
+                Log.d(TAG, "2. namesList = $namesList ")
 
             }
         }
         viewModelScope.launch {
             getCurrentListIdUseCase().collect{
-                Log.d("ListSetViewModel","init id = $it")
+                Log.d(TAG,"init id = $it")
                 _shopListIdLD.value = it
             }
         }
@@ -106,7 +106,7 @@ class ListSetViewModel @Inject constructor(
             }
         }
 
-        Log.d("ListSetViewModel","oldFileName = $oldFileName")
+        Log.d(TAG,"oldFileName = $oldFileName")
 
         this.filePath = filePath
         this.fileUri = uri
@@ -119,7 +119,7 @@ class ListSetViewModel @Inject constructor(
 
 
 
-    fun openShopList(listId: Int){
+    fun setCurrentListId(listId: Int){
         scope.launch {
             setCurrentListIdUseCase(listId)
         }

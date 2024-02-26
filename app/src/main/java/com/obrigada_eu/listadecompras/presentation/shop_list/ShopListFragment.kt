@@ -45,6 +45,9 @@ class ShopListFragment : SwipeSwapListFragment<
         fragmentListViewModel.shopListIdLD.observe(viewLifecycleOwner){
             Log.d("ShopListFragment", "shopListIdLD.observe = $it")
             listId = it
+            if (it == ShopList.UNDEFINED_ID){
+                requireActivity().finish()
+            }
         }
 
         fragmentListViewModel.shopListLD.observe(viewLifecycleOwner) {

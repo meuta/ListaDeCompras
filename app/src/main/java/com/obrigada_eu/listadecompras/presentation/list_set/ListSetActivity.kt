@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityListSetBinding
+import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,13 +31,12 @@ class ListSetActivity : AppCompatActivity() {
     private val listSetViewModel: ListSetViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: intent = $intent")
         super.onCreate(savedInstanceState)
         binding = ActivityListSetBinding.inflate(layoutInflater)
         setContentView(binding.root)
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.list_set_container, ListSetFragment.newInstance())
-                .commit()
+            replaceListSetFragment()
 
             intent?.let {
                 handleIntent(it)
@@ -50,11 +50,19 @@ class ListSetActivity : AppCompatActivity() {
 
 
     override fun onNewIntent(intent: Intent?) {
+        Log.d(TAG, "onNewIntent: intent = $intent")
         super.onNewIntent(intent)
+        intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
             handleIntent(it)
+            listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
+            replaceListSetFragment()
         }
     }
+
+    private fun replaceListSetFragment() = supportFragmentManager.beginTransaction()
+        .replace(R.id.list_set_container, ListSetFragment.newInstance())
+        .commit()
 
     private fun handleIntent(intent: Intent) {
         Log.d(TAG, "handleIntent: intent = $intent")
@@ -122,7 +130,7 @@ class ListSetActivity : AppCompatActivity() {
         when (item.itemId) {
 
             R.id.action_load_txt -> {
-
+                listSetViewModel.updateUiState(false, null, null, null)
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
                     && ContextCompat.checkSelfPermission(
                         this,

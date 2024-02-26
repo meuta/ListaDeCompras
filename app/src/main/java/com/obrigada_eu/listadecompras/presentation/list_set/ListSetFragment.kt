@@ -190,7 +190,7 @@ class ListSetFragment(
     }
 
     override fun onListItemClick(itemId: Int) {
-        fragmentListViewModel.openShopList(itemId)
+        fragmentListViewModel.setCurrentListId(itemId)
         with(binding) {
             if (cardNewList.visibility == View.VISIBLE) {
                 etListName.setText("")
