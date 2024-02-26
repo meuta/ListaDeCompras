@@ -88,6 +88,14 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 }
             }
         }
+
+        shopListViewModel.intent.observe(this) {
+            Log.d(TAG, "observeViewModel: intent = $it")
+            it?.let {
+                startActivity(it)
+                shopListViewModel.resetIntent()
+            }
+        }
     }
 
 
@@ -136,15 +144,23 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 return true
             }
 
+
+            R.id.action_share_file -> {
+                shareTxtList()
+            }
+
+
             R.id.action_rename_list -> {
-
                 showRenameListView = true
-
                 return true
             }
 
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun shareTxtList(){
+        shopListViewModel.shareTxtList()
     }
 
     override fun onRequestPermissionsResult(
@@ -301,6 +317,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     companion object {
 
         private const val STORAGE_PERMISSION_CODE = 101
+        private const val TAG = "ShopListActivity"
 
         fun newIntent(context: Context): Intent {
             val intent = Intent(context, ShopListActivity::class.java)

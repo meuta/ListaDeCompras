@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.domain.shop_list
 
+import android.content.Intent
 import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,8 @@ interface ShopListRepository {
     fun getCurrentListId(): StateFlow<Int>
 
     suspend fun exportListToTxt(listId: Int)
+
+    fun shareTxtList(listId: Int): Flow<Intent>
 
     suspend fun loadFilesList(): List<String>?
 

@@ -18,4 +18,5 @@
     <string name="snack_bar_undo_delete_list_text">List deleted</string>
     <string name="undo">\nUNDO\n</string>
     <string name="rename_list">Rename list</string>
+    <string name="share_text_file">Share list</string>
 </resources>

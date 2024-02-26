@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation.shop_list
 
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,6 +17,7 @@ import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsFl
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetShopListNameUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.ShareTxtListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.UpdateShopListNameUseCase
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +39,7 @@ class ShopListViewModel @Inject constructor(
     private val setCurrentListIdUseCase: SetCurrentListIdUseCase,
     getCurrentListIdUseCase: GetCurrentListIdUseCase,
     private val exportListToTxtUseCase: ExportListToTxtUseCase,
+    private val shareTxtListUseCase: ShareTxtListUseCase,
     private val undoDeleteItemUseCase: UndoDeleteItemUseCase,
 ) : SwipeSwapViewModel() {
 
@@ -55,7 +58,9 @@ class ShopListViewModel @Inject constructor(
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
 
-
+    private var _intent = MutableLiveData<Intent?>()
+    val intent: LiveData<Intent?>
+        get() = _intent
 
     fun updateShopListIdState(listId: Int) {
         scope.launch {
@@ -125,9 +130,21 @@ class ShopListViewModel @Inject constructor(
         _errorInputName.value = false
     }
 
+    fun resetIntent() {
+        _intent.value = null
+    }
+
     fun exportListToTxt() {
         scope.launch {
             exportListToTxtUseCase(shopListIdFlow.value)
+        }
+    }
+
+    fun shareTxtList()  {
+        viewModelScope.launch {
+            shareTxtListUseCase(shopListIdFlow.value).collect{
+                _intent.value = it
+            }
         }
     }
 

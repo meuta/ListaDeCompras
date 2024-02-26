@@ -2,16 +2,19 @@ package com.obrigada_eu.listadecompras.data.repositories
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.content.FileProvider
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.obrigada_eu.listadecompras.BuildConfig
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.data.database.ShopItemDao
 import com.obrigada_eu.listadecompras.data.database.ShopListDao
@@ -32,6 +35,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.io.BufferedReader
@@ -42,6 +46,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
+import java.io.PrintWriter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -70,7 +75,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getAllListsWithoutItemsFlow(): Flow<List<ShopList>> {
         return shopListDao.getShopListsWithoutShopItemsFlow().map { set ->
-            Log.d("getAllListsWithoutItems", "ListSet = ${set.map { it.name to it.position }}")
+            Log.d("getAllListsWithoutItems", "ListSet = ${set.map { it.name to it.id }}")
             listSet = set.toMutableList()
             mapper.mapListSetToEntity(set)
         }
@@ -141,6 +146,13 @@ class ShopListRepositoryImpl @Inject constructor(
 
         val shopListWithItems = shopListDao.getShopListWithItems(listId)
 
+        val nameAndContent = getContent(shopListWithItems)
+
+
+        saveFile(context, nameAndContent.first, nameAndContent.second, "txt")
+    }
+
+    private fun getContent(shopListWithItems: ShopListWithShopItemsDbModel): Pair<String, String> {
         val listName = shopListWithItems.shopListDbModel.name
         val listEnabled = if (shopListWithItems.shopListDbModel.enabled) "-" else "+"
         var content = String.format(
@@ -160,9 +172,33 @@ class ShopListRepositoryImpl @Inject constructor(
             content += row + "\n"
         }
         content = content.dropLast(1)
-
-        saveFile(context, listName, content, "txt")
+        return Pair(listName, content)
     }
+
+    override fun shareTxtList(listId: Int): Flow<Intent> {
+        return shopListDao.getShopListWithItemsFlow(listId).map { list ->
+            val nameAndContent = getContent(list)
+
+            val file = File(context.cacheDir, "${nameAndContent.first}.txt")
+            PrintWriter(file).also {
+                it.print("")
+                it.close()
+            }
+            file.appendText(nameAndContent.second)
+
+            val uri = FileProvider.getUriForFile(context, FILE_PROVIDER_AUTHORITY, file)
+
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                putExtra(Intent.EXTRA_STREAM, uri)
+            }
+            intent
+        }
+            .flowOn(Dispatchers.IO)
+    }
+
 
     @Throws(IOException::class)
     private fun saveFile(context: Context, fileName: String, text: String, extension: String) {
@@ -196,7 +232,6 @@ class ShopListRepositoryImpl @Inject constructor(
         outputStream?.write(bytes)
         outputStream?.close()
     }
-
 
     override suspend fun loadFromTxtFile(
         fileName: String,
@@ -334,6 +369,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     override suspend fun setCurrentListId(listId: Int) {
+        Log.d(TAG, "setCurrentListId: listId = $listId")
         shopListPreferences.edit { preferences ->
             preferences[KEY_LIST_ID] = listId
         }
@@ -357,6 +393,8 @@ class ShopListRepositoryImpl @Inject constructor(
     private companion object {
 
         private const val TAG = "ShopListRepositoryImpl"
+
+        private const val FILE_PROVIDER_AUTHORITY = "${BuildConfig.APPLICATION_ID}.provider"
 
         val KEY_LIST_ID = intPreferencesKey(name = "listId")
 
