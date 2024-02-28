@@ -222,7 +222,7 @@ class ShopListRepositoryImpl @Inject constructor(
             )
             val extVolumeUri: Uri = MediaStore.Files.getContentUri("external")
             val fileUri: Uri? = context.contentResolver.insert(extVolumeUri, values)
-            context.contentResolver.openOutputStream(fileUri!!)
+            fileUri?.let { context.contentResolver.openOutputStream(it) }
         } else {
             val file = File(dirDocumentsApp.absolutePath, "$fileName.$extension")
             FileOutputStream(file)

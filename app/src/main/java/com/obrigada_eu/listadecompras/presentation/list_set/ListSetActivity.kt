@@ -72,6 +72,7 @@ class ListSetActivity : AppCompatActivity() {
         when (intent.action) {
 
             Intent.ACTION_SEND -> {
+
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
                 } else {
@@ -89,12 +90,23 @@ class ListSetActivity : AppCompatActivity() {
                 when (intent.type) {
 
                     "text/plain" -> {
-                        val myFilePath = data?.lastPathSegment
-                        val parts = myFilePath?.split("/")
-                        val myFileName = parts?.last()?.dropLast(4)
-                        Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
-                        Log.d(TAG, "handleIntent: myFileName = $myFileName")
-                        listSetViewModel.addShopList(myFileName, true, myFilePath)
+                        Log.d(TAG, "handleIntent: data = $data")
+                        Log.d(TAG, "handleIntent: myFilePath = ${data?.path}")
+                        data?.let {
+                            if (it.path?.take(5) == "/tree") {
+
+                                val myFilePath = it.lastPathSegment
+                                val parts = myFilePath?.split("/")
+                                val myFileName = parts?.last()?.dropLast(4)
+                                Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
+                                Log.d(TAG, "handleIntent: myFileName = $myFileName")
+                                listSetViewModel.addShopList(myFileName, true, myFilePath)
+                            } else {
+
+                                val fileName = listSetViewModel.getFileName(it)
+                                listSetViewModel.addShopList(fileName, true, null, it)
+                            }
+                        }
                     }
                 }
             }
