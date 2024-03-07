@@ -17,8 +17,8 @@
         tools:context=".presentation.shop_item.ShopItemFragment">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:theme="@style/text_selection_appearance"
             android:id="@+id/til_name"
+            android:theme="@style/text_selection_appearance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -44,12 +44,14 @@
                 android:hint="@string/name_hint"
                 android:text=""
                 android:maxLength="80"
-                android:inputType="textCapSentences" />
+                android:inputType="textCapSentences"
+                android:nextFocusDown="@+id/et_count"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:theme="@style/text_selection_appearance"
             android:id="@+id/til_count"
+            android:theme="@style/text_selection_appearance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -73,13 +75,14 @@
                 android:hint="@string/count_hint"
                 android:inputType="numberDecimal"
                 android:maxLength="7"
+                android:nextFocusDown="@+id/et_units"
                 app:itemId="@{viewModel.shopItem.id}"
                 app:setCountToEditText="@{viewModel.shopItem.count}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:theme="@style/text_selection_appearance"
             android:id="@+id/til_units"
+            android:theme="@style/text_selection_appearance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
