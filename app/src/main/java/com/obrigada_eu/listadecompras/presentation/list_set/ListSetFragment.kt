@@ -9,6 +9,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
@@ -17,6 +18,8 @@ import com.obrigada_eu.listadecompras.presentation.SwipeSwapAdapter
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import com.obrigada_eu.listadecompras.presentation.shop_list.ShopListActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ListSetFragment(
@@ -89,7 +92,8 @@ class ListSetFragment(
                         fromFile = true
                     }
                     fragmentListViewModel.addShopList(etListName.text?.toString(), fromFile)
-                    val isError = fragmentListViewModel.errorInputName.value ?: true
+                lifecycleScope.launch {
+                    val isError = fragmentListViewModel.errorInputName.first()
                     if (!isError) {
                         etListName.setText("")
                         cardNewList.visibility = View.GONE
@@ -97,6 +101,9 @@ class ListSetFragment(
                             activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
                     }
+                }
+
+
             }
         }
     }

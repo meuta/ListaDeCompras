@@ -23,6 +23,7 @@ import com.obrigada_eu.listadecompras.presentation.SwipeSwapViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,9 +53,8 @@ class ShopListViewModel @Inject constructor(
 
     val shopListLD = getShopListUseCase(shopListIdFlow.value).asLiveData(scope.coroutineContext, 500)
 
-    private var _errorInputName = MutableLiveData<Boolean>()
-    val errorInputName: LiveData<Boolean>
-        get() = _errorInputName
+    private val _errorInputName = MutableStateFlow<Boolean>(false)
+    val errorInputName: StateFlow<Boolean> = _errorInputName
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
 

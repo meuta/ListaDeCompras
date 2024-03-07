@@ -27,6 +27,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,9 +52,8 @@ class ListSetViewModel @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private var _errorInputName = MutableLiveData<Boolean>()
-    val errorInputName: LiveData<Boolean>
-        get() = _errorInputName
+    private val _errorInputName = MutableStateFlow(false)
+    val errorInputName: StateFlow<Boolean> = _errorInputName
 
     private val _shopListIdLD = MutableLiveData<Int>()
     val shopListIdLD: LiveData<Int>

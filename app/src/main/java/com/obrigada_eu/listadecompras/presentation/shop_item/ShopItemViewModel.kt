@@ -6,6 +6,8 @@ import com.obrigada_eu.listadecompras.domain.shop_item.EditShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.GetShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,9 +18,8 @@ class ShopItemViewModel @Inject constructor(
     private val editShopItemUseCase: EditShopItemUseCase,
 ) : ViewModel() {
 
-    private var _errorInputName = MutableLiveData<Boolean>()
-    val errorInputName: LiveData<Boolean>
-        get() = _errorInputName
+    private val _errorInputName = MutableStateFlow<Boolean>(false)
+    val errorInputName: StateFlow<Boolean> = _errorInputName
 
 
     private val _shopItem = MutableLiveData<ShopItem>()
@@ -32,9 +33,8 @@ class ShopItemViewModel @Inject constructor(
         }
     }
 
-    private var _errorInputCount = MutableLiveData<Boolean>()
-    val errorInputCount: LiveData<Boolean>
-        get() = _errorInputCount
+    private val _errorInputCount = MutableStateFlow<Boolean>(false)
+    val errorInputCount: StateFlow<Boolean> = _errorInputCount
 
     private val _closeScreen = MutableLiveData<Unit>()
     val closeScreen: LiveData<Unit>

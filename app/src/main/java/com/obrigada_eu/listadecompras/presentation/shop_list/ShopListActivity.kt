@@ -21,12 +21,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityShopListBinding
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemActivity
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.io.File
 
 @AndroidEntryPoint
@@ -75,19 +80,24 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             Log.d("ShopListActivity", "allListsWithItems.observe =\n $it")
         }
 
-        shopListViewModel.errorInputName.observe(this) {
-            Log.d("ShopListActivity", "errorInputName.observe = $it")
-            with(binding) {
-                if (it) {
-                    tvErrorToolbarShopListActivity.text =
-                        this@ShopListActivity.getString(R.string.error_input_list_name)
-                    tvErrorToolbarShopListActivity.visibility = View.VISIBLE
-                } else {
-                    tvErrorToolbarShopListActivity.text = ""
-                    tvErrorToolbarShopListActivity.visibility = View.GONE
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                shopListViewModel.errorInputName.collect {
+                    Log.d("ShopListActivity", "errorInputName.observe = $it")
+                    with(binding) {
+                        if (it) {
+                            tvErrorToolbarShopListActivity.text =
+                                this@ShopListActivity.getString(R.string.error_input_list_name)
+                            tvErrorToolbarShopListActivity.visibility = View.VISIBLE
+                        } else {
+                            tvErrorToolbarShopListActivity.text = ""
+                            tvErrorToolbarShopListActivity.visibility = View.GONE
+                        }
+                    }
                 }
             }
         }
+
 
         shopListViewModel.intent.observe(this) {
             Log.d(TAG, "observeViewModel: intent = $it")
@@ -235,16 +245,15 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
             buttonSaveListName.setOnClickListener {
                 shopListViewModel.updateShopListName(etToolbarShopListActivity.text.toString())
-                val isError = shopListViewModel.errorInputName.value ?: true
-                if (!isError) {
-                    etToolbarShopListActivity.clearFocus()
-                    etToolbarShopListActivity.setText("")
-                    val inputMethodManager =
-                        this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputMethodManager.hideSoftInputFromWindow(
-                        etToolbarShopListActivity.windowToken,
-                        0
-                    )
+                lifecycleScope.launch {
+                    val isError = shopListViewModel.errorInputName.first()
+                    if (!isError) {
+                        etToolbarShopListActivity.clearFocus()
+                        etToolbarShopListActivity.setText("")
+                        val inputMethodManager =
+                            this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        inputMethodManager.hideSoftInputFromWindow(etToolbarShopListActivity.windowToken, 0)
+                    }
                 }
             }
         }
