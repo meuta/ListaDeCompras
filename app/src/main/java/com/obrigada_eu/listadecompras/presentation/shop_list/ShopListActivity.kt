@@ -303,7 +303,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     override fun onListItemClick(itemId: Int) {
         if (isOnePaneMode()) {
-            val intent = ShopItemActivity.newIntentEditItem(this, itemId)
+            val intent = ShopItemActivity.newIntentEditItem(this, itemId, binding.tvToolbarShopListActivity.text.toString())
             startActivity(intent)
         } else {
             val fragment = ShopItemFragment.newInstanceEditItem(itemId)
@@ -314,7 +314,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     override fun onFabClick(listId: Int?) {
         listId?.let {
             if (isOnePaneMode()) {
-                val intent = ShopItemActivity.newIntentAddItem(this@ShopListActivity, it)
+                val intent = ShopItemActivity.newIntentAddItem(this@ShopListActivity, it, binding.tvToolbarShopListActivity.text.toString())
                 startActivity(intent)
             } else {
                 val fragment = ShopItemFragment.newInstanceAddItem(it)

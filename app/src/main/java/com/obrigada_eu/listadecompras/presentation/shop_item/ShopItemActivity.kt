@@ -3,8 +3,10 @@ package com.obrigada_eu.listadecompras.presentation.shop_item
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.obrigada_eu.listadecompras.R
+import com.obrigada_eu.listadecompras.databinding.ActivityShopItemBinding
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,16 +17,32 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private var screenMode = MODE_UNKNOWN
     private var itemId = ShopItem.UNDEFINED_ID
     private var listId = ShopList.UNDEFINED_ID
+    private var listName = SHOP_LIST_UNKNOWN
+
+    private lateinit var binding: ActivityShopItemBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_shop_item)
+        binding = ActivityShopItemBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         parseIntent()
+        setupActionBar(listName)
 
         if (savedInstanceState == null) {            //Means that the Activity was not recreated
             launchRightMode()
         }
+    }
+
+    private fun setupActionBar(listName: String) {
+        setSupportActionBar(binding.toolbarShopItemActivity)
+        val actionBar = supportActionBar
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_24)
+        }
+        binding.toolbarShopItemActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.tvToolbarShopItemActivity.text = listName
     }
 
     override fun onEditingFinished() {
@@ -63,35 +81,45 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             itemId = intent.getIntExtra(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
 
-       if (screenMode == MODE_ADD) {
+        if (screenMode == MODE_ADD) {
             if (!intent.hasExtra(SHOP_LIST_ID)) {
                 throw RuntimeException("Param shop_list_id is absent")
             }
-           listId = intent.getIntExtra(SHOP_LIST_ID, ShopList.UNDEFINED_ID)
+            listId = intent.getIntExtra(SHOP_LIST_ID, ShopList.UNDEFINED_ID)
         }
+
+        if (!intent.hasExtra(SHOP_LIST_NAME)) {
+            throw RuntimeException("Param shop_list_name is absent")
+        }
+        intent.getStringExtra(SHOP_LIST_NAME)?.let { listName = it }
     }
 
     companion object {
         private const val SECOND_SCREEN_MODE = "second_screen_mode"
         private const val SHOP_ITEM_ID = "shop_item_id"
         private const val SHOP_LIST_ID = "shop_list_id"
+        private const val SHOP_LIST_NAME = "shop_list_name"
         private const val MODE_ADD = "mode_add"
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_UNKNOWN = ""
+        private const val SHOP_LIST_UNKNOWN = "Shop List"
 
-        fun newIntentAddItem(context: Context, listId: Int): Intent {
+        private const val TAG = "ShopItemActivity"
+
+        fun newIntentAddItem(context: Context, listId: Int, listName: String): Intent {
             val intent = Intent(context, ShopItemActivity::class.java)
             intent.putExtra(SECOND_SCREEN_MODE, MODE_ADD)
             intent.putExtra(SHOP_LIST_ID, listId)
+            intent.putExtra(SHOP_LIST_NAME, listName)
             return intent
         }
 
-        fun newIntentEditItem(context: Context, itemId: Int): Intent {
+        fun newIntentEditItem(context: Context, itemId: Int, listName: String): Intent {
             val intent = Intent(context, ShopItemActivity::class.java)
             intent.putExtra(SECOND_SCREEN_MODE, MODE_EDIT)
             intent.putExtra(SHOP_ITEM_ID, itemId)
+            intent.putExtra(SHOP_LIST_NAME, listName)
             return intent
         }
     }
-
 }

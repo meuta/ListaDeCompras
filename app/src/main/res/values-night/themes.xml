@@ -19,6 +19,13 @@
     <style name="Theme.ListaDeCompras.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/blackish</item>
+    </style>
+
+    <style name="Theme.ListaDeCompras.NoActionBarLight">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/background_dark_gray_color</item>
     </style>
 
     <style name="Theme.ListaDeCompras.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
