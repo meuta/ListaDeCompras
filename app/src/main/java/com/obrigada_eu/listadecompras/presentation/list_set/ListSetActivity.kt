@@ -31,7 +31,7 @@ class ListSetActivity : AppCompatActivity() {
     private val listSetViewModel: ListSetViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate: intent = $intent")
+//        Log.d(TAG, "onCreate: intent = $intent")
         super.onCreate(savedInstanceState)
         binding = ActivityListSetBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -50,7 +50,7 @@ class ListSetActivity : AppCompatActivity() {
 
 
     override fun onNewIntent(intent: Intent?) {
-        Log.d(TAG, "onNewIntent: intent = $intent")
+//        Log.d(TAG, "onNewIntent: intent = $intent")
         super.onNewIntent(intent)
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
@@ -65,7 +65,7 @@ class ListSetActivity : AppCompatActivity() {
         .commit()
 
     private fun handleIntent(intent: Intent) {
-        Log.d(TAG, "handleIntent: intent = $intent")
+//        Log.d(TAG, "handleIntent: intent = $intent")
 
         val data: Uri? = intent.data
 
@@ -80,7 +80,7 @@ class ListSetActivity : AppCompatActivity() {
                 }
 
                 uri?.let {
-                    Log.d(TAG, "handleIntent: myFilePath = ${it.path}")
+//                    Log.d(TAG, "handleIntent: myFilePath = ${it.path}")
                     val fileName = listSetViewModel.getFileName(it)
                     listSetViewModel.addShopList(fileName, true, null, it)
                 }
@@ -90,16 +90,16 @@ class ListSetActivity : AppCompatActivity() {
                 when (intent.type) {
 
                     "text/plain" -> {
-                        Log.d(TAG, "handleIntent: data = $data")
-                        Log.d(TAG, "handleIntent: myFilePath = ${data?.path}")
+//                        Log.d(TAG, "handleIntent: data = $data")
+//                        Log.d(TAG, "handleIntent: myFilePath = ${data?.path}")
                         data?.let {
                             if (it.path?.take(5) == "/tree") {
 
                                 val myFilePath = it.lastPathSegment
                                 val parts = myFilePath?.split("/")
                                 val myFileName = parts?.last()?.dropLast(4)
-                                Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
-                                Log.d(TAG, "handleIntent: myFileName = $myFileName")
+//                                Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
+//                                Log.d(TAG, "handleIntent: myFileName = $myFileName")
                                 listSetViewModel.addShopList(myFileName, true, myFilePath)
                             } else {
 
@@ -142,7 +142,7 @@ class ListSetActivity : AppCompatActivity() {
         when (item.itemId) {
 
             R.id.action_load_txt -> {
-                listSetViewModel.updateUiState(false, null, null, null)
+                listSetViewModel.updateUiState(false, false, null, null, null)
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
                     && ContextCompat.checkSelfPermission(
                         this,
@@ -208,7 +208,7 @@ class ListSetActivity : AppCompatActivity() {
                 binding.filesList.adapter = listAdapter
                 binding.filesList.setOnItemClickListener { parent, _, position, _ ->
                     val fileName = listAdapter.getItem(position)?.dropLast(4)
-                    Log.d("filesList.setOnItemClickListener", "element = $fileName")
+//                    Log.d("filesList.setOnItemClickListener", "element = $fileName")
                     fileName?.let { name ->
                         loadFromTxtFile(name)
                     }
@@ -217,7 +217,7 @@ class ListSetActivity : AppCompatActivity() {
                     filesListBackPressedCallback.isEnabled = false
                 }
             }
-            Log.d("ListSetActivity", "filesList.observe = $it")
+//            Log.d("ListSetActivity", "filesList.observe = $it")
         }
         filesListBackPressedCallback.isEnabled = true
     }

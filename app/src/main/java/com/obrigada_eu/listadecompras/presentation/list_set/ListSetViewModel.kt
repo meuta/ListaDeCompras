@@ -61,9 +61,13 @@ class ListSetViewModel @Inject constructor(
 
     val allListsWithoutItems = getAllListsWithoutItemsFlowUseCase().asLiveData(scope.coroutineContext)
 
-    private var _showCreateListForFile = MutableStateFlow(false)
-    val showCreateListForFile: LiveData<Boolean>
-        get() = _showCreateListForFile.asLiveData()
+
+    private val _cardNewListVisibilityStateFlow = MutableStateFlow(false)
+    val cardNewListVisibilityStateFlow: StateFlow<Boolean> = _cardNewListVisibilityStateFlow
+
+    private var _showCardNewListForFile = MutableStateFlow(false)
+    val showCardNewListForFile: LiveData<Boolean>
+        get() = _showCardNewListForFile.asLiveData()
 
     private var _oldFileName: MutableLiveData<String?> = MutableLiveData(null)
     val oldFileName: LiveData<String?>
@@ -79,24 +83,25 @@ class ListSetViewModel @Inject constructor(
     private var fileUri: Uri? = null
 
     init {
-        Log.d(TAG, "1. namesList = $namesList ")
+//        Log.d(TAG, "1. namesList = $namesList ")
         scope.launch {
             getAllListsWithoutItemsFlowUseCase().collect{list ->
                 namesList = list.map { it.name }
-                Log.d(TAG, "2. namesList = $namesList ")
+//                Log.d(TAG, "2. namesList = $namesList ")
 
             }
         }
         viewModelScope.launch {
             getCurrentListIdUseCase().collect{
-                Log.d(TAG,"init id = $it")
+//                Log.d(TAG,"init id = $it")
                 _shopListIdLD.value = it
             }
         }
     }
 
-    fun updateUiState(uiState: Boolean, oldFileName: String? = null, filePath: String? = null, uri: Uri? = null) {
-        _showCreateListForFile.update { uiState }
+    fun updateUiState(cardNewListVisibility: Boolean, showCreateListForFile: Boolean, oldFileName: String? = null, filePath: String? = null, uri: Uri? = null) {
+        _cardNewListVisibilityStateFlow.update { cardNewListVisibility }
+        _showCardNewListForFile.update { showCreateListForFile }
 
         if (this._oldFileName.value == null) {
             this._oldFileName.value = oldFileName
@@ -106,7 +111,7 @@ class ListSetViewModel @Inject constructor(
             }
         }
 
-        Log.d(TAG,"oldFileName = $oldFileName")
+//        Log.d(TAG,"oldFileName = $oldFileName")
 
         this.filePath = filePath
         this.fileUri = uri
@@ -128,7 +133,7 @@ class ListSetViewModel @Inject constructor(
 
     fun addShopList(inputName: String?, fromTxtFile: Boolean = false, path: String? = null, uri: Uri? =null) {
         val name = parseName(inputName)
-        Log.d("addShopList", "namesList = $namesList")
+//        Log.d("addShopList", "namesList = $namesList")
 
         var fieldsValid = !namesList.contains(name)
 
@@ -138,7 +143,7 @@ class ListSetViewModel @Inject constructor(
 
         viewModelScope.launch {
             fieldsValid = validateInput(name)
-            Log.d("addShopList check", "fromTxtFile = $fromTxtFile, fieldsValid = $fieldsValid")
+//            Log.d("addShopList check", "fromTxtFile = $fromTxtFile, fieldsValid = $fieldsValid")
             if (!fromTxtFile && fieldsValid) {
 
 //            viewModelScope.launch {
@@ -156,30 +161,30 @@ class ListSetViewModel @Inject constructor(
                 _fileWithoutErrors.value = loadFromTxtFileUseCase(oldName, newName, myFilePath, myFileUri)
 //                }
 
-                updateUiState(false, null, null, null)
+                updateUiState(false, false, null, null, null)
                 if (!_fileWithoutErrors.value) _fileWithoutErrors.value = true
 
             }
 
             if (fromTxtFile && !fieldsValid) {
-                updateUiState(true, name, path, uri)
+                updateUiState(true, true, name, path, uri)
             }
         }
     }
 
     private suspend fun validateInput(name: String): Boolean {
-        Log.d("validateInput", "name = $name")
+//        Log.d("validateInput", "name = $name")
         if (name.isBlank()) {
             _errorInputName.value = true
             return false
         }
 
         val myNamesList = getAllListsWithoutItemsUseCase().map { it.name }
-        Log.d("validateInput", "myNamesList = $myNamesList")
+//        Log.d("validateInput", "myNamesList = $myNamesList")
 
         if (myNamesList.contains(name)) {
             _errorInputName.value = true
-            Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
+//            Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
             return false
         }
 

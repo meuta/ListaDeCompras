@@ -9,7 +9,9 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
@@ -51,24 +53,52 @@ class ListSetFragment(
     override fun observeViewModel() {
         fragmentListViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
             fragmentListAdapter.submitList(it)
-            Log.d("ListSetFragment", "listSet.observe = ${it.map { it.name}}")
+//            Log.d(TAG, "listSet.observe = ${it.map { it.name}}")
         }
         fragmentListViewModel.shopListIdLD.observe(viewLifecycleOwner) {
-            Log.d("ListSetFragment", "shopListIdLD.observe = $it")
+//            Log.d(TAG, "shopListIdLD.observe = $it")
             if (it != ShopList.UNDEFINED_ID) {
                 startShopListActivity()
             }
         }
 
-        fragmentListViewModel.showCreateListForFile.observe(viewLifecycleOwner){
-            Log.d("ListSetFragment", "showCreateListForFile.observe = $it")
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                fragmentListViewModel.cardNewListVisibilityStateFlow.collect {isVisible ->
+                    with(binding){
+                        if (!isVisible) {
+
+                            etListName.setText("")
+                            cardNewList.visibility = View.GONE
+                            val inputMethodManager =
+                                activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                            inputMethodManager.hideSoftInputFromWindow(cardNewList.windowToken, 0)
+
+                        } else {
+
+                            cardNewList.visibility = View.VISIBLE
+                            etListName.setText(requireContext().resources.getString(R.string.new_list))
+                            etListName.requestFocus()
+                            etListName.setSelection(0, etListName.text.length)
+
+                            val inputMethodManager =
+                                activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                            inputMethodManager.showSoftInput(etListName, 0)
+                        }
+                    }
+                }
+            }
+        }
+
+        fragmentListViewModel.showCardNewListForFile.observe(viewLifecycleOwner){
+//            Log.d(TAG, "showCreateListForFile.observe = $it")
             if (it) {
                 onFabClick()
             }
         }
 
         fragmentListViewModel.oldFileName.observe(viewLifecycleOwner){ fileName ->
-            Log.d("ListSetFragment", "oldFileName.observe = $fileName")
+//            Log.d(TAG, "oldFileName.observe = $fileName")
             fileName?.let {
                 with(binding){
                     etListName.tag = TAG_ERROR_INPUT_NAME
@@ -87,23 +117,17 @@ class ListSetFragment(
             }
 
             buttonCreateList.setOnClickListener { view ->
-                    var fromFile = false
-                    if (fragmentListViewModel.showCreateListForFile.value == true){
-                        fromFile = true
-                    }
-                    fragmentListViewModel.addShopList(etListName.text?.toString(), fromFile)
+                var fromFile = false
+                if (fragmentListViewModel.showCardNewListForFile.value == true) {
+                    fromFile = true
+                }
+                fragmentListViewModel.addShopList(etListName.text?.toString(), fromFile)
                 lifecycleScope.launch {
                     val isError = fragmentListViewModel.errorInputName.first()
                     if (!isError) {
-                        etListName.setText("")
-                        cardNewList.visibility = View.GONE
-                        val inputMethodManager =
-                            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+                        fragmentListViewModel.updateUiState(false, false, null, null, null)
                     }
                 }
-
-
             }
         }
     }
@@ -117,16 +141,16 @@ class ListSetFragment(
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 with(binding) {
                     if (etListName.text.hashCode() == s.hashCode()) {
-                        Log.d(TAG, "onTextChanged: etListName.tag = ${etListName.tag}")
+//                        Log.d(TAG, "onTextChanged: etListName.tag = ${etListName.tag}")
                         if( etListName.tag == null ) {
                             // Value changed by user
                             fragmentListViewModel.resetErrorInputName()
-                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
+//                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
                         }
                         else{
                             // Value changed by program
                             fragmentListViewModel.showErrorInputName()
-                            Log.d(TAG, "onTextChanged: show errorInputName")
+//                            Log.d(TAG, "onTextChanged: show errorInputName")
                         }
                     }
                 }
@@ -142,10 +166,10 @@ class ListSetFragment(
 
 
     private fun startShopListActivity() {
-        Log.d(
-            "ListSetFragment",
-            "startShopListActivity listId = ${fragmentListViewModel.shopListIdLD.value}"
-        )
+//        Log.d(
+//            TAG,
+//            "startShopListActivity listId = ${fragmentListViewModel.shopListIdLD.value}"
+//        )
         val intent = ShopListActivity.newIntent(this.requireContext())
         startActivity(intent)
     }
@@ -177,12 +201,11 @@ class ListSetFragment(
             true // default to enabled
         ) {
             override fun handleOnBackPressed() {
-                with(binding) {
-                    if (cardNewList.visibility == View.VISIBLE) {
-                        etListName.setText("")
-                        cardNewList.visibility = View.GONE
-                        fragmentListViewModel.updateUiState(false, null, null, null)
+                lifecycleScope.launch {
+                    val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
+                    if (isVisible) {
+                        fragmentListViewModel.updateUiState(false, false, null, null, null)
                     } else {
                         isEnabled = false
                         requireActivity().finish()
@@ -198,26 +221,12 @@ class ListSetFragment(
 
     override fun onListItemClick(itemId: Int) {
         fragmentListViewModel.setCurrentListId(itemId)
-        with(binding) {
-            if (cardNewList.visibility == View.VISIBLE) {
-                etListName.setText("")
-                cardNewList.visibility = View.GONE
-            }
-        }
+        fragmentListViewModel.updateUiState(false, false, null, null)
     }
 
     override fun onFabClick(listId: Int?) {
-        with(binding) {
-            if (cardNewList.visibility == View.GONE) {
-                cardNewList.visibility = View.VISIBLE
-                etListName.setText(requireContext().resources.getString(R.string.new_list))
-                etListName.requestFocus()
-                etListName.setSelection(0, etListName.text.length)
-
-                val inputMethodManager =
-                    activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.showSoftInput(etListName, 0)
-            }
+        lifecycleScope.launch {
+            fragmentListViewModel.updateUiState(true, false, null, null, null)
         }
     }
 
