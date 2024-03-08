@@ -1,6 +1,11 @@
 package com.obrigada_eu.listadecompras.presentation
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -44,6 +49,30 @@ abstract class SwipeSwapAdapter<T>(diff: DiffUtil.ItemCallback<T>) :
         val binding = holder.binding
 
         binding.root.setOnClickListener {
+
+            val revealView = when (binding){
+                is ItemListEnabledBinding ->  binding.revealView
+                is ItemListDisabledBinding ->  binding.revealView
+                is ItemShopEnabledBinding ->  binding.revealView
+                is ItemShopDisabledBinding ->  binding.revealView
+                else -> throw RuntimeException("Unknown binding: $binding")
+            }
+            with(revealView) {
+                val cx = width / 2
+                val cy = height / 2
+                val radius = width.toFloat()
+
+                val anim = ViewAnimationUtils.createCircularReveal(this, cx, cy, radius, radius)
+                anim.setDuration(250)
+                anim.addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        visibility = View.INVISIBLE
+                    }
+                })
+                visibility = View.VISIBLE
+                anim.start()
+            }
             onItemClickListener?.invoke(item)
         }
 
@@ -70,5 +99,7 @@ abstract class SwipeSwapAdapter<T>(diff: DiffUtil.ItemCallback<T>) :
         const val VIEW_TYPE_DISABLED = 0
 
         const val MAX_POOL_SIZE = 15
+
+        private const val TAG = "SwipeSwapAdapter"
     }
 }

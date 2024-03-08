@@ -7,7 +7,8 @@
             type="com.obrigada_eu.listadecompras.domain.shop_list.ShopList" />
     </data>
 
-    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -20,25 +21,39 @@
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/item_list_background_color"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/grayish"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="@{listItem.name}"
-                tools:text="Any List" />
+                android:background="@color/item_list_background_color"
+                android:orientation="horizontal"
+                android:padding="16dp">
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/grayish"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@{listItem.name}"
+                    tools:text="Any List" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/reveal_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@color/ripple_color"
+                android:visibility="invisible"
+                />
+
+        </FrameLayout>
 
     </androidx.cardview.widget.CardView>
 </layout>
