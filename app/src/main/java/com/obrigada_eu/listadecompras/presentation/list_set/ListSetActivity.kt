@@ -54,9 +54,14 @@ class ListSetActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
-            handleIntent(it)
+            listSetViewModel.updateUiState(false, false, null, null, null)
             listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
-            replaceListSetFragment()
+            with(binding.filesList) {
+                if (visibility == View.VISIBLE) {
+                    visibility = View.GONE
+                }
+            }
+            handleIntent(it)
         }
     }
 

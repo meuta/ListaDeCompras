@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
@@ -63,8 +62,9 @@ class ListSetFragment(
         }
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.CREATED){
                 fragmentListViewModel.cardNewListVisibilityStateFlow.collect {isVisible ->
+//                    Log.d(TAG, "observeViewModel: cardNewListVisibilityStateFlow.collect = $isVisible")
                     with(binding){
                         if (!isVisible) {
 
@@ -90,12 +90,6 @@ class ListSetFragment(
             }
         }
 
-        fragmentListViewModel.showCardNewListForFile.observe(viewLifecycleOwner){
-//            Log.d(TAG, "showCreateListForFile.observe = $it")
-            if (it) {
-                onFabClick()
-            }
-        }
 
         fragmentListViewModel.oldFileName.observe(viewLifecycleOwner){ fileName ->
 //            Log.d(TAG, "oldFileName.observe = $fileName")
@@ -116,18 +110,11 @@ class ListSetFragment(
                 onFabClickListener.onFabClick()
             }
 
-            buttonCreateList.setOnClickListener { view ->
-                var fromFile = false
-                if (fragmentListViewModel.showCardNewListForFile.value == true) {
-                    fromFile = true
-                }
-                fragmentListViewModel.addShopList(etListName.text?.toString(), fromFile)
-                lifecycleScope.launch {
-                    val isError = fragmentListViewModel.errorInputName.first()
-                    if (!isError) {
-                        fragmentListViewModel.updateUiState(false, false, null, null, null)
-                    }
-                }
+            buttonCreateList.setOnClickListener {
+                fragmentListViewModel.addShopList(
+                    etListName.text?.toString(),
+                    fragmentListViewModel.fromTxtFile.value
+                )
             }
         }
     }
@@ -221,7 +208,7 @@ class ListSetFragment(
 
     override fun onListItemClick(itemId: Int) {
         fragmentListViewModel.setCurrentListId(itemId)
-        fragmentListViewModel.updateUiState(false, false, null, null)
+        fragmentListViewModel.updateUiState(false, false, null, null, null)
     }
 
     override fun onFabClick(listId: Int?) {

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
@@ -65,9 +64,8 @@ class ListSetViewModel @Inject constructor(
     private val _cardNewListVisibilityStateFlow = MutableStateFlow(false)
     val cardNewListVisibilityStateFlow: StateFlow<Boolean> = _cardNewListVisibilityStateFlow
 
-    private var _showCardNewListForFile = MutableStateFlow(false)
-    val showCardNewListForFile: LiveData<Boolean>
-        get() = _showCardNewListForFile.asLiveData()
+    private var _fromTxtFile = MutableStateFlow(false)
+    val fromTxtFile: StateFlow<Boolean> = _fromTxtFile
 
     private var _oldFileName: MutableLiveData<String?> = MutableLiveData(null)
     val oldFileName: LiveData<String?>
@@ -100,8 +98,9 @@ class ListSetViewModel @Inject constructor(
     }
 
     fun updateUiState(cardNewListVisibility: Boolean, showCreateListForFile: Boolean, oldFileName: String? = null, filePath: String? = null, uri: Uri? = null) {
+//        Log.d(TAG, "updateUiState: cardNewListVisibility = $cardNewListVisibility, showCreateListForFile = $showCreateListForFile, oldFileName = $oldFileName, filePath = $filePath, uri= $uri")
         _cardNewListVisibilityStateFlow.update { cardNewListVisibility }
-        _showCardNewListForFile.update { showCreateListForFile }
+        _fromTxtFile.update { showCreateListForFile }
 
         if (this._oldFileName.value == null) {
             this._oldFileName.value = oldFileName
@@ -133,13 +132,14 @@ class ListSetViewModel @Inject constructor(
 
     fun addShopList(inputName: String?, fromTxtFile: Boolean = false, path: String? = null, uri: Uri? =null) {
         val name = parseName(inputName)
+//        Log.d(TAG, "addShopList: inputName = $inputName, fromTxtFile = $fromTxtFile, path = $path, uri = $uri")
 //        Log.d("addShopList", "namesList = $namesList")
 
         var fieldsValid = !namesList.contains(name)
 
-       if (!fieldsValid){
+        if (!fieldsValid){
            _errorInputName.value = true
-       }
+        }
 
         viewModelScope.launch {
             fieldsValid = validateInput(name)
@@ -149,6 +149,7 @@ class ListSetViewModel @Inject constructor(
 //            viewModelScope.launch {
                 addShopListUseCase(name)
 //            }
+                updateUiState(false, false, null, null, null)
             }
             if (fromTxtFile && fieldsValid) {
 
@@ -163,11 +164,14 @@ class ListSetViewModel @Inject constructor(
 
                 updateUiState(false, false, null, null, null)
                 if (!_fileWithoutErrors.value) _fileWithoutErrors.value = true
-
             }
 
             if (fromTxtFile && !fieldsValid) {
-                updateUiState(true, true, name, path, uri)
+
+                val myFilePath = filePath ?: path
+                val myFileUri = fileUri ?: uri
+
+                updateUiState(true, true, name, myFilePath, myFileUri)
             }
         }
     }
