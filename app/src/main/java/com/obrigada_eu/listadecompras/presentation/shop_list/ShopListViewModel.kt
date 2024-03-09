@@ -56,6 +56,9 @@ class ShopListViewModel @Inject constructor(
     private val _errorInputName = MutableStateFlow<Boolean>(false)
     val errorInputName: StateFlow<Boolean> = _errorInputName
 
+    private val _renameListAppearance = MutableStateFlow<Boolean>(false)
+    val renameListAppearance: StateFlow<Boolean> = _renameListAppearance
+
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
 
     private var _intent = MutableLiveData<Intent?>()
@@ -108,13 +111,13 @@ class ShopListViewModel @Inject constructor(
 
 
         val names = allListsWithoutItems.value?.map { it.name }
-        Log.d("validateInput", "names = $names")
+//        Log.d("validateInput", "names = $names")
         names?.let {
             if (names.contains(name)) {
                 val id = allListsWithoutItems.value?.find { it.name == name }?.id
                 if (id != shopListIdFlow.value) {
                     _errorInputName.value = true
-                    Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
+//                    Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
                     result = false
                 }
             }
@@ -132,6 +135,10 @@ class ShopListViewModel @Inject constructor(
 
     fun resetIntent() {
         _intent.value = null
+    }
+
+    fun setRenameListAppearance(show: Boolean) {
+        _renameListAppearance.value = show
     }
 
     fun exportListToTxt() {

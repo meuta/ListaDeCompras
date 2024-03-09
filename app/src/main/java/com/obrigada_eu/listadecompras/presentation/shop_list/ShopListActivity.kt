@@ -42,7 +42,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private lateinit var binding: ActivityShopListBinding
 
-    private var showRenameListView = false
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -72,18 +71,18 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun observeViewModel() {
 
         shopListViewModel.shopListNameLD.observe(this) {
-            Log.d("ShopListActivity", "shopListName.observe = $it")
+//            Log.d(TAG, "shopListName.observe = $it")
             if (it?.isNotEmpty() == true) binding.tvToolbarShopListActivity.text = it
         }
 
         shopListViewModel.allListsWithoutItems.observe(this) {
-            Log.d("ShopListActivity", "allListsWithItems.observe =\n $it")
+//            Log.d(TAG, "allListsWithItems.observe =\n $it")
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 shopListViewModel.errorInputName.collect {
-                    Log.d("ShopListActivity", "errorInputName.observe = $it")
+//                    Log.d(TAG, "errorInputName.observe = $it")
                     with(binding) {
                         if (it) {
                             tvErrorToolbarShopListActivity.text =
@@ -98,12 +97,34 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             }
         }
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                shopListViewModel.renameListAppearance.collect {
+//                    Log.d(TAG, "renameListAppearance.collect = $it")
+                    with(binding) {
+                        if (!it) {
+                            buttonSaveListName.visibility = View.INVISIBLE
+                            etToolbarShopListActivity.visibility = View.INVISIBLE
+                            etToolbarShopListActivity.clearFocus()
+                            etToolbarShopListActivity.setText("")
+                            val inputMethodManager =
+                                this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                            inputMethodManager.hideSoftInputFromWindow(etToolbarShopListActivity.windowToken, 0)
+                            tvToolbarShopListActivity.text = ""
+                            tvToolbarShopListActivity.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        }
+
 
         shopListViewModel.intent.observe(this) {
-            Log.d(TAG, "observeViewModel: intent = $it")
+//            Log.d(TAG, "observeViewModel: intent = $it")
             it?.let {
                 startActivity(it)
                 shopListViewModel.resetIntent()
+                shopListViewModel.setRenameListAppearance(false)
             }
         }
     }
@@ -161,7 +182,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
 
             R.id.action_rename_list -> {
-                showRenameListView = true
+                shopListViewModel.setRenameListAppearance(true)
                 return true
             }
 
@@ -202,7 +223,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun exportListToTxt() {
         shopListViewModel.exportListToTxt()
         val dir =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath + File.separator.toString() + this.resources.getString(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                .absolutePath + File.separator.toString() + this.resources.getString(
                 R.string.app_name
             )
         Toast.makeText(this, "List has been saved to the directory:\n$dir", Toast.LENGTH_LONG)
@@ -212,47 +234,32 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (showRenameListView && hasFocus) {
-            showRenameListView = false
-            with(binding) {
-                etToolbarShopListActivity.setText(tvToolbarShopListActivity.text)
-                etToolbarShopListActivity.setSelection(etToolbarShopListActivity.text.length)
-                etToolbarShopListActivity.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            if (shopListViewModel.renameListAppearance.first() && hasFocus) {
+                with(binding) {
+                    tvToolbarShopListActivity.visibility = View.INVISIBLE
+                    etToolbarShopListActivity.setText(tvToolbarShopListActivity.text)
+                    etToolbarShopListActivity.setSelection(etToolbarShopListActivity.text.length)
+                    etToolbarShopListActivity.visibility = View.VISIBLE
 
-                etToolbarShopListActivity.requestFocus()
+                    etToolbarShopListActivity.requestFocus()
+                    val inputMethodManager =
+                        this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.showSoftInput(etToolbarShopListActivity, 0)
+                    buttonSaveListName.visibility = View.VISIBLE
+                }
             }
         }
     }
 
     private fun setupEditText() {
         with(binding) {
-            etToolbarShopListActivity.setOnFocusChangeListener { view, hasFocus ->
-
-                if (hasFocus) {
-                    buttonSaveListName.visibility = View.VISIBLE
-                    tvToolbarShopListActivity.visibility = View.INVISIBLE
-
-                    val inputMethodManager =
-                        this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputMethodManager.showSoftInput(etToolbarShopListActivity, 0)
-
-                } else {
-                    tvToolbarShopListActivity.visibility = View.VISIBLE
-                    buttonSaveListName.visibility = View.INVISIBLE
-                    view.visibility = View.INVISIBLE
-                }
-            }
 
             buttonSaveListName.setOnClickListener {
                 shopListViewModel.updateShopListName(etToolbarShopListActivity.text.toString())
                 lifecycleScope.launch {
-                    val isError = shopListViewModel.errorInputName.first()
-                    if (!isError) {
-                        etToolbarShopListActivity.clearFocus()
-                        etToolbarShopListActivity.setText("")
-                        val inputMethodManager =
-                            this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        inputMethodManager.hideSoftInputFromWindow(etToolbarShopListActivity.windowToken, 0)
+                    if (!shopListViewModel.errorInputName.first()) {
+                        shopListViewModel.setRenameListAppearance(false)
                     }
                 }
             }
