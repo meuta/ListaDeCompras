@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -30,6 +31,7 @@ import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemActivity
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
@@ -66,6 +68,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 }
             }
         }
+        setOnBackPressedCallback()
     }
 
     private fun observeViewModel() {
@@ -110,8 +113,11 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                             val inputMethodManager =
                                 this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                             inputMethodManager.hideSoftInputFromWindow(etToolbarShopListActivity.windowToken, 0)
-                            tvToolbarShopListActivity.text = ""
-                            tvToolbarShopListActivity.visibility = View.VISIBLE
+                            lifecycleScope.launch{
+                                delay(25)
+                                tvToolbarShopListActivity.visibility = View.VISIBLE
+                                renameListAppearanceCallback.isEnabled = false
+                            }
                         }
                     }
                 }
@@ -139,6 +145,22 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         }
         binding.toolbarShopListActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setupEditText()
+    }
+
+    private val renameListAppearanceCallback = object : OnBackPressedCallback(
+        true // default to enabled
+    ) {
+        override fun handleOnBackPressed() {
+            lifecycleScope.launch {
+                if (shopListViewModel.renameListAppearance.first()) {
+                    shopListViewModel.setRenameListAppearance(false)
+                }
+            }
+        }
+    }
+
+    private fun setOnBackPressedCallback() {
+        onBackPressedDispatcher.addCallback(this, renameListAppearanceCallback)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -247,6 +269,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                         this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.showSoftInput(etToolbarShopListActivity, 0)
                     buttonSaveListName.visibility = View.VISIBLE
+                    renameListAppearanceCallback.isEnabled = true
                 }
             }
         }
