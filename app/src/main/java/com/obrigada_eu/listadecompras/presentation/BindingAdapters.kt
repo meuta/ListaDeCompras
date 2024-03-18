@@ -37,6 +37,7 @@ fun bindErrorInputListName(til: TextInputLayout, isError: Boolean){
     } else {
         null
     }
+    til.errorIconDrawable = null
     til.error = message
 }
 

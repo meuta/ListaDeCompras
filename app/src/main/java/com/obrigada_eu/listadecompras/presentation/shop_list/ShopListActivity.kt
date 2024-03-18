@@ -339,6 +339,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             val fragment = ShopItemFragment.newInstanceEditItem(itemId)
             launchFragment(fragment)
         }
+        shopListViewModel.setRenameListAppearance(false)
     }
 
     override fun onFabClick(listId: Int?) {
@@ -350,6 +351,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 val fragment = ShopItemFragment.newInstanceAddItem(it)
                 launchFragment(fragment)
             }
+            shopListViewModel.setRenameListAppearance(false)
         }
     }
 

@@ -75,7 +75,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getAllListsWithoutItemsFlow(): Flow<List<ShopList>> {
         return shopListDao.getShopListsWithoutShopItemsFlow().map { set ->
-            Log.d("getAllListsWithoutItems", "ListSet = ${set.map { it.name to it.id }}")
+//            Log.d("getAllListsWithoutItems", "ListSet = ${set.map { it.name to it.id }}")
             listSet = set.toMutableList()
             mapper.mapListSetToEntity(set)
         }
@@ -132,10 +132,10 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getShopListWithItems(listId: Int): Flow<ShopListWithItems> {
         return shopListDao.getShopListWithItemsFlow(listId).map { list ->
-            Log.d(
-                "getShopListWithItems",
-                "shopList = ${list.shopList.map { it.name to it.position }}"
-            )
+//            Log.d(
+//                "getShopListWithItems",
+//                "shopList = ${list.shopList.map { it.name to it.position }}"
+//            )
             val newList = list.shopList.sortedBy { it.position }.toMutableList()
             mapper.mapShopListWithItemsDbModelToShopList(list.copy(shopList = newList))
         }
@@ -240,10 +240,10 @@ class ShopListRepositoryImpl @Inject constructor(
         uri: Uri?
     ): Boolean {
 
-        Log.d(
-            "loadTxtList",
-            "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath, uri = $uri"
-        )
+//        Log.d(
+//            "loadTxtList",
+//            "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath, uri = $uri"
+//        )
         if (uri == null) {
 
             val path = if (myFilePath == null) {
@@ -299,14 +299,14 @@ class ShopListRepositoryImpl @Inject constructor(
             val units = values[3].trim().ifEmpty { null }
 
             val item = ShopItem(itemName, count?.toDouble(), units, enabled)
-            Log.d("loadTxtList", "item = $item")
+//            Log.d("loadTxtList", "item = $item")
             list.add(item)
         }
         val listEnabled = lines[0].first() != '+'
 
         val listName = newFileName ?: fileName
 
-        Log.d("loadTxtList", "listName = $listName")
+//        Log.d("loadTxtList", "listName = $listName")
 
         addShopList(listName, listEnabled)
 
@@ -329,7 +329,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
         val inputStreamReader = InputStreamReader(iStream)
         val inputString = inputStreamReader.use { it.readText() }
-        Log.d(TAG, "createFileFromContentUri: inputString = $inputString")
+//        Log.d(TAG, "createFileFromContentUri: inputString = $inputString")
 
         return inputString
 
@@ -341,9 +341,9 @@ class ShopListRepositoryImpl @Inject constructor(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = separator.toString() + context.resources.getString(R.string.app_name)
         val dirDocumentsApp = File(dirDocuments.toString() + append)
-        if (!dirDocumentsApp.isDirectory) {
-            Log.d("loadFilesList", "!dirDocumentsApp.isDirectory")
-        }
+//        if (!dirDocumentsApp.isDirectory) {
+//            Log.d("loadFilesList", "!dirDocumentsApp.isDirectory")
+//        }
 
         val filesTxtList =
             dirDocumentsApp.list { _, filename -> filename.endsWith(".txt") }?.toList()
@@ -369,7 +369,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     override suspend fun setCurrentListId(listId: Int) {
-        Log.d(TAG, "setCurrentListId: listId = $listId")
+//        Log.d(TAG, "setCurrentListId: listId = $listId")
         shopListPreferences.edit { preferences ->
             preferences[KEY_LIST_ID] = listId
         }
