@@ -38,36 +38,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="12dp"
             android:visibility="gone"
             app:cardCornerRadius="4dp"
             app:cardElevation="8dp"
             app:cardBackgroundColor="@color/list_set_card_new_list_color"
             android:outlineProvider="none"
             app:cardUseCompatPadding="true"
-            app:layout_constraintBottom_toTopOf="@+id/button_add_item"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="visible">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="20dp"
-                android:paddingBottom="4dp"
-                >
+                android:padding="20dp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_list_name"
-                    android:theme="@style/text_selection_appearance"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="16dp"
+                    android:layout_margin="12dp"
+                    android:theme="@style/text_selection_appearance"
+                    app:expandedHintEnabled="false"
                     app:errorEnabled="true"
                     app:setErrorInputListName="@{viewModel.errorInputName}"
                     app:boxStrokeColor="@color/whitish"
@@ -78,32 +72,49 @@
                     app:errorTextAppearance="@style/error_appearance"
                     app:cursorErrorColor="@color/grayish">
 
-                <EditText
-                    android:id="@+id/et_list_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="top"
-                    android:padding="16dp"
-                    android:background="@color/whitish"
-                    android:textColor="@color/grayish"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:inputType="textCapSentences"
-                    android:autofillHints="list name"
-                    tools:ignore="LabelFor"
-                    tools:text="@string/new_list" />
+                    <EditText
+                        android:id="@+id/et_list_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:autofillHints="list name"
+                        android:background="@color/whitish"
+                        android:inputType="textCapSentences"
+                        android:paddingTop="30dp"
+                        android:textColor="@color/grayish"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:hint="@string/name_hint"
+                        tools:ignore="LabelFor"
+                        tools:text="@string/new_list" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
-                    android:id="@+id/button_create_list"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/grayish"
-                    android:textStyle="bold"
-                    android:text="@string/create_list"
-                    android:textColor="@color/whitish" />
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/button_cansel_create_list"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@+id/til_list_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:background="@color/grayish"
+                        android:text="@string/cansel_create_list"
+                        android:textColor="@color/whitish"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/button_create_list"
+                        android:layout_alignParentEnd="true"
+                        android:layout_below="@+id/til_list_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:background="@color/grayish"
+                        android:text="@string/create_list"
+                        android:textColor="@color/whitish"
+                        android:textStyle="bold" />
+
+
+            </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
 
 
@@ -111,12 +122,13 @@
             android:id="@+id/button_add_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="20dp"
             android:clickable="true"
             android:contentDescription="@string/add_shop_item_content_description"
             android:focusable="true"
-            app:backgroundTint="@color/list_set_fab_color"
-            android:outlineProvider="none"
+            android:alpha="0.85"
+            app:pressedTranslationZ="0dp"
+            app:backgroundTint="@color/list_set_fab_color_2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_add" />

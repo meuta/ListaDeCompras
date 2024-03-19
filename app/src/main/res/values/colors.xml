@@ -20,9 +20,11 @@
     <color name="item_background_color">#9776D0</color>
     <color name="shop_list_scroll_thumb_color">#E69776D0</color>
     <color name="shop_list_fab_color">#E66F569A</color>
+    <color name="shop_list_fab_color_2">#673DAD</color>
     <color name="item_list_background_color">#5EBC8D</color>
     <color name="list_set_scroll_thumb_color">#D85EBC8D</color>
     <color name="list_set_fab_color">#D8428362</color>
+    <color name="list_set_fab_color_2">#179871</color>
     <color name="list_set_card_new_list_color">#428362</color>
 
     <color name="background_color_toggle">#6D8E6E</color>

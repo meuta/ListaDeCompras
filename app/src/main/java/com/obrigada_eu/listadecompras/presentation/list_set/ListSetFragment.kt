@@ -116,6 +116,10 @@ class ListSetFragment(
                     fragmentListViewModel.fromTxtFile.value
                 )
             }
+
+            buttonCanselCreateList.setOnClickListener {
+                fragmentListViewModel.updateUiState(false, false, null, null, null)
+            }
         }
     }
 
@@ -207,13 +211,23 @@ class ListSetFragment(
     }
 
     override fun onListItemClick(itemId: Int) {
-        fragmentListViewModel.setCurrentListId(itemId)
-        fragmentListViewModel.updateUiState(false, false, null, null, null)
+        lifecycleScope.launch {
+            val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
+
+            if (!isVisible) {
+                fragmentListViewModel.setCurrentListId(itemId)
+                fragmentListViewModel.updateUiState(false, false, null, null, null)
+            }
+        }
     }
 
     override fun onFabClick(listId: Int?) {
         lifecycleScope.launch {
-            fragmentListViewModel.updateUiState(true, false, null, null, null)
+            val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
+
+            if (!isVisible) {
+                fragmentListViewModel.updateUiState(true, false, null, null, null)
+            }
         }
     }
 
