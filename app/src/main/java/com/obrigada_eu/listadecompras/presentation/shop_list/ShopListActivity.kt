@@ -10,9 +10,9 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -118,6 +118,10 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                                 tvToolbarShopListActivity.visibility = View.VISIBLE
                                 renameListAppearanceCallback.isEnabled = false
                             }
+                            coverView.visibility = View.GONE
+
+                        } else {
+                            coverView.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -145,6 +149,24 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         }
         binding.toolbarShopListActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setupEditText()
+        setupCoverView()
+    }
+
+    private fun setupCoverView(){
+
+        binding.coverView.setOnTouchListener { v, event ->
+            v.performClick()
+            if (event.action == MotionEvent.ACTION_DOWN ) {
+                lifecycleScope.launch {
+                    if (shopListViewModel.renameListAppearance.first()) {
+                        binding.buttonSaveListName.setBackgroundResource(R.color.whitish)
+                        delay(200)
+                        binding.buttonSaveListName.setBackgroundResource(R.color.item_background_color)
+                    }
+                }
+            }
+            true
+        }
     }
 
     private val renameListAppearanceCallback = object : OnBackPressedCallback(
@@ -339,7 +361,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             val fragment = ShopItemFragment.newInstanceEditItem(itemId)
             launchFragment(fragment)
         }
-        shopListViewModel.setRenameListAppearance(false)
     }
 
     override fun onFabClick(listId: Int?) {
@@ -351,7 +372,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                 val fragment = ShopItemFragment.newInstanceAddItem(it)
                 launchFragment(fragment)
             }
-            shopListViewModel.setRenameListAppearance(false)
         }
     }
 
