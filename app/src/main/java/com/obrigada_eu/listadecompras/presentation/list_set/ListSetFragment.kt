@@ -7,12 +7,14 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.R
+import com.obrigada_eu.listadecompras.databinding.AreYouShureLayoutBinding
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapAdapter
@@ -118,7 +120,22 @@ class ListSetFragment(
             }
 
             buttonCanselCreateList.setOnClickListener {
-                fragmentListViewModel.updateUiState(false, false, null, null, null)
+
+                val alertDialog = AlertDialog.Builder(requireActivity())
+                    .create()
+                val dialogBinding = AreYouShureLayoutBinding.inflate(layoutInflater)
+                with(dialogBinding){
+                    noButton.setOnClickListener {
+                        alertDialog.dismiss()
+                    }
+                    yesButton.setOnClickListener {
+                        fragmentListViewModel.updateUiState(false, false, null, null, null)
+                        alertDialog.dismiss()
+                    }
+                    alertDialog.setView(root)
+                }
+                alertDialog.setCanceledOnTouchOutside(false)
+                alertDialog.show()
             }
         }
     }

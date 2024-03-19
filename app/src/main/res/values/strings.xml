@@ -20,4 +20,7 @@
     <string name="undo">\nUNDO\n</string>
     <string name="rename_list">Rename list</string>
     <string name="share_text_file">Share list</string>
+    <string name="cancel_the_list_creation_are_you_sure">Cancel the list creation.\nAre You sure?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 </resources>
