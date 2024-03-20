@@ -107,6 +107,11 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                     with(binding) {
                         if (!it) {
                             buttonSaveListName.visibility = View.INVISIBLE
+
+                            toolbarShopListActivity.navigationIcon = ContextCompat.getDrawable(
+                                this@ShopListActivity, R.drawable.ic_arrow_back_normal_56
+                            )
+
                             etToolbarShopListActivity.visibility = View.INVISIBLE
                             etToolbarShopListActivity.clearFocus()
                             etToolbarShopListActivity.setText("")
@@ -145,7 +150,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         val actionBar = supportActionBar
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_24)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_normal_56)
         }
         binding.toolbarShopListActivity.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setupEditText()
@@ -154,18 +159,28 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun setupCoverView(){
 
-        binding.coverView.setOnTouchListener { v, event ->
-            v.performClick()
-            if (event.action == MotionEvent.ACTION_DOWN ) {
-                lifecycleScope.launch {
-                    if (shopListViewModel.renameListAppearance.first()) {
-                        binding.buttonSaveListName.setBackgroundResource(R.color.whitish)
-                        delay(200)
-                        binding.buttonSaveListName.setBackgroundResource(R.color.item_background_color)
+        with(binding){
+            coverView.setOnTouchListener { v, event ->
+                v.performClick()
+                if (event.action == MotionEvent.ACTION_DOWN ) {
+                    lifecycleScope.launch {
+                        if (shopListViewModel.renameListAppearance.first()) {
+                            buttonSaveListName.setBackgroundResource(R.color.whitish)
+                            toolbarShopListActivity.navigationIcon = ContextCompat.getDrawable(
+                                this@ShopListActivity, R.drawable.ic_arrow_back_alert_56
+                            )
+
+                            delay(200)
+
+                            buttonSaveListName.setBackgroundResource(R.color.item_background_color)
+                            toolbarShopListActivity.navigationIcon = ContextCompat.getDrawable(
+                                this@ShopListActivity, R.drawable.ic_arrow_back_purple_56
+                            )
+                        }
                     }
                 }
+                true
             }
-            true
         }
     }
 
@@ -291,6 +306,11 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                         this@ShopListActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.showSoftInput(etToolbarShopListActivity, 0)
                     buttonSaveListName.visibility = View.VISIBLE
+
+                    toolbarShopListActivity.navigationIcon = ContextCompat.getDrawable(
+                        this@ShopListActivity, R.drawable.ic_arrow_back_purple_56
+                    )
+
                     renameListAppearanceCallback.isEnabled = true
                 }
             }
