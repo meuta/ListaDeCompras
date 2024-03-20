@@ -111,6 +111,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                             toolbarShopListActivity.navigationIcon = ContextCompat.getDrawable(
                                 this@ShopListActivity, R.drawable.ic_arrow_back_normal_56
                             )
+                            toolbarShopListActivity.menu.setGroupVisible(R.id.shop_list_menu_group, true)
 
                             etToolbarShopListActivity.visibility = View.INVISIBLE
                             etToolbarShopListActivity.clearFocus()
@@ -170,7 +171,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                                 this@ShopListActivity, R.drawable.ic_arrow_back_alert_56
                             )
 
-                            delay(200)
+                            delay(300)
 
                             buttonSaveListName.setBackgroundResource(R.color.item_background_color)
                             toolbarShopListActivity.navigationIcon = ContextCompat.getDrawable(
@@ -310,6 +311,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                     toolbarShopListActivity.navigationIcon = ContextCompat.getDrawable(
                         this@ShopListActivity, R.drawable.ic_arrow_back_purple_56
                     )
+
+                    toolbarShopListActivity.menu.setGroupVisible(R.id.shop_list_menu_group, false)
 
                     renameListAppearanceCallback.isEnabled = true
                 }
