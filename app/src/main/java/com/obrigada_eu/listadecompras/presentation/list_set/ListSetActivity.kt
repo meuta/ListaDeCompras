@@ -181,12 +181,6 @@ class ListSetActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty()
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED
             ) {
-                Toast.makeText(
-                    this,
-                    "Storage permissions granted,\nnow you can see the list of files",
-                    Toast.LENGTH_LONG
-                ).show()
-
                 // perform the action as soon as authorisation is granted
                 loadFilesList()
 

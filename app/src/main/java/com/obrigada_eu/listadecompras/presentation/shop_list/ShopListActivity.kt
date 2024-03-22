@@ -264,12 +264,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             if (grantResults.isNotEmpty()
                 && grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED
             ) {
-                Toast.makeText(
-                    this,
-                    "Storage permissions granted,\nnow you can save the file",
-                    Toast.LENGTH_LONG
-                ).show()
-
                 // perform the action as soon as authorisation is granted
                 exportListToTxt()
 
