@@ -210,7 +210,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         when (item.itemId) {
             R.id.action_save_txt -> {
 
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
                     && ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.READ_EXTERNAL_STORAGE
@@ -269,6 +269,10 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                     "Storage permissions granted,\nnow you can save the file",
                     Toast.LENGTH_LONG
                 ).show()
+
+                // perform the action as soon as authorisation is granted
+                exportListToTxt()
+
             } else {
                 Toast.makeText(
                     this,

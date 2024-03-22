@@ -148,8 +148,8 @@ class ListSetActivity : AppCompatActivity() {
 
             R.id.action_load_txt -> {
                 listSetViewModel.updateUiState(false, false, null, null, null)
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
-                    && ContextCompat.checkSelfPermission(
+                if (
+                    Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.READ_EXTERNAL_STORAGE
                     )
@@ -157,9 +157,7 @@ class ListSetActivity : AppCompatActivity() {
                 ) {
                     ActivityCompat.requestPermissions(
                         this,
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        ),
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                         STORAGE_PERMISSION_CODE
                     )
                 } else {
@@ -188,6 +186,10 @@ class ListSetActivity : AppCompatActivity() {
                     "Storage permissions granted,\nnow you can see the list of files",
                     Toast.LENGTH_LONG
                 ).show()
+
+                // perform the action as soon as authorisation is granted
+                loadFilesList()
+
             } else {
                 Toast.makeText(
                     this,
