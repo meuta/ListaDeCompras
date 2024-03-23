@@ -65,6 +65,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
     private lateinit var listSet: MutableList<ShopListDbModel>
 
+
     override suspend fun addShopList(shopListName: String, enabled: Boolean) {
         val dbModel =
             ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = enabled)
@@ -233,17 +234,30 @@ class ShopListRepositoryImpl @Inject constructor(
         outputStream?.close()
     }
 
-    override suspend fun loadFromTxtFile(
+    override suspend fun saveListToDb(
         fileName: String,
         newFileName: String?,
-        myFilePath: String?,
-        uri: Uri?
+        listEnabled : Boolean,
+        list: List<ShopItem>
     ): Boolean {
 
-//        Log.d(
-//            "loadTxtList",
-//            "fileName = $fileName, newFileName = $newFileName, myFilePath = $myFilePath, uri = $uri"
-//        )
+        Log.d("loadTxtList", "fileName = $fileName, newFileName = $newFileName")
+
+        try {
+            saveList(newFileName, fileName, listEnabled, list)
+        } catch (e: Exception) {
+            return false
+        }
+        return true
+    }
+
+
+    override fun getListFromTxtFile(fileName: String, myFilePath: String?, uri: Uri?): Pair<ShopList?, List<ShopItem>> {
+
+        Log.d(
+            "loadTxtList",
+            "fileName = $fileName, myFilePath = $myFilePath, uri = $uri"
+        )
         if (uri == null) {
 
             val path = if (myFilePath == null) {
@@ -262,38 +276,50 @@ class ShopListRepositoryImpl @Inject constructor(
 
             val file = File(path)
             if (file.exists()) {
-                try {
+                return try {
                     val bufferedReader: BufferedReader = file.bufferedReader()
                     val contentString = bufferedReader.use { it.readText() }
-                    Log.d("loadTxtList", "content: \n$contentString")
-                    readContentStringToShopList(contentString, newFileName, fileName)
+                    getListName(contentString)
                 } catch (e: Exception) {
-                    return false
+                    Log.d(TAG, "getListFromTxtFile: Exception = $e")
+//                    null
+                    null to emptyList()
                 }
             }
 
         } else {
-            try {
+            return try {
                 val contentString: String = retrieveContentFromContentUri(uri)
-                readContentStringToShopList(contentString, newFileName, fileName)
+                getListName(contentString)
             } catch (e: Exception) {
-                return false
+                Log.d(TAG, "getListFromTxtFile: Exception = $e")
+//                null
+                null to emptyList()
             }
         }
-        return true
+
+//        return null
+        return null to emptyList()
     }
 
-    private suspend fun readContentStringToShopList(
-        inputString: String,
-        newFileName: String?,
-        fileName: String
-    ) {
-        val lines = inputString.split("\n")
+
+    private fun getListName(
+        inputString: String
+    ): Pair<ShopList, List<ShopItem>> {
+
         val list = mutableListOf<ShopItem>()
+        val lines = inputString.split("\n")
+
         lines.drop(2).forEach { line ->
             val values = line.split("\t")
 
-            val enabled = line.first() != '+'
+            val enabled = when (line.first()) {
+                '-' -> true
+                '+' -> false
+                else -> {
+                    throw IllegalArgumentException("Unknown symbol for the field 'enabled': ${line.first()}")
+                }
+            }
             val itemName = values[1].trim()
             val count = values[2].trim().ifEmpty { null }
             val units = values[3].trim().ifEmpty { null }
@@ -302,11 +328,38 @@ class ShopListRepositoryImpl @Inject constructor(
 //            Log.d("loadTxtList", "item = $item")
             list.add(item)
         }
-        val listEnabled = lines[0].first() != '+'
+        Log.d(TAG, "getListName: listEnabled = ${lines[0].first()}")
+
+        val listEnabled = when (lines[0].first()) {
+            '-' -> true
+            '+' -> false
+            else -> {
+                throw IllegalArgumentException("Unknown symbol for the field 'enabled': ${lines[0].first()}")
+            }
+        }
+
+
+        val listName = lines[0].split("\t")[1].trim()
+        Log.d("loadTxtList", "listName = $listName")
+
+
+        val shopList = ShopList(listName, listEnabled)
+//        val shopListWithItems = ShopListWithItems(listName, list)
+
+//        return listName
+        return shopList to list
+    }
+
+
+
+    private suspend fun saveList(
+        newFileName: String?,
+        fileName: String,
+        listEnabled : Boolean,
+        list: List<ShopItem>
+    ) {
 
         val listName = newFileName ?: fileName
-
-//        Log.d("loadTxtList", "listName = $listName")
 
         addShopList(listName, listEnabled)
 

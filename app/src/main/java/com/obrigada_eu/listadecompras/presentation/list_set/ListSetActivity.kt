@@ -18,10 +18,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityListSetBinding
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ListSetActivity : AppCompatActivity() {
@@ -55,7 +60,6 @@ class ListSetActivity : AppCompatActivity() {
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
             listSetViewModel.updateUiState(false, false, null, null, null)
-            listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
             with(binding.filesList) {
                 if (visibility == View.VISIBLE) {
                     visibility = View.GONE
@@ -72,12 +76,11 @@ class ListSetActivity : AppCompatActivity() {
     private fun handleIntent(intent: Intent) {
 //        Log.d(TAG, "handleIntent: intent = $intent")
 
-        val data: Uri? = intent.data
-
         when (intent.action) {
 
             Intent.ACTION_SEND -> {
 
+                listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
                 } else {
@@ -92,9 +95,13 @@ class ListSetActivity : AppCompatActivity() {
             }
 
             Intent.ACTION_VIEW -> {
+
+                listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
                 when (intent.type) {
 
                     "text/plain" -> {
+
+                        val data: Uri? = intent.data
 //                        Log.d(TAG, "handleIntent: data = $data")
 //                        Log.d(TAG, "handleIntent: myFilePath = ${data?.path}")
                         data?.let {
@@ -120,9 +127,22 @@ class ListSetActivity : AppCompatActivity() {
 
 
     private fun observeViewModel() {
-        listSetViewModel.fileWithoutErrors.observe(this) {
-            if (!it) {
-                Toast.makeText(this, "File reading error", Toast.LENGTH_LONG).show()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listSetViewModel.fileWithoutErrors.collect {
+                    Log.d(TAG, "observeViewModel: fileWithoutErrors = $it")
+                    if (!it) {
+                        Toast.makeText(
+                            this@ListSetActivity,
+                            "File reading error",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                        delay(100)
+                        listSetViewModel.resetFileWithoutErrors()
+                        listSetViewModel.resetErrorInputName()
+                    }
+                }
             }
         }
     }

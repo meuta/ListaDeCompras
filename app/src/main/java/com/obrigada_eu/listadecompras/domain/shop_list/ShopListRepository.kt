@@ -2,6 +2,7 @@ package com.obrigada_eu.listadecompras.domain.shop_list
 
 import android.content.Intent
 import android.net.Uri
+import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -33,7 +34,9 @@ interface ShopListRepository {
 
     suspend fun loadFilesList(): List<String>?
 
-    suspend fun loadFromTxtFile(fileName: String, newFileName: String? = null, myFilePath: String? = null, uri: Uri? = null): Boolean
+    suspend fun saveListToDb(fileName: String, newFileName: String? = null, listEnabled : Boolean, list: List<ShopItem>): Boolean
+
+    fun getListFromTxtFile(fileName: String, myFilePath: String? = null, uri: Uri? = null): Pair<ShopList?, List<ShopItem>>
 
     suspend fun undoDelete()
 

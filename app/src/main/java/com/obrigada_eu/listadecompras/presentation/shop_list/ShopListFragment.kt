@@ -43,7 +43,7 @@ class ShopListFragment : SwipeSwapListFragment<
 
     override fun observeViewModel() {
         fragmentListViewModel.shopListIdLD.observe(viewLifecycleOwner){
-            Log.d("ShopListFragment", "shopListIdLD.observe = $it")
+//            Log.d("ShopListFragment", "shopListIdLD.observe = $it")
             listId = it
             if (it == ShopList.UNDEFINED_ID){
                 requireActivity().finish()
@@ -52,7 +52,7 @@ class ShopListFragment : SwipeSwapListFragment<
 
         fragmentListViewModel.shopListLD.observe(viewLifecycleOwner) {
             fragmentListAdapter.submitList(it)
-            Log.d("ShopListFragment", "shopList.observe = ${it.map { listOf(it.name, it.count, it.units) }}")
+//            Log.d("ShopListFragment", "shopList.observe = ${it.map { listOf(it.name, it.count, it.units) }}")
         }
     }
 
@@ -90,8 +90,8 @@ class ShopListFragment : SwipeSwapListFragment<
     ) {
         override fun handleOnBackPressed() {
             val fragments = parentFragmentManager.fragments
-            Log.d("setOnBackPressedCallback", "list fragments = $fragments")
-            Log.d("setOnBackPressedCallback", "fragments this = ${this@ShopListFragment}")
+//            Log.d("setOnBackPressedCallback", "list fragments = $fragments")
+//            Log.d("setOnBackPressedCallback", "fragments this = ${this@ShopListFragment}")
             if (fragments.last() == this@ShopListFragment) {
                 fragmentListViewModel.updateShopListIdState(ShopList.UNDEFINED_ID)
                 requireActivity().finish()

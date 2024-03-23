@@ -24,7 +24,7 @@ class ShopItemRepositoryImpl @Inject constructor(
 
     override fun getShopList(listId: Int): Flow<List<ShopItem>> {
         return shopItemDao.getShopList(listId).map { list ->
-            Log.d("getShopList", "shopList = ${list.map{it.name to it.position}}")
+//            Log.d("getShopList", "shopList = ${list.map{it.name to it.position}}")
             shopListDbModel = list.toMutableList()
             mapper.mapListDbModelToEntity(list)
         }
@@ -46,7 +46,7 @@ class ShopItemRepositoryImpl @Inject constructor(
     override suspend fun deleteShopItem(shopItem: ShopItem) {
         recentlyDeletedShopItemDbModel = shopItemDao.getShopItem(shopItem.id)
         shopItemDao.deleteShopItem(shopItem.id)
-        Log.d("deleteShopItem", " list = ${shopListDbModel.map { it.id }}")
+//        Log.d("deleteShopItem", " list = ${shopListDbModel.map { it.id }}")
     }
 
     override suspend fun undoDelete() {

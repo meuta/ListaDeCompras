@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
@@ -14,8 +15,9 @@ import com.obrigada_eu.listadecompras.domain.shop_list.DragShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsFlowUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetAllListsWithoutItemsUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.GetCurrentListIdUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.GetListFromTxtFileUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.LoadFilesListUseCase
-import com.obrigada_eu.listadecompras.domain.shop_list.LoadFromTxtFileUseCase
+import com.obrigada_eu.listadecompras.domain.shop_list.SaveListToDbUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.SetCurrentListIdUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.domain.shop_list.UndoDeleteListUseCase
@@ -45,7 +47,8 @@ class ListSetViewModel @Inject constructor(
     private val getCurrentListIdUseCase: GetCurrentListIdUseCase,
     private val undoDeleteListUseCase: UndoDeleteListUseCase,
     private val loadFilesListUseCase: LoadFilesListUseCase,
-    private val loadFromTxtFileUseCase: LoadFromTxtFileUseCase,
+    private val saveListToDbUseCase: SaveListToDbUseCase,
+    private val getListFromTxtFileUseCase: GetListFromTxtFileUseCase,
 ) : SwipeSwapViewModel() {
 
 
@@ -72,8 +75,7 @@ class ListSetViewModel @Inject constructor(
         get() = _oldFileName
 
     private var _fileWithoutErrors = MutableStateFlow(true)
-    val fileWithoutErrors: LiveData<Boolean>
-        get() = _fileWithoutErrors.asLiveData()
+    val fileWithoutErrors: StateFlow<Boolean> = _fileWithoutErrors
 
     private var namesList = listOf<String>()
 
@@ -130,15 +132,20 @@ class ListSetViewModel @Inject constructor(
     }
 
 
-    fun addShopList(inputName: String?, fromTxtFile: Boolean = false, path: String? = null, uri: Uri? =null) {
+    fun addShopList(
+        inputName: String?,
+        fromTxtFile: Boolean = false,
+        path: String? = null,
+        uri: Uri? = null
+    ) {
         val name = parseName(inputName)
 //        Log.d(TAG, "addShopList: inputName = $inputName, fromTxtFile = $fromTxtFile, path = $path, uri = $uri")
 //        Log.d("addShopList", "namesList = $namesList")
 
         var fieldsValid = !namesList.contains(name)
 
-        if (!fieldsValid){
-           _errorInputName.value = true
+        if (!fieldsValid) {
+            _errorInputName.value = true
         }
 
         viewModelScope.launch {
@@ -146,32 +153,40 @@ class ListSetViewModel @Inject constructor(
 //            Log.d("addShopList check", "fromTxtFile = $fromTxtFile, fieldsValid = $fieldsValid")
             if (!fromTxtFile && fieldsValid) {
 
-//            viewModelScope.launch {
                 addShopListUseCase(name)
-//            }
                 updateUiState(false, false, null, null, null)
             }
-            if (fromTxtFile && fieldsValid) {
+
+            if (fromTxtFile) {
 
                 val oldName = _oldFileName.value ?: name
-                val newName = if (_oldFileName.value != null) name else null
-
-                val myFilePath = filePath ?: path
-                val myFileUri = fileUri ?: uri
-//                scope.launch {
-                _fileWithoutErrors.value = loadFromTxtFileUseCase(oldName, newName, myFilePath, myFileUri)
-//                }
-
-                updateUiState(false, false, null, null, null)
-                if (!_fileWithoutErrors.value) _fileWithoutErrors.value = true
-            }
-
-            if (fromTxtFile && !fieldsValid) {
 
                 val myFilePath = filePath ?: path
                 val myFileUri = fileUri ?: uri
 
-                updateUiState(true, true, name, myFilePath, myFileUri)
+                val listWithItems = getListFromTxtFileUseCase(oldName, myFilePath, myFileUri)
+                val listNameFromText = listWithItems.first?.name
+                val listEnabled = listWithItems.first?.enabled
+                val list = listWithItems.second
+
+                _fileWithoutErrors.value = listNameFromText != null && listEnabled != null
+
+                Log.d("addShopList", "name1 = $oldName")
+                Log.d("addShopList", "name2 = $listNameFromText")
+                if (_fileWithoutErrors.value) {
+                    if (fieldsValid) {
+                        val newName = if (_oldFileName.value != null) name else null
+
+
+                            val listSaved = saveListToDbUseCase(oldName, newName, listEnabled ?: true, list)
+                            Log.d(TAG, "addShopList: listSaved = $listSaved")
+
+                        updateUiState(false, false, null, null, null)
+                    } else {
+
+                        updateUiState(true, true, name, myFilePath, myFileUri)
+                    }
+                }
             }
         }
     }
@@ -223,6 +238,10 @@ class ListSetViewModel @Inject constructor(
 
     fun resetErrorInputName() {
         _errorInputName.value = false
+    }
+
+    fun resetFileWithoutErrors() {
+        _fileWithoutErrors.value = true
     }
 
     fun showErrorInputName() {
