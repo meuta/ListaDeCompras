@@ -234,17 +234,22 @@ class ShopListRepositoryImpl @Inject constructor(
         outputStream?.close()
     }
 
-    override suspend fun saveListToDb(
-        fileName: String,
-        newFileName: String?,
-        listEnabled : Boolean,
-        list: List<ShopItem>
-    ): Boolean {
+    override suspend fun saveListToDb(shopListWithItems: ShopListWithItems): Boolean {
 
-        Log.d("loadTxtList", "fileName = $fileName, newFileName = $newFileName")
+        Log.d("loadTxtList", "listName = $shopListWithItems.name")
 
         try {
-            saveList(newFileName, fileName, listEnabled, list)
+            addShopList(shopListWithItems.name, shopListWithItems.enabled)
+
+            shopListDao.getShopListId(shopListWithItems.name)?.let { listId ->
+                shopListWithItems.itemList.withIndex().forEach {
+                    shopItemDao.addShopItem(
+                        mapper
+                            .mapShopItemEntityToDbModel(it.value)
+                            .copy(shopListId = listId, position = it.index)
+                    )
+                }
+            }
         } catch (e: Exception) {
             return false
         }
@@ -252,7 +257,7 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override fun getListFromTxtFile(fileName: String, myFilePath: String?, uri: Uri?): Pair<ShopList?, List<ShopItem>> {
+    override fun getListFromTxtFile(fileName: String, myFilePath: String?, uri: Uri?): ShopListWithItems? {
 
         Log.d(
             "loadTxtList",
@@ -279,33 +284,28 @@ class ShopListRepositoryImpl @Inject constructor(
                 return try {
                     val bufferedReader: BufferedReader = file.bufferedReader()
                     val contentString = bufferedReader.use { it.readText() }
-                    getListName(contentString)
+                    getListWithItemsFromString(contentString)
                 } catch (e: Exception) {
                     Log.d(TAG, "getListFromTxtFile: Exception = $e")
-//                    null
-                    null to emptyList()
+                    null
                 }
             }
 
         } else {
             return try {
                 val contentString: String = retrieveContentFromContentUri(uri)
-                getListName(contentString)
+                getListWithItemsFromString(contentString)
             } catch (e: Exception) {
                 Log.d(TAG, "getListFromTxtFile: Exception = $e")
-//                null
-                null to emptyList()
+                null
             }
         }
 
-//        return null
-        return null to emptyList()
+        return null
     }
 
 
-    private fun getListName(
-        inputString: String
-    ): Pair<ShopList, List<ShopItem>> {
+    private fun getListWithItemsFromString(inputString: String): ShopListWithItems {
 
         val list = mutableListOf<ShopItem>()
         val lines = inputString.split("\n")
@@ -338,40 +338,12 @@ class ShopListRepositoryImpl @Inject constructor(
             }
         }
 
-
         val listName = lines[0].split("\t")[1].trim()
         Log.d("loadTxtList", "listName = $listName")
 
+        val shopListWithItems = ShopListWithItems(listName, listEnabled, list)
 
-        val shopList = ShopList(listName, listEnabled)
-//        val shopListWithItems = ShopListWithItems(listName, list)
-
-//        return listName
-        return shopList to list
-    }
-
-
-
-    private suspend fun saveList(
-        newFileName: String?,
-        fileName: String,
-        listEnabled : Boolean,
-        list: List<ShopItem>
-    ) {
-
-        val listName = newFileName ?: fileName
-
-        addShopList(listName, listEnabled)
-
-        shopListDao.getShopListId(listName)?.let { listId ->
-            list.withIndex().forEach {
-                shopItemDao.addShopItem(
-                    mapper
-                        .mapShopItemEntityToDbModel(it.value)
-                        .copy(shopListId = listId, position = it.index)
-                )
-            }
-        }
+        return shopListWithItems
     }
 
 

@@ -111,9 +111,7 @@ class ListSetViewModel @Inject constructor(
                 this._oldFileName.value = null
             }
         }
-
 //        Log.d(TAG,"oldFileName = $oldFileName")
-
         this.filePath = filePath
         this.fileUri = uri
     }
@@ -122,7 +120,6 @@ class ListSetViewModel @Inject constructor(
     private var _filesList = MutableLiveData<List<String>?>()
     val filesList: LiveData<List<String>?>
         get() = _filesList
-
 
 
     fun setCurrentListId(listId: Int){
@@ -151,13 +148,12 @@ class ListSetViewModel @Inject constructor(
         viewModelScope.launch {
             fieldsValid = validateInput(name)
 //            Log.d("addShopList check", "fromTxtFile = $fromTxtFile, fieldsValid = $fieldsValid")
-            if (!fromTxtFile && fieldsValid) {
-
-                addShopListUseCase(name)
-                updateUiState(false, false, null, null, null)
-            }
-
-            if (fromTxtFile) {
+            if (!fromTxtFile) {
+                if (fieldsValid) {
+                    addShopListUseCase(name)
+                    updateUiState(false, false, null, null, null)
+                }
+            } else {
 
                 val oldName = _oldFileName.value ?: name
 
@@ -165,26 +161,24 @@ class ListSetViewModel @Inject constructor(
                 val myFileUri = fileUri ?: uri
 
                 val listWithItems = getListFromTxtFileUseCase(oldName, myFilePath, myFileUri)
-                val listNameFromText = listWithItems.first?.name
-                val listEnabled = listWithItems.first?.enabled
-                val list = listWithItems.second
+                _fileWithoutErrors.value = listWithItems != null
 
-                _fileWithoutErrors.value = listNameFromText != null && listEnabled != null
+                listWithItems?.let {
+                    val listNameFromText = it.name
 
-                Log.d("addShopList", "name1 = $oldName")
-                Log.d("addShopList", "name2 = $listNameFromText")
-                if (_fileWithoutErrors.value) {
-                    if (fieldsValid) {
-                        val newName = if (_oldFileName.value != null) name else null
+                    Log.d("addShopList", "name1 = $oldName")
+                    Log.d("addShopList", "name2 = $listNameFromText")
+                    if (_fileWithoutErrors.value) {
+                        if (fieldsValid) {
 
-
-                            val listSaved = saveListToDbUseCase(oldName, newName, listEnabled ?: true, list)
+                            val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
                             Log.d(TAG, "addShopList: listSaved = $listSaved")
 
-                        updateUiState(false, false, null, null, null)
-                    } else {
+                            updateUiState(false, false, null, null, null)
+                        } else {
 
-                        updateUiState(true, true, name, myFilePath, myFileUri)
+                            updateUiState(true, true, name, myFilePath, myFileUri)
+                        }
                     }
                 }
             }

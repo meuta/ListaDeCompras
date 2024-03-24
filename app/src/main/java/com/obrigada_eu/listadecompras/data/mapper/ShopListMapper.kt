@@ -53,6 +53,7 @@ class ShopListMapper @Inject constructor() {
         shopListWithShopItemsDbModel: ShopListWithShopItemsDbModel
     ) : ShopListWithItems = ShopListWithItems(
         shopListWithShopItemsDbModel.shopListDbModel.name,
+        shopListWithShopItemsDbModel.shopListDbModel.enabled,
         shopListWithShopItemsDbModel.shopList.map { mapShopItemDbModelToEntity(it) },
         shopListWithShopItemsDbModel.shopListDbModel.id
     )
