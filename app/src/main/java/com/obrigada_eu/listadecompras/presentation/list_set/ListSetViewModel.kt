@@ -54,8 +54,11 @@ class ListSetViewModel @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private val _errorInputName = MutableStateFlow(false)
-    val errorInputName: StateFlow<Boolean> = _errorInputName
+    private val _errorInputNameTitle = MutableStateFlow(false)
+    val errorInputNameTitle: StateFlow<Boolean> = _errorInputNameTitle
+
+    private val _errorInputNameContent = MutableStateFlow(false)
+    val errorInputNameContent: StateFlow<Boolean> = _errorInputNameContent
 
     private val _shopListIdLD = MutableLiveData<Int>()
     val shopListIdLD: LiveData<Int>
@@ -77,20 +80,27 @@ class ListSetViewModel @Inject constructor(
     private var _fileWithoutErrors = MutableStateFlow(true)
     val fileWithoutErrors: StateFlow<Boolean> = _fileWithoutErrors
 
-    private var namesList = listOf<String>()
+//    private var namesList = listOf<String>()
 
     private var filePath: String? = null
     private var fileUri: Uri? = null
 
+
+    private var _isTitle = MutableStateFlow<Boolean>(true)
+    val isTitle:StateFlow<Boolean> = _isTitle
+
+    private var _listNameFromFileContent = MutableStateFlow<String?>(null)
+    val listNameFromFileContent: StateFlow<String?> = _listNameFromFileContent
+
     init {
 //        Log.d(TAG, "1. namesList = $namesList ")
-        scope.launch {
-            getAllListsWithoutItemsFlowUseCase().collect{list ->
-                namesList = list.map { it.name }
-//                Log.d(TAG, "2. namesList = $namesList ")
-
-            }
-        }
+//        scope.launch {
+//            getAllListsWithoutItemsFlowUseCase().collect{list ->
+//                namesList = list.map { it.name }
+////                Log.d(TAG, "2. namesList = $namesList ")
+//
+//            }
+//        }
         viewModelScope.launch {
             getCurrentListIdUseCase().collect{
 //                Log.d(TAG,"init id = $it")
@@ -133,20 +143,21 @@ class ListSetViewModel @Inject constructor(
         inputName: String?,
         fromTxtFile: Boolean = false,
         path: String? = null,
-        uri: Uri? = null
+        uri: Uri? = null,
+        alterName: String? = null
     ) {
         val name = parseName(inputName)
 //        Log.d(TAG, "addShopList: inputName = $inputName, fromTxtFile = $fromTxtFile, path = $path, uri = $uri")
 //        Log.d("addShopList", "namesList = $namesList")
 
-        var fieldsValid = !namesList.contains(name)
-
-        if (!fieldsValid) {
-            _errorInputName.value = true
-        }
+//        var fieldsValid = !namesList.contains(name)
+//
+//        if (!fieldsValid) {
+//            _errorInputNameTitle.value = true
+//        }
 
         viewModelScope.launch {
-            fieldsValid = validateInput(name)
+            val fieldsValid = validateInput(name, "title")
 //            Log.d("addShopList check", "fromTxtFile = $fromTxtFile, fieldsValid = $fieldsValid")
             if (!fromTxtFile) {
                 if (fieldsValid) {
@@ -164,45 +175,68 @@ class ListSetViewModel @Inject constructor(
                 _fileWithoutErrors.value = listWithItems != null
 
                 listWithItems?.let {
-                    val listNameFromText = it.name
-
+                    var listNameFromText = it.name
                     Log.d("addShopList", "name1 = $oldName")
                     Log.d("addShopList", "name2 = $listNameFromText")
-                    if (_fileWithoutErrors.value) {
-                        if (fieldsValid) {
+                    Log.d("addShopList", "alterName = $alterName")
 
-                            val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
-                            Log.d(TAG, "addShopList: listSaved = $listSaved")
+                    if (listNameFromText != oldName) {
 
-                            updateUiState(false, false, null, null, null)
-                        } else {
+                        alterName?.let { listNameFromText = alterName }
 
-                            updateUiState(true, true, name, myFilePath, myFileUri)
-                        }
+                        _listNameFromFileContent.value = listNameFromText
+//                        var fieldsValidContent = !namesList.contains(listNameFromText)
+//
+//                        if (!fieldsValidContent) {
+//                            _errorInputNameContent.value = true
+//                        }
+
+                        val fieldsValidContent = validateInput(listNameFromText, "content")
+                    }
+
+                    if (fieldsValid) {
+
+                        val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
+                        Log.d(TAG, "addShopList: listSaved = $listSaved")
+
+                        updateUiState(false, false, null, null, null)
+
+                        _listNameFromFileContent.value = null
+
+                    } else {
+
+                        updateUiState(true, true, name, myFilePath, myFileUri)
                     }
                 }
             }
         }
     }
 
-    private suspend fun validateInput(name: String): Boolean {
-//        Log.d("validateInput", "name = $name")
+    private suspend fun validateInput(name: String, field: String): Boolean {
+        Log.d("validateInput", "name = $name")
         if (name.isBlank()) {
-            _errorInputName.value = true
+            if (field  == "title"){
+                _errorInputNameTitle.value = true
+            } else if(field  == "content"){
+                _errorInputNameContent.value = true
+            }
             return false
         }
-
         val myNamesList = getAllListsWithoutItemsUseCase().map { it.name }
-//        Log.d("validateInput", "myNamesList = $myNamesList")
-
+        Log.d("validateInput", "myNamesList = $myNamesList")
         if (myNamesList.contains(name)) {
-            _errorInputName.value = true
-//            Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
+            if (field  == "title"){
+                _errorInputNameTitle.value = true
+            Log.d("validateInput", "_errorInputName.value = ${_errorInputNameTitle.value}")
+            } else if(field  == "content"){
+                _errorInputNameContent.value = true
+            Log.d("validateInput", "_errorInputName.value = ${_errorInputNameContent.value}")
+            }
             return false
         }
-
         return true
     }
+
 
     fun getFileName(uri: Uri): String? {
 
@@ -230,16 +264,28 @@ class ListSetViewModel @Inject constructor(
         return inputName?.trim() ?: ""
     }
 
-    fun resetErrorInputName() {
-        _errorInputName.value = false
+    fun resetErrorInputNameTitle() {
+        _errorInputNameTitle.value = false
+    }
+
+    fun resetErrorInputNameContent() {
+        _errorInputNameContent.value = false
     }
 
     fun resetFileWithoutErrors() {
         _fileWithoutErrors.value = true
     }
 
-    fun showErrorInputName() {
-        _errorInputName.value = true
+    fun resetListNameFromContent() {
+        _listNameFromFileContent.value = null
+    }
+
+    fun showErrorInputNameTitle() {
+        _errorInputNameTitle.value = true
+    }
+
+    fun showErrorInputNameContent() {
+        _errorInputNameContent.value = true
     }
 
     fun deleteShopList(id: Int) {

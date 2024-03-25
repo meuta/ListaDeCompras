@@ -140,7 +140,8 @@ class ListSetActivity : AppCompatActivity() {
                             .show()
                         delay(100)
                         listSetViewModel.resetFileWithoutErrors()
-                        listSetViewModel.resetErrorInputName()
+                        listSetViewModel.resetErrorInputNameTitle()
+                        listSetViewModel.resetErrorInputNameContent()
                     }
                 }
             }

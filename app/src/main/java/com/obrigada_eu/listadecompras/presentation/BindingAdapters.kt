@@ -1,6 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation
 
 import android.util.Log
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -8,6 +9,8 @@ import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem.Companion.UNDEFI
 import com.google.android.material.textfield.TextInputLayout
 import com.obrigada_eu.listadecompras.R
 import kotlin.math.roundToInt
+
+private const val TAG = "BindingAdapter"
 
 @BindingAdapter("setErrorInputName")
 fun bindErrorInputName(til: TextInputLayout, isError: Boolean){
@@ -87,4 +90,10 @@ fun bindUnits(editText: EditText, itemId: Int, itemUnits: String?){
     if (itemId != UNDEFINED_ID) {
         itemUnits?.let { editText.setText(it) }
     }
+}
+
+@BindingAdapter("alterNameVisibility")
+fun setAlterNameVisibility(view: View, name: String?){
+    Log.d(TAG, "setAlterNameVisibility: name = $name")
+    view.visibility = if (name == null) View.GONE else View.VISIBLE
 }

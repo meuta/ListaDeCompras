@@ -50,32 +50,71 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="visible">
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="20dp">
 
+
+                <RadioGroup
+                    android:id="@+id/radio_group_list_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="@+id/til_list_name_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/til_list_name_content"
+                    app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
+                    tools:visibility="visible"
+                    >
+
+                    <RadioButton
+                        android:id="@+id/radio_tilte"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="6dp"
+                        android:buttonTint="@color/blackish"
+                        android:checked="@{!viewModel.isTitle()}"
+                        />
+
+                    <RadioButton
+                        android:id="@+id/radio_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginTop="6dp"
+                        android:buttonTint="@color/blackish"
+                        android:checked="@{!viewModel.isTitle()}"
+                        />
+                </RadioGroup>
+
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_list_name"
-                    android:layout_width="match_parent"
+                    android:id="@+id/til_list_name_title"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
+                    android:layout_marginVertical="12dp"
+                    android:layout_marginStart="12dp"
                     android:theme="@style/text_selection_appearance"
                     app:expandedHintEnabled="false"
                     app:errorEnabled="true"
-                    app:setErrorInputListName="@{viewModel.errorInputName}"
+                    app:setErrorInputListName="@{viewModel.errorInputNameTitle}"
                     app:boxStrokeColor="@color/whitish"
                     app:boxStrokeErrorColor="@color/whitish"
                     app:boxBackgroundColor="@color/whitish"
                     app:errorTextColor="@color/orange_error_color"
                     app:errorIconTint="@color/whitish"
                     app:errorTextAppearance="@style/error_appearance"
-                    app:cursorErrorColor="@color/grayish">
+                    app:cursorErrorColor="@color/grayish"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/check_name_title"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <EditText
-                        android:id="@+id/et_list_name"
+                        android:id="@+id/et_list_name_title"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_weight="4"
                         android:autofillHints="list name"
                         android:background="@color/whitish"
                         android:inputType="textCapSentences"
@@ -89,32 +128,104 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <TextView
+                    android:id="@+id/check_name_title"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="unique"
+                    android:textColor="@color/blackish"
+                    app:layout_constraintStart_toEndOf="@+id/til_list_name_title"
+                    app:layout_constraintEnd_toStartOf="@id/radio_group_list_name"
+                    app:layout_constraintTop_toTopOf="@+id/til_list_name_title"
+                    app:layout_constraintBottom_toBottomOf="@+id/til_list_name_title"
+                    app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
+                    tools:visibility="visible"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_list_name_content"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="12dp"
+                    android:layout_marginStart="12dp"
+                    android:theme="@style/text_selection_appearance"
+                    app:expandedHintEnabled="false"
+                    app:errorEnabled="true"
+                    app:setErrorInputListName="@{viewModel.errorInputNameContent}"
+                    app:boxStrokeColor="@color/whitish"
+                    app:boxStrokeErrorColor="@color/whitish"
+                    app:boxBackgroundColor="@color/whitish"
+                    app:errorTextColor="@color/orange_error_color"
+                    app:errorIconTint="@color/whitish"
+                    app:errorTextAppearance="@style/error_appearance"
+                    app:cursorErrorColor="@color/grayish"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/check_name_content"
+                    app:layout_constraintTop_toBottomOf="@+id/til_list_name_title"
+                    app:alterNameVisibility="@{viewModel.listNameFromFileContent}">
+
+                    <EditText
+                        android:id="@+id/et_list_name_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:autofillHints="list name"
+                        android:background="@color/whitish"
+                        android:inputType="textCapSentences"
+                        android:paddingTop="30dp"
+                        android:textColor="@color/grayish"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:hint="@string/name_hint"
+                        android:text="@{viewModel.listNameFromFileContent.toString()}"
+                        tools:ignore="LabelFor"
+                        tools:text="@string/new_list" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/check_name_content"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="unique"
+                    android:textColor="@color/blackish"
+                    app:layout_constraintStart_toEndOf="@+id/til_list_name_content"
+                    app:layout_constraintEnd_toStartOf="@id/radio_group_list_name"
+                    app:layout_constraintTop_toTopOf="@id/til_list_name_content"
+                    app:layout_constraintBottom_toBottomOf="@id/til_list_name_content"
+                    app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
+                    tools:visibility="visible"/>
+
                     <Button
                         android:id="@+id/button_cansel_create_list"
-                        android:layout_alignParentStart="true"
-                        android:layout_below="@+id/til_list_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:layout_marginHorizontal="12dp"
                         android:background="@color/grayish"
                         android:text="@string/cansel_create_list"
                         android:textColor="@color/whitish"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/til_list_name_content"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
                     <Button
                         android:id="@+id/button_create_list"
-                        android:layout_alignParentEnd="true"
-                        android:layout_below="@+id/til_list_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:layout_marginHorizontal="12dp"
                         android:background="@color/grayish"
                         android:text="@string/create_list"
                         android:textColor="@color/whitish"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
 

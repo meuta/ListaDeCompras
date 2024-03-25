@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
@@ -70,7 +71,7 @@ class ListSetFragment(
                     with(binding){
                         if (!isVisible) {
 
-                            etListName.setText("")
+                            etListNameTitle.setText("")
                             cardNewList.visibility = View.GONE
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -79,13 +80,13 @@ class ListSetFragment(
                         } else {
 
                             cardNewList.visibility = View.VISIBLE
-                            etListName.setText(requireContext().resources.getString(R.string.new_list))
-                            etListName.requestFocus()
-                            etListName.setSelection(0, etListName.text.length)
+                            etListNameTitle.setText(requireContext().resources.getString(R.string.new_list))
+                            etListNameTitle.requestFocus()
+                            etListNameTitle.setSelection(0, etListNameTitle.text.length)
 
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                            inputMethodManager.showSoftInput(etListName, 0)
+                            inputMethodManager.showSoftInput(etListNameTitle, 0)
                         }
                     }
                 }
@@ -97,10 +98,10 @@ class ListSetFragment(
 //            Log.d(TAG, "oldFileName.observe = $fileName")
             fileName?.let {
                 with(binding){
-                    etListName.tag = TAG_ERROR_INPUT_NAME
-                    etListName.setText(it)
-                    etListName.setSelection(etListName.text.length)
-                    etListName.tag = null
+                    etListNameTitle.tag = TAG_ERROR_INPUT_NAME
+                    etListNameTitle.setText(it)
+                    etListNameTitle.setSelection(etListNameTitle.text.length)
+                    etListNameTitle.tag = null
                 }
             }
         }
@@ -113,9 +114,11 @@ class ListSetFragment(
             }
 
             buttonCreateList.setOnClickListener {
+                val alterName = if (!etListNameContent.text?.toString().isNullOrEmpty()) etListNameContent.text?.toString() else null
                 fragmentListViewModel.addShopList(
-                    etListName.text?.toString(),
-                    fragmentListViewModel.fromTxtFile.value
+                    etListNameTitle.text?.toString(),
+                    fragmentListViewModel.fromTxtFile.value,
+                    alterName = alterName
                 )
             }
 
@@ -129,6 +132,7 @@ class ListSetFragment(
                         alertDialog.dismiss()
                     }
                     yesButton.setOnClickListener {
+                        fragmentListViewModel.resetListNameFromContent()
                         fragmentListViewModel.updateUiState(false, false, null, null, null)
                         alertDialog.dismiss()
                     }
@@ -148,16 +152,29 @@ class ListSetFragment(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 with(binding) {
-                    if (etListName.text.hashCode() == s.hashCode()) {
-//                        Log.d(TAG, "onTextChanged: etListName.tag = ${etListName.tag}")
-                        if( etListName.tag == null ) {
+                    if (etListNameTitle.text.hashCode() == s.hashCode()) {
+//                        Log.d(TAG, "onTextChanged: etListNameTitle.tag = ${etListNameTitle.tag}")
+                        if( etListNameTitle.tag == null ) {
                             // Value changed by user
-                            fragmentListViewModel.resetErrorInputName()
+                            fragmentListViewModel.resetErrorInputNameTitle()
 //                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
                         }
                         else{
                             // Value changed by program
-                            fragmentListViewModel.showErrorInputName()
+                            fragmentListViewModel.showErrorInputNameTitle()
+//                            Log.d(TAG, "onTextChanged: show errorInputName")
+                        }
+                    }
+                    if (etListNameContent.text.hashCode() == s.hashCode()) {
+//                        Log.d(TAG, "onTextChanged: etListNameContent.tag = ${etListNameContent.tag}")
+                        if( etListNameContent.tag == null ) {
+                            // Value changed by user
+                            fragmentListViewModel.resetErrorInputNameContent()
+//                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
+                        }
+                        else{
+                            // Value changed by program
+                            fragmentListViewModel.showErrorInputNameContent()
 //                            Log.d(TAG, "onTextChanged: show errorInputName")
                         }
                     }
@@ -168,7 +185,8 @@ class ListSetFragment(
             }
         }
         with(binding) {
-            etListName.addTextChangedListener(inputErrorListener)
+            etListNameTitle.addTextChangedListener(inputErrorListener)
+            etListNameContent.addTextChangedListener(inputErrorListener)
         }
     }
 
@@ -230,6 +248,9 @@ class ListSetFragment(
     override fun onListItemClick(itemId: Int) {
         lifecycleScope.launch {
             val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
+
+            Log.d(TAG, "onListItemClick: isVisible = $isVisible")
+            Log.d(TAG, "onListItemClick: itemId = $itemId")
 
             if (!isVisible) {
                 fragmentListViewModel.setCurrentListId(itemId)
