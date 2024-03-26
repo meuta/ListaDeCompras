@@ -44,16 +44,16 @@ fun bindErrorInputListName(til: TextInputLayout, isError: Boolean){
     til.error = message
 }
 
-@BindingAdapter("setTextViewErrorInputListName")
-fun bindTextViewErrorInputListName(textView: TextView, isError: Boolean){
-    Log.d("BindingAdapter", "isError = $isError ")
-    val message = if (isError) {
-        textView.context.getString(R.string.error_input_list_name)
-    } else {
-        ""
-    }
-    textView.text = message
-}
+//@BindingAdapter("setTextViewErrorInputListName")
+//fun bindTextViewErrorInputListName(textView: TextView, isError: Boolean){
+//    Log.d("BindingAdapter", "isError = $isError ")
+//    val message = if (isError) {
+//        textView.context.getString(R.string.error_input_list_name)
+//    } else {
+//        ""
+//    }
+//    textView.text = message
+//}
 
 @BindingAdapter("itemId", "setCountToEditText")
 fun bindCount(editText: EditText, itemId: Int, itemCount: Double?){

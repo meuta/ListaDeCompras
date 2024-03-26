@@ -236,7 +236,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override suspend fun saveListToDb(shopListWithItems: ShopListWithItems): Boolean {
 
-        Log.d("loadTxtList", "listName = $shopListWithItems.name")
+        Log.d("loadTxtList", "listName = ${shopListWithItems.name}")
 
         try {
             addShopList(shopListWithItems.name, shopListWithItems.enabled)

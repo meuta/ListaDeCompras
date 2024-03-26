@@ -55,7 +55,7 @@ class ListSetFragment(
     override fun observeViewModel() {
         fragmentListViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
             fragmentListAdapter.submitList(it)
-//            Log.d(TAG, "listSet.observe = ${it.map { it.name}}")
+            Log.d(TAG, "listSet.observe = ${it.map { it.name}}")
         }
         fragmentListViewModel.shopListIdLD.observe(viewLifecycleOwner) {
 //            Log.d(TAG, "shopListIdLD.observe = $it")
@@ -80,9 +80,11 @@ class ListSetFragment(
                         } else {
 
                             cardNewList.visibility = View.VISIBLE
+                            etListNameTitle.tag = TAG_ERROR_INPUT_NAME
                             etListNameTitle.setText(requireContext().resources.getString(R.string.new_list))
                             etListNameTitle.requestFocus()
                             etListNameTitle.setSelection(0, etListNameTitle.text.length)
+                            etListNameTitle.tag = null
 
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -95,13 +97,26 @@ class ListSetFragment(
 
 
         fragmentListViewModel.oldFileName.observe(viewLifecycleOwner){ fileName ->
-//            Log.d(TAG, "oldFileName.observe = $fileName")
+            Log.d(TAG, "oldFileName.observe = $fileName")
             fileName?.let {
                 with(binding){
                     etListNameTitle.tag = TAG_ERROR_INPUT_NAME
                     etListNameTitle.setText(it)
                     etListNameTitle.setSelection(etListNameTitle.text.length)
                     etListNameTitle.tag = null
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED){
+                fragmentListViewModel.isTitle.collect(){
+                    Log.d(TAG, "observeViewModel: isTitle.collect = $it")
+                    if (it == null) {
+                        binding.radioTilte.isChecked = true
+                        binding.radioContent.isChecked = false
+                        fragmentListViewModel.setIsTitle(true)
+                    }
                 }
             }
         }
@@ -114,7 +129,11 @@ class ListSetFragment(
             }
 
             buttonCreateList.setOnClickListener {
-                val alterName = if (!etListNameContent.text?.toString().isNullOrEmpty()) etListNameContent.text?.toString() else null
+                val alterName = if (fragmentListViewModel.listNameFromFileContent.value != null) {
+                    etListNameContent.text?.toString()
+                } else null
+
+                Log.d(TAG, "setupButtons: alterName = $alterName")
                 fragmentListViewModel.addShopList(
                     etListNameTitle.text?.toString(),
                     fragmentListViewModel.fromTxtFile.value,
@@ -133,6 +152,8 @@ class ListSetFragment(
                     }
                     yesButton.setOnClickListener {
                         fragmentListViewModel.resetListNameFromContent()
+                        fragmentListViewModel.setIsTitle(null)
+                        fragmentListViewModel.resetUserCheckedDifferNames()
                         fragmentListViewModel.updateUiState(false, false, null, null, null)
                         alertDialog.dismiss()
                     }
@@ -141,6 +162,17 @@ class ListSetFragment(
                 alertDialog.setCanceledOnTouchOutside(false)
                 alertDialog.show()
             }
+
+            radioTilte.setOnCheckedChangeListener { _, isChecked ->
+                Log.d("RADIO", "Title is checked: $isChecked")
+                fragmentListViewModel.setIsTitle(isTitle = isChecked)
+            }
+
+            radioContent.setOnCheckedChangeListener { _, isChecked ->
+                Log.d("RADIO", "Content is checked: $isChecked")
+                fragmentListViewModel.setIsTitle(isTitle = !isChecked)
+            }
+
         }
     }
 
@@ -157,12 +189,7 @@ class ListSetFragment(
                         if( etListNameTitle.tag == null ) {
                             // Value changed by user
                             fragmentListViewModel.resetErrorInputNameTitle()
-//                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
-                        }
-                        else{
-                            // Value changed by program
-                            fragmentListViewModel.showErrorInputNameTitle()
-//                            Log.d(TAG, "onTextChanged: show errorInputName")
+                            Log.d(TAG, "onTextChanged: resetErrorInputNameTitle")
                         }
                     }
                     if (etListNameContent.text.hashCode() == s.hashCode()) {
@@ -170,12 +197,7 @@ class ListSetFragment(
                         if( etListNameContent.tag == null ) {
                             // Value changed by user
                             fragmentListViewModel.resetErrorInputNameContent()
-//                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
-                        }
-                        else{
-                            // Value changed by program
-                            fragmentListViewModel.showErrorInputNameContent()
-//                            Log.d(TAG, "onTextChanged: show errorInputName")
+                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
                         }
                     }
                 }
@@ -231,6 +253,8 @@ class ListSetFragment(
                     val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
                     if (isVisible) {
+                        fragmentListViewModel.setIsTitle(null)
+                        fragmentListViewModel.resetUserCheckedDifferNames()
                         fragmentListViewModel.updateUiState(false, false, null, null, null)
                     } else {
                         isEnabled = false

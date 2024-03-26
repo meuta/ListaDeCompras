@@ -80,6 +80,12 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_SEND -> {
 
+                listSetViewModel.resetUserCheckedDifferNames()
+                listSetViewModel.resetErrorInputNameTitle()
+                listSetViewModel.resetErrorInputNameContent()
+                listSetViewModel.resetListNameFromContent()
+                listSetViewModel.setIsTitle(null)
+
                 listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
@@ -95,6 +101,12 @@ class ListSetActivity : AppCompatActivity() {
             }
 
             Intent.ACTION_VIEW -> {
+
+                listSetViewModel.resetUserCheckedDifferNames()
+                listSetViewModel.resetErrorInputNameTitle()
+                listSetViewModel.resetErrorInputNameContent()
+                listSetViewModel.resetListNameFromContent()
+                listSetViewModel.setIsTitle(null)
 
                 listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
                 when (intent.type) {
@@ -245,6 +257,12 @@ class ListSetActivity : AppCompatActivity() {
     }
 
     private fun loadFromTxtFile(fileName: String) {
+
+        listSetViewModel.resetUserCheckedDifferNames()
+        listSetViewModel.resetErrorInputNameTitle()
+        listSetViewModel.resetErrorInputNameContent()
+        listSetViewModel.resetListNameFromContent()
+        listSetViewModel.setIsTitle(null)
 
         listSetViewModel.addShopList(fileName, true)
     }
