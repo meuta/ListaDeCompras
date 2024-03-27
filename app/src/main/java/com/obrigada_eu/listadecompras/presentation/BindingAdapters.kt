@@ -109,6 +109,18 @@ fun bindEditTextName(editText: EditText, name: String?){
         }
     }
 }
+@BindingAdapter("setEditTextNameTrimmed")
+fun bindEditTextNameTrimmed(editText: EditText, name: String?){
+    Log.d(TAG, "bindEditTextName: editText = ${editText.id}, name = $name")
+    name?.let {
+        with(editText) {
+            tag = TAG_ERROR_INPUT_NAME
+            setText(it)
+            setSelection(editText.text.length)
+            tag = null
+        }
+    }
+}
 
 @BindingAdapter("radioGroupClearCheck")
 fun bindRadioGroupClearCheck(radioGroup: RadioGroup, isNameFromTitle: Boolean?){

@@ -103,6 +103,7 @@
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:setEditTextName="@{viewModel.oldFileName}"
+                        app:setEditTextNameTrimmed="@{viewModel.trimmedNameFromTitle}"
                         app:etListNameFromTitleIsChecked="@{viewModel.isNameFromTitle}"
                         tools:ignore="LabelFor"
                         tools:text="@string/new_list" />
@@ -142,6 +143,7 @@
                         android:inputType="textCapSentences"
                         android:paddingTop="30dp"
                         app:setEditTextName="@{viewModel.listNameFromFileContent}"
+                        app:setEditTextNameTrimmed="@{viewModel.trimmedNameFromContent}"
                         android:textColor="@color/grayish"
                         android:textSize="16sp"
                         android:textStyle="bold"

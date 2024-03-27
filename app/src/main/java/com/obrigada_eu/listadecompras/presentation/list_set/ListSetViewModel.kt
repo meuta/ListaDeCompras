@@ -80,6 +80,14 @@ class ListSetViewModel @Inject constructor(
     val oldFileName: LiveData<String?>
         get() = _oldFileName
 
+    private var _trimmedNameFromTitle: MutableLiveData<String?> = MutableLiveData(null)
+    val trimmedNameFromTitle: LiveData<String?>
+        get() = _trimmedNameFromTitle
+    
+    private var _trimmedNameFromContent: MutableLiveData<String?> = MutableLiveData(null)
+    val trimmedNameFromContent: LiveData<String?>
+        get() = _trimmedNameFromContent
+
     private var _fileWithoutErrors = MutableStateFlow(true)
     val fileWithoutErrors: StateFlow<Boolean> = _fileWithoutErrors
 
@@ -159,6 +167,10 @@ class ListSetViewModel @Inject constructor(
         alterName: String? = null // editText content
     ) {
         val name = parseName(inputName)
+        if (name != inputName) {
+            Log.d(TAG, "addShopList: $name != $inputName")
+            _trimmedNameFromTitle.value = name
+        }
 //        Log.d(TAG, "addShopList: inputName = $inputName, fromTxtFile = $fromTxtFile, path = $path, uri = $uri")
 //        Log.d("addShopList", "namesList = $namesList")
 
@@ -195,7 +207,13 @@ class ListSetViewModel @Inject constructor(
 
                     var fieldIsValidContent = true
                     if (listNameFromText != oldName) {
-                        alterName?.let { listNameFromText = parseName(alterName) }
+                        alterName?.let {
+                            listNameFromText = parseName(alterName)
+                            if (listNameFromText != alterName) {
+                                Log.d(TAG, "addShopList: $listNameFromText != $alterName")
+                                _trimmedNameFromContent.value = listNameFromText
+                            }
+                        }
                         Log.d(TAG, "addShopList: listNameFromText = $listNameFromText")
                         _listNameFromFileContent.value = listNameFromText
 //                        var fieldsValidContent = !namesList.contains(listNameFromText)
