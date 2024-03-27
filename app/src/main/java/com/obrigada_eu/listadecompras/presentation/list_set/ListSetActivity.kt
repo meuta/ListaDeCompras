@@ -161,11 +161,14 @@ class ListSetActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 listSetViewModel.cardNewListVisibilityStateFlow.collect {isVisible ->
-                    Log.d(TAG, "observeViewModel: cardNewListVisibilityStateFlow.collect = $isVisible")
+//                    Log.d(TAG, "observeViewModel: cardNewListVisibilityStateFlow.collect = $isVisible")
                     with(binding){
                         if (!isVisible) {
+//                            Log.d(TAG, "observeViewModel: not visible")
                             toolbarListSetActivity.menu.setGroupVisible(R.id.list_set_menu_group, true)
                         } else {
+//                            Log.d(TAG, "observeViewModel: visible")
+                            delay(50)   // for change orientation
                             toolbarListSetActivity.menu.setGroupVisible(R.id.list_set_menu_group, false)
                         }
                     }
