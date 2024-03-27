@@ -95,40 +95,6 @@ class ListSetFragment(
                 }
             }
         }
-
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED){
-                fragmentListViewModel.isNameFromTitle.collect(){
-                    Log.d(TAG, "observeViewModel: isNameFromTitle.collect = $it")
-                    with(binding){
-
-                        if (it == null) {
-                            radioGroupListName.clearCheck()
-                        } else {
-                            if (it == true){
-                                etListNameTitle.setBackgroundResource(R.color.whitish)
-                                etListNameTitle.setTextColor(requireActivity().getColor(R.color.grayish))
-                                etListNameTitle.requestFocus()
-                                etListNameTitle.setSelection(etListNameTitle.text.length)
-
-                                etListNameContent.setBackgroundResource(R.color.whitish_transparent)
-                                etListNameContent.setTextColor(requireActivity().getColor(R.color.blackish_transparent))
-
-                            } else {
-                                etListNameContent.setBackgroundResource(R.color.whitish)
-                                etListNameContent.setTextColor(requireActivity().getColor(R.color.grayish))
-                                etListNameContent.requestFocus()
-                                etListNameContent.setSelection(etListNameContent.text.length)
-
-                                etListNameTitle.setBackgroundResource(R.color.whitish_transparent)
-                                etListNameTitle.setTextColor(requireActivity().getColor(R.color.blackish_transparent))
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     override fun setupButtons() {

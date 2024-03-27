@@ -103,6 +103,7 @@
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:setEditTextName="@{viewModel.oldFileName}"
+                        app:etListNameFromTitleIsChecked="@{viewModel.isNameFromTitle}"
                         tools:ignore="LabelFor"
                         tools:text="@string/new_list" />
 
@@ -144,6 +145,7 @@
                         android:textColor="@color/grayish"
                         android:textSize="16sp"
                         android:textStyle="bold"
+                        app:etListNameFromContentIsChecked="@{viewModel.isNameFromTitle()}"
                         tools:ignore="LabelFor"
                         tools:text="@string/new_list" />
 
@@ -159,6 +161,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/til_list_name_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/til_list_name_title"
+                    app:radioGroupClearCheck="@{viewModel.isNameFromTitle}"
                     tools:visibility="visible">
 
                     <RadioButton

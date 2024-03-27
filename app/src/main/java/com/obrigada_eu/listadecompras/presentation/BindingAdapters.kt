@@ -3,6 +3,7 @@ package com.obrigada_eu.listadecompras.presentation
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem.Companion.UNDEFINED_ID
@@ -105,6 +106,56 @@ fun bindEditTextName(editText: EditText, name: String?){
             setText(it)
             setSelection(editText.text.length)
             tag = null
+        }
+    }
+}
+
+@BindingAdapter("radioGroupClearCheck")
+fun bindRadioGroupClearCheck(radioGroup: RadioGroup, isNameFromTitle: Boolean?){
+    Log.d(TAG, "bindRadioGroupClearCheck: isNameFromTitle = $isNameFromTitle")
+    if (isNameFromTitle == null) radioGroup.clearCheck()
+}
+
+@BindingAdapter("etListNameFromTitleIsChecked")
+fun bindEditTextNameFromTitleIsChecked(editText: EditText, isNameFromTitle: Boolean?) {
+    Log.d(TAG, "bindEditTextNameFromTitleIsChecked: editText = ${editText.id}, isNameFromTitle = $isNameFromTitle")
+    with(editText) {
+        if (isNameFromTitle == null) {
+            setBackgroundResource(R.color.whitish_transparent)
+            setTextColor(context.getColor(R.color.blackish_transparent))
+            clearFocus()
+        } else {
+            if (isNameFromTitle == true) {
+                setBackgroundResource(R.color.whitish)
+                setTextColor(context.getColor(R.color.grayish))
+                requestFocus()
+                setSelection(text.length)
+            } else {
+                setBackgroundResource(R.color.whitish_transparent)
+                setTextColor(context.getColor(R.color.blackish_transparent))
+            }
+        }
+    }
+}
+
+@BindingAdapter("etListNameFromContentIsChecked")
+fun bindEditTextNameFromContentIsChecked(editText: EditText, isNameFromTitle: Boolean?) {
+    Log.d(TAG, "bindEditTextNameFromTitleIsChecked: editText = ${editText.id}, isNameFromTitle = $isNameFromTitle")
+    with(editText) {
+        if (isNameFromTitle == null) {
+            setBackgroundResource(R.color.whitish_transparent)
+            setTextColor(context.getColor(R.color.blackish_transparent))
+            clearFocus()
+        } else {
+            if (isNameFromTitle == false) {
+                setBackgroundResource(R.color.whitish)
+                setTextColor(context.getColor(R.color.grayish))
+                requestFocus()
+                setSelection(text.length)
+            } else {
+                setBackgroundResource(R.color.whitish_transparent)
+                setTextColor(context.getColor(R.color.blackish_transparent))
+            }
         }
     }
 }
