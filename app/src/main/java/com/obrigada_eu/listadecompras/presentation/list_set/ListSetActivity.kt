@@ -80,13 +80,8 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_SEND -> {
 
-                listSetViewModel.resetUserCheckedDifferNames()
-                listSetViewModel.resetErrorInputNameTitle()
-                listSetViewModel.resetErrorInputNameContent()
-                listSetViewModel.resetListNameFromContent()
-                listSetViewModel.setIsTitle(null)
+                setDefaultCardNewList()
 
-                listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
                 } else {
@@ -102,13 +97,8 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_VIEW -> {
 
-                listSetViewModel.resetUserCheckedDifferNames()
-                listSetViewModel.resetErrorInputNameTitle()
-                listSetViewModel.resetErrorInputNameContent()
-                listSetViewModel.resetListNameFromContent()
-                listSetViewModel.setIsTitle(null)
+                setDefaultCardNewList()
 
-                listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
                 when (intent.type) {
 
                     "text/plain" -> {
@@ -137,6 +127,15 @@ class ListSetActivity : AppCompatActivity() {
         }
     }
 
+    private fun setDefaultCardNewList() {
+        listSetViewModel.resetUserCheckedDifferNames()
+        listSetViewModel.resetErrorInputNameTitle()
+        listSetViewModel.resetErrorInputNameContent()
+        listSetViewModel.resetListNameFromContent()
+
+        listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
+    }
+
 
     private fun observeViewModel() {
         lifecycleScope.launch {
@@ -154,6 +153,21 @@ class ListSetActivity : AppCompatActivity() {
                         listSetViewModel.resetFileWithoutErrors()
                         listSetViewModel.resetErrorInputNameTitle()
                         listSetViewModel.resetErrorInputNameContent()
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                listSetViewModel.cardNewListVisibilityStateFlow.collect {isVisible ->
+                    Log.d(TAG, "observeViewModel: cardNewListVisibilityStateFlow.collect = $isVisible")
+                    with(binding){
+                        if (!isVisible) {
+                            toolbarListSetActivity.menu.setGroupVisible(R.id.list_set_menu_group, true)
+                        } else {
+                            toolbarListSetActivity.menu.setGroupVisible(R.id.list_set_menu_group, false)
+                        }
                     }
                 }
             }
@@ -257,13 +271,6 @@ class ListSetActivity : AppCompatActivity() {
     }
 
     private fun loadFromTxtFile(fileName: String) {
-
-        listSetViewModel.resetUserCheckedDifferNames()
-        listSetViewModel.resetErrorInputNameTitle()
-        listSetViewModel.resetErrorInputNameContent()
-        listSetViewModel.resetListNameFromContent()
-        listSetViewModel.setIsTitle(null)
-
         listSetViewModel.addShopList(fileName, true)
     }
 

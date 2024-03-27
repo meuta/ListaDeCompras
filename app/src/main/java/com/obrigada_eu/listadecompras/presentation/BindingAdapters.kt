@@ -11,6 +11,7 @@ import com.obrigada_eu.listadecompras.R
 import kotlin.math.roundToInt
 
 private const val TAG = "BindingAdapter"
+private const val TAG_ERROR_INPUT_NAME = 101
 
 @BindingAdapter("setErrorInputName")
 fun bindErrorInputName(til: TextInputLayout, isError: Boolean){
@@ -32,16 +33,12 @@ fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
     til.error = message
 }
 
+
 @BindingAdapter("setErrorInputListName")
-fun bindErrorInputListName(til: TextInputLayout, isError: Boolean){
-    Log.d("BindingAdapter", "isError = $isError ")
-    val message = if (isError) {
-        til.context.getString(R.string.error_input_list_name)
-    } else {
-        null
-    }
+fun bindErrorInputListName(til: TextInputLayout, error: String?){
+    Log.d("BindingAdapter", "error = $error ")
     til.errorIconDrawable = null
-    til.error = message
+    til.error = error
 }
 
 //@BindingAdapter("setTextViewErrorInputListName")
@@ -96,4 +93,18 @@ fun bindUnits(editText: EditText, itemId: Int, itemUnits: String?){
 fun setAlterNameVisibility(view: View, name: String?){
     Log.d(TAG, "setAlterNameVisibility: name = $name")
     view.visibility = if (name == null) View.GONE else View.VISIBLE
+}
+
+
+@BindingAdapter("setEditTextName")
+fun bindEditTextName(editText: EditText, name: String?){
+    Log.d(TAG, "bindEditTextName: editText = ${editText.id}, name = $name")
+    name?.let {
+        with(editText) {
+            tag = TAG_ERROR_INPUT_NAME
+            setText(it)
+            setSelection(editText.text.length)
+            tag = null
+        }
+    }
 }

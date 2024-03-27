@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.View.OnFocusChangeListener
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -50,6 +51,7 @@ class ListSetFragment(
         onFabClickListener = this
         onListItemClickListener = this
         addTextChangedListeners()
+        addEditTextFocusChangedListener()
     }
 
     override fun observeViewModel() {
@@ -76,7 +78,6 @@ class ListSetFragment(
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                             inputMethodManager.hideSoftInputFromWindow(cardNewList.windowToken, 0)
-
                         } else {
 
                             cardNewList.visibility = View.VISIBLE
@@ -96,26 +97,34 @@ class ListSetFragment(
         }
 
 
-        fragmentListViewModel.oldFileName.observe(viewLifecycleOwner){ fileName ->
-            Log.d(TAG, "oldFileName.observe = $fileName")
-            fileName?.let {
-                with(binding){
-                    etListNameTitle.tag = TAG_ERROR_INPUT_NAME
-                    etListNameTitle.setText(it)
-                    etListNameTitle.setSelection(etListNameTitle.text.length)
-                    etListNameTitle.tag = null
-                }
-            }
-        }
-
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED){
-                fragmentListViewModel.isTitle.collect(){
-                    Log.d(TAG, "observeViewModel: isTitle.collect = $it")
-                    if (it == null) {
-                        binding.radioTilte.isChecked = true
-                        binding.radioContent.isChecked = false
-                        fragmentListViewModel.setIsTitle(true)
+                fragmentListViewModel.isNameFromTitle.collect(){
+                    Log.d(TAG, "observeViewModel: isNameFromTitle.collect = $it")
+                    with(binding){
+
+                        if (it == null) {
+                            radioGroupListName.clearCheck()
+                        } else {
+                            if (it == true){
+                                etListNameTitle.setBackgroundResource(R.color.whitish)
+                                etListNameTitle.setTextColor(requireActivity().getColor(R.color.grayish))
+                                etListNameTitle.requestFocus()
+                                etListNameTitle.setSelection(etListNameTitle.text.length)
+
+                                etListNameContent.setBackgroundResource(R.color.whitish_transparent)
+                                etListNameContent.setTextColor(requireActivity().getColor(R.color.blackish_transparent))
+
+                            } else {
+                                etListNameContent.setBackgroundResource(R.color.whitish)
+                                etListNameContent.setTextColor(requireActivity().getColor(R.color.grayish))
+                                etListNameContent.requestFocus()
+                                etListNameContent.setSelection(etListNameContent.text.length)
+
+                                etListNameTitle.setBackgroundResource(R.color.whitish_transparent)
+                                etListNameTitle.setTextColor(requireActivity().getColor(R.color.blackish_transparent))
+                            }
+                        }
                     }
                 }
             }
@@ -129,16 +138,18 @@ class ListSetFragment(
             }
 
             buttonCreateList.setOnClickListener {
-                val alterName = if (fragmentListViewModel.listNameFromFileContent.value != null) {
-                    etListNameContent.text?.toString()
-                } else null
+                lifecycleScope.launch {
+                    val alterName = if (fragmentListViewModel.listNameFromFileContent.first() != null) {
+                        etListNameContent.text?.toString()
+                    } else null
 
-                Log.d(TAG, "setupButtons: alterName = $alterName")
-                fragmentListViewModel.addShopList(
-                    etListNameTitle.text?.toString(),
-                    fragmentListViewModel.fromTxtFile.value,
-                    alterName = alterName
-                )
+                    Log.d(TAG, "setupButtons: alterName = $alterName")
+                    fragmentListViewModel.addShopList(
+                        etListNameTitle.text?.toString(),
+                        fragmentListViewModel.fromTxtFile.first(),
+                        alterName = alterName
+                    )
+                }
             }
 
             buttonCanselCreateList.setOnClickListener {
@@ -152,7 +163,6 @@ class ListSetFragment(
                     }
                     yesButton.setOnClickListener {
                         fragmentListViewModel.resetListNameFromContent()
-                        fragmentListViewModel.setIsTitle(null)
                         fragmentListViewModel.resetUserCheckedDifferNames()
                         fragmentListViewModel.updateUiState(false, false, null, null, null)
                         alertDialog.dismiss()
@@ -163,18 +173,37 @@ class ListSetFragment(
                 alertDialog.show()
             }
 
-            radioTilte.setOnCheckedChangeListener { _, isChecked ->
-                Log.d("RADIO", "Title is checked: $isChecked")
-                fragmentListViewModel.setIsTitle(isTitle = isChecked)
-            }
+            radioGroupListName.setOnCheckedChangeListener { group, checkedId ->
+                Log.d(TAG, "radioGroupListName: checkedId = $checkedId")
 
-            radioContent.setOnCheckedChangeListener { _, isChecked ->
-                Log.d("RADIO", "Content is checked: $isChecked")
-                fragmentListViewModel.setIsTitle(isTitle = !isChecked)
+                fragmentListViewModel.setIsNameFromTitle(isFromTitle = when (checkedId) {
+                    R.id.radio_tilte -> true
+                    R.id.radio_content -> false
+                    NO_RADIO_BUTTON_CHECKED_ID -> null
+                    else -> throw RuntimeException("unknown radio button ID")
+                })
             }
-
         }
     }
+
+
+    private fun addEditTextFocusChangedListener(){
+        with(binding){
+            val editTextFocusChangedListener = OnFocusChangeListener { v, hasFocus ->
+                if (v == etListNameTitle && hasFocus) {
+                    radioTilte.isChecked = true
+                    fragmentListViewModel.setIsNameFromTitle(true)
+                }
+                if (v == etListNameContent && hasFocus) {
+                    radioContent.isChecked = true
+                    fragmentListViewModel.setIsNameFromTitle(false)
+                }
+            }
+            etListNameTitle.onFocusChangeListener = editTextFocusChangedListener
+            etListNameContent.onFocusChangeListener = editTextFocusChangedListener
+        }
+    }
+
 
     private fun addTextChangedListeners() {
         val inputErrorListener = object : TextWatcher {
@@ -253,7 +282,6 @@ class ListSetFragment(
                     val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
                     if (isVisible) {
-                        fragmentListViewModel.setIsTitle(null)
                         fragmentListViewModel.resetUserCheckedDifferNames()
                         fragmentListViewModel.updateUiState(false, false, null, null, null)
                     } else {
@@ -297,6 +325,7 @@ class ListSetFragment(
 
         private const val TAG = "ListSetFragment"
         private const val TAG_ERROR_INPUT_NAME = 101
+        private const val NO_RADIO_BUTTON_CHECKED_ID = -1
 
         fun newInstance() = ListSetFragment()
     }

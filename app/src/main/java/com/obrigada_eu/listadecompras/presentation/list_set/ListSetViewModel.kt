@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.domain.shop_list.AddShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.DeleteShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.DragShopListUseCase
@@ -54,11 +55,13 @@ class ListSetViewModel @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private val _errorInputNameTitle = MutableStateFlow(false)
-    val errorInputNameTitle: StateFlow<Boolean> = _errorInputNameTitle
 
-    private val _errorInputNameContent = MutableStateFlow(false)
-    val errorInputNameContent: StateFlow<Boolean> = _errorInputNameContent
+    private val _errorInputNameFromTitle: MutableStateFlow<String?> = MutableStateFlow(null)
+    val errorInputNameFromTitle: StateFlow<String?> = _errorInputNameFromTitle
+
+    private val _errorInputNameFromContent: MutableStateFlow<String?> = MutableStateFlow(null)
+    val errorInputNameFromContent: StateFlow<String?> = _errorInputNameFromContent
+
 
     private val _shopListIdLD = MutableLiveData<Int>()
     val shopListIdLD: LiveData<Int>
@@ -86,8 +89,8 @@ class ListSetViewModel @Inject constructor(
     private var fileUri: Uri? = null
 
 
-    private var _isTitle = MutableStateFlow<Boolean?>(true)
-    val isTitle: StateFlow<Boolean?> = _isTitle
+    private var _isNameFromTitle = MutableStateFlow<Boolean?>(null)
+    val isNameFromTitle: StateFlow<Boolean?> = _isNameFromTitle
 
 
     private var _listNameFromFileContent = MutableStateFlow<String?>(null)
@@ -129,6 +132,10 @@ class ListSetViewModel @Inject constructor(
 //        Log.d(TAG,"oldFileName = $oldFileName")
         this.filePath = filePath
         this.fileUri = uri
+
+        if (!cardNewListVisibility) {
+            _isNameFromTitle.value = null
+        }
     }
 
 
@@ -188,7 +195,7 @@ class ListSetViewModel @Inject constructor(
 
                     var fieldIsValidContent = true
                     if (listNameFromText != oldName) {
-                        alterName?.let { listNameFromText = alterName }
+                        alterName?.let { listNameFromText = parseName(alterName) }
                         Log.d(TAG, "addShopList: listNameFromText = $listNameFromText")
                         _listNameFromFileContent.value = listNameFromText
 //                        var fieldsValidContent = !namesList.contains(listNameFromText)
@@ -214,9 +221,9 @@ class ListSetViewModel @Inject constructor(
                         if (listNameFromText != oldName){
                             // names from title and content are different:
 
-                            Log.d(TAG, "addShopList: isTitle.value = ${isTitle.value}")
+                            Log.d(TAG, "addShopList: isTitle.value = ${isNameFromTitle.value}")
 
-                            if (fieldIsValidContent && isTitle.value == false && _userCheckedAlterName.value) {
+                            if (fieldIsValidContent && isNameFromTitle.value == false && _userCheckedAlterName.value) {
                                 val listSaved = saveListToDbUseCase(listWithItems.copy(name = listNameFromText))
                                 Log.d(TAG, "addShopList: listSaved = $listSaved")
 
@@ -225,8 +232,7 @@ class ListSetViewModel @Inject constructor(
                                 _listNameFromFileContent.value = null
                                 _userCheckedAlterName.value = false
 
-                                _isTitle.value = null
-                            } else if (fieldIsValid && isTitle.value == true && _userCheckedAlterName.value) {
+                            } else if (fieldIsValid && isNameFromTitle.value == true && _userCheckedAlterName.value) {
                                 val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
                                 Log.d(TAG, "addShopList: listSaved = $listSaved")
 
@@ -257,9 +263,10 @@ class ListSetViewModel @Inject constructor(
         Log.d("validateInput", "name = $name")
         if (name.isBlank()) {
             if (field  == "title"){
-                _errorInputNameTitle.value = true
+                _errorInputNameFromTitle.value = context.getString(R.string.error_input_list_name_empty)
+
             } else if(field  == "content"){
-                _errorInputNameContent.value = true
+                _errorInputNameFromContent.value = context.getString(R.string.error_input_list_name_empty)
             }
             return false
         }
@@ -267,11 +274,9 @@ class ListSetViewModel @Inject constructor(
         Log.d("validateInput", "myNamesList = $myNamesList")
         if (myNamesList.contains(name)) {
             if (field  == "title"){
-                _errorInputNameTitle.value = true
-            Log.d("validateInput", "_errorInputNameTitle.value = ${_errorInputNameTitle.value}")
+                _errorInputNameFromTitle.value = context.getString(R.string.error_input_list_name_duplicated)
             } else if(field  == "content"){
-                _errorInputNameContent.value = true
-            Log.d("validateInput", "_errorInputNameContent.value = ${_errorInputNameContent.value}")
+                _errorInputNameFromContent.value = context.getString(R.string.error_input_list_name_duplicated)
             }
             return false
         }
@@ -307,12 +312,12 @@ class ListSetViewModel @Inject constructor(
 
     fun resetErrorInputNameTitle() {
         Log.d(TAG, "resetErrorInputNameTitle: ")
-        _errorInputNameTitle.value = false
+        _errorInputNameFromTitle.value = null
     }
 
     fun resetErrorInputNameContent() {
         Log.d(TAG, "resetErrorInputNameContent: ")
-        _errorInputNameContent.value = false
+        _errorInputNameFromContent.value = null
     }
 
     fun resetFileWithoutErrors() {
@@ -361,8 +366,8 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
-    fun setIsTitle(isTitle: Boolean?) {
-        _isTitle.value = isTitle
+    fun setIsNameFromTitle(isFromTitle: Boolean?) {
+        _isNameFromTitle.value = isFromTitle
     }
 
 

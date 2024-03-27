@@ -65,7 +65,7 @@
                     android:text="@string/card_new_list_title"
                     android:padding="20dp"
                     android:gravity="center"
-                    android:textSize="16sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/blackish"/>
 
@@ -76,18 +76,18 @@
                     android:layout_margin="12dp"
                     android:theme="@style/text_selection_appearance"
                     app:boxBackgroundColor="@color/whitish"
-                    app:boxStrokeColor="@color/whitish"
-                    app:boxStrokeErrorColor="@color/whitish"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
                     app:cursorErrorColor="@color/grayish"
                     app:errorEnabled="true"
                     app:errorIconTint="@color/whitish"
-                    app:errorTextAppearance="@style/error_appearance"
-                    app:errorTextColor="@color/orange_error_color"
+                    app:errorTextAppearance="@style/error_appearance_list_set"
+                    app:errorTextColor="@color/background_color_delete"
                     app:expandedHintEnabled="false"
                     app:layout_constraintEnd_toStartOf="@+id/radio_group_list_name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_card_new_list_title"
-                    app:setErrorInputListName="@{viewModel.errorInputNameTitle}">
+                    app:setErrorInputListName="@{viewModel.errorInputNameFromTitle}">
 
                     <EditText
                         android:id="@+id/et_list_name_title"
@@ -102,6 +102,7 @@
                         android:textColor="@color/grayish"
                         android:textSize="16sp"
                         android:textStyle="bold"
+                        app:setEditTextName="@{viewModel.oldFileName}"
                         tools:ignore="LabelFor"
                         tools:text="@string/new_list" />
 
@@ -116,18 +117,18 @@
                     android:theme="@style/text_selection_appearance"
                     app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
                     app:boxBackgroundColor="@color/whitish"
-                    app:boxStrokeColor="@color/whitish"
-                    app:boxStrokeErrorColor="@color/whitish"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
                     app:cursorErrorColor="@color/grayish"
                     app:errorEnabled="true"
                     app:errorIconTint="@color/whitish"
-                    app:errorTextAppearance="@style/error_appearance"
-                    app:errorTextColor="@color/orange_error_color"
+                    app:errorTextAppearance="@style/error_appearance_list_set"
+                    app:errorTextColor="@color/background_color_delete"
                     app:expandedHintEnabled="false"
                     app:layout_constraintEnd_toStartOf="@+id/radio_group_list_name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/til_list_name_title"
-                    app:setErrorInputListName="@{viewModel.errorInputNameContent}">
+                    app:setErrorInputListName="@{viewModel.errorInputNameFromContent}">
 
                     <EditText
                         android:id="@+id/et_list_name_content"
@@ -139,7 +140,7 @@
                         android:hint="@string/name_hint"
                         android:inputType="textCapSentences"
                         android:paddingTop="30dp"
-                        android:text="@{viewModel.listNameFromFileContent.toString()}"
+                        app:setEditTextName="@{viewModel.listNameFromFileContent}"
                         android:textColor="@color/grayish"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -167,7 +168,7 @@
                         android:layout_marginBottom="6dp"
                         android:layout_weight="1"
                         android:buttonTint="@color/blackish"
-                        android:checked="true" />
+                        />
 
                     <RadioButton
                         android:id="@+id/radio_content"

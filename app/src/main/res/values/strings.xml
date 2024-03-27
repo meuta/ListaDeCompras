@@ -8,6 +8,8 @@
     <string name="error_input_name">please enter a name</string>
     <string name="error_input_count">please enter a positive value</string>
     <string name="error_input_list_name">please enter a unique name</string>
+    <string name="error_input_list_name_duplicated">this name is not unique</string>
+    <string name="error_input_list_name_empty">this name is empty</string>
     <string name="new_list">New List</string>
     <string name="my_lists">My Lists</string>
     <string name="create_list">Create List</string>
@@ -23,5 +25,5 @@
     <string name="cancel_the_list_creation_are_you_sure">Cancel the list creation.\nAre You sure?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
-    <string name="card_new_list_title">Choose the list name and edit it if need</string>
+    <string name="card_new_list_title">Select a name for the list\nand edit it if necessary</string>
 </resources>

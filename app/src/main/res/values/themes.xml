@@ -41,6 +41,12 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="error_appearance_list_set" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/background_color_delete</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="text_selection_appearance" parent="">
         <item name="colorPrimary">@color/grayish_opaque</item>
         <item name="colorSecondary">@color/blackish_transparent</item>

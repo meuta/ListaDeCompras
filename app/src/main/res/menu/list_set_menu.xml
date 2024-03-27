@@ -2,11 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <group
+        android:id="@+id/list_set_menu_group">
 
     <item
         android:id="@+id/action_load_txt"
         android:orderInCategory="100"
         android:title="@string/load_text_file"
         app:showAsAction="never"/>
-
+    </group>
 </menu>

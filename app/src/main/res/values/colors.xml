@@ -17,6 +17,7 @@
     <color name="input_text_color">#56686868</color>
     <color name="background_light_gray_color">#17686868</color>
     <color name="whitish">#BCBCBC</color>
+    <color name="whitish_transparent">#C2B4B4B4</color>
     <color name="item_background_color">#9776D0</color>
     <color name="shop_list_scroll_thumb_color">#E69776D0</color>
     <color name="shop_list_fab_color">#E66F569A</color>
