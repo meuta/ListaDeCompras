@@ -24,8 +24,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityListSetBinding
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
+import com.obrigada_eu.listadecompras.presentation.shop_list.ShopListActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -36,7 +38,7 @@ class ListSetActivity : AppCompatActivity() {
     private val listSetViewModel: ListSetViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        Log.d(TAG, "onCreate: intent = $intent")
+        Log.d(TAG, "onCreate: intent = $intent")
         super.onCreate(savedInstanceState)
         binding = ActivityListSetBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -55,7 +57,7 @@ class ListSetActivity : AppCompatActivity() {
 
 
     override fun onNewIntent(intent: Intent?) {
-//        Log.d(TAG, "onNewIntent: intent = $intent")
+        Log.d(TAG, "onNewIntent: intent = $intent")
         super.onNewIntent(intent)
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
@@ -73,10 +75,27 @@ class ListSetActivity : AppCompatActivity() {
         .replace(R.id.list_set_container, ListSetFragment.newInstance())
         .commit()
 
+
+    private fun startShopListActivity() {
+        val intent = ShopListActivity.newIntent(this)
+        startActivity(intent)
+    }
+
+
     private fun handleIntent(intent: Intent) {
-//        Log.d(TAG, "handleIntent: intent = $intent")
+        Log.d(TAG, "handleIntent: intent = $intent")
 
         when (intent.action) {
+
+            Intent.ACTION_MAIN -> {
+                lifecycleScope.launch {
+                    val listId = listSetViewModel.shopListIdLD.first()
+                    Log.d(TAG, "handleIntent: listId = $listId")
+                    if (listId != ShopList.UNDEFINED_ID) {
+                        startShopListActivity()
+                    }
+                }
+            }
 
             Intent.ACTION_SEND -> {
 
@@ -96,7 +115,7 @@ class ListSetActivity : AppCompatActivity() {
             }
 
             Intent.ACTION_VIEW -> {
-
+//                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
                 setDefaultCardNewList()
 
                 when (intent.type) {
@@ -138,10 +157,23 @@ class ListSetActivity : AppCompatActivity() {
 
 
     private fun observeViewModel() {
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                listSetViewModel.shopListIdLD.collect { listId ->
+
+                    Log.d(TAG, "shopListIdLD.collect = $listId")
+                    if (listId != ShopList.UNDEFINED_ID) {
+                        startShopListActivity()
+                    }
+                }
+            }
+        }
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 listSetViewModel.fileWithoutErrors.collect {
-                    Log.d(TAG, "observeViewModel: fileWithoutErrors = $it")
+//                    Log.d(TAG, "observeViewModel: fileWithoutErrors = $it")
                     if (!it) {
                         Toast.makeText(
                             this@ListSetActivity,

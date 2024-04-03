@@ -21,7 +21,6 @@ import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapAdapter
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
-import com.obrigada_eu.listadecompras.presentation.shop_list.ShopListActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -57,14 +56,9 @@ class ListSetFragment(
     override fun observeViewModel() {
         fragmentListViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
             fragmentListAdapter.submitList(it)
-            Log.d(TAG, "listSet.observe = ${it.map { it.name}}")
+//            Log.d(TAG, "listSet.observe = ${it.map { it.name}}")
         }
-        fragmentListViewModel.shopListIdLD.observe(viewLifecycleOwner) {
-//            Log.d(TAG, "shopListIdLD.observe = $it")
-            if (it != ShopList.UNDEFINED_ID) {
-                startShopListActivity()
-            }
-        }
+
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED){
@@ -109,7 +103,7 @@ class ListSetFragment(
                         etListNameContent.text?.toString()
                     } else null
 
-                    Log.d(TAG, "setupButtons: alterName = $alterName")
+//                    Log.d(TAG, "setupButtons: alterName = $alterName")
                     fragmentListViewModel.addShopList(
                         etListNameTitle.text?.toString(),
                         fragmentListViewModel.fromTxtFile.first(),
@@ -140,7 +134,7 @@ class ListSetFragment(
             }
 
             radioGroupListName.setOnCheckedChangeListener { group, checkedId ->
-                Log.d(TAG, "radioGroupListName: checkedId = $checkedId")
+//                Log.d(TAG, "radioGroupListName: checkedId = $checkedId")
 
                 fragmentListViewModel.setIsNameFromTitle(isFromTitle = when (checkedId) {
                     R.id.radio_tilte -> true
@@ -184,7 +178,7 @@ class ListSetFragment(
                         if( etListNameTitle.tag == null ) {
                             // Value changed by user
                             fragmentListViewModel.resetErrorInputNameTitle()
-                            Log.d(TAG, "onTextChanged: resetErrorInputNameTitle")
+//                            Log.d(TAG, "onTextChanged: resetErrorInputNameTitle")
                         }
                     }
                     if (etListNameContent.text.hashCode() == s.hashCode()) {
@@ -192,7 +186,7 @@ class ListSetFragment(
                         if( etListNameContent.tag == null ) {
                             // Value changed by user
                             fragmentListViewModel.resetErrorInputNameContent()
-                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
+//                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
                         }
                     }
                 }
@@ -205,16 +199,6 @@ class ListSetFragment(
             etListNameTitle.addTextChangedListener(inputErrorListener)
             etListNameContent.addTextChangedListener(inputErrorListener)
         }
-    }
-
-
-    private fun startShopListActivity() {
-//        Log.d(
-//            TAG,
-//            "startShopListActivity listId = ${fragmentListViewModel.shopListIdLD.value}"
-//        )
-        val intent = ShopListActivity.newIntent(this.requireContext())
-        startActivity(intent)
     }
 
 

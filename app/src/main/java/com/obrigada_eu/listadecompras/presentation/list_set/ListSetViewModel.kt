@@ -63,9 +63,8 @@ class ListSetViewModel @Inject constructor(
     val errorInputNameFromContent: StateFlow<String?> = _errorInputNameFromContent
 
 
-    private val _shopListIdLD = MutableLiveData<Int>()
-    val shopListIdLD: LiveData<Int>
-        get() = _shopListIdLD
+    private val _shopListIdLD = MutableStateFlow<Int>(ShopList.UNDEFINED_ID)
+    val shopListIdLD: StateFlow<Int> = _shopListIdLD
 
     val allListsWithoutItems = getAllListsWithoutItemsFlowUseCase().asLiveData(scope.coroutineContext)
 
@@ -119,7 +118,7 @@ class ListSetViewModel @Inject constructor(
 //        }
         viewModelScope.launch {
             getCurrentListIdUseCase().collect{
-//                Log.d(TAG,"init id = $it")
+                Log.d(TAG,"init id = $it")
                 _shopListIdLD.value = it
             }
         }
