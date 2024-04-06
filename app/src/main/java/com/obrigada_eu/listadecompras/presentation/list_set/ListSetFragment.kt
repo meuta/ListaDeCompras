@@ -16,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.R
-import com.obrigada_eu.listadecompras.databinding.AreYouShureLayoutBinding
+import com.obrigada_eu.listadecompras.databinding.AreYouShureDialogLayoutBinding
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapAdapter
@@ -116,7 +116,7 @@ class ListSetFragment(
 
                 val alertDialog = AlertDialog.Builder(requireActivity())
                     .create()
-                val dialogBinding = AreYouShureLayoutBinding.inflate(layoutInflater)
+                val dialogBinding = AreYouShureDialogLayoutBinding.inflate(layoutInflater)
                 with(dialogBinding){
                     noButton.setOnClickListener {
                         alertDialog.dismiss()

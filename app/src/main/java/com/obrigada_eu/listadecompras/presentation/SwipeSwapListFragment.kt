@@ -6,9 +6,14 @@ import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginTop
 import androidx.databinding.ViewDataBinding
@@ -24,6 +29,7 @@ import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.list_set.ListSetViewModel
 import com.obrigada_eu.listadecompras.presentation.shop_list.ShopListViewModel
+
 
 abstract class SwipeSwapListFragment<
         T,
@@ -318,18 +324,53 @@ abstract class SwipeSwapListFragment<
 
     private fun showUndoSnackbar() {
 
-        val viewAndString =  when (val b = binding) {
+        val viewAndString = when (val b = binding) {
             is FragmentShopListBinding -> b.rvShopList to R.string.snack_bar_undo_delete_item_text
             is FragmentListSetBinding -> b.rvListSet to R.string.snack_bar_undo_delete_list_text
-
             else -> throw RuntimeException("Unknown binding: $binding")
         }
 
-        val snackbar: Snackbar = Snackbar.make(viewAndString.first, viewAndString.second, Snackbar.LENGTH_LONG)
-        snackbar
-            .setActionTextColor(requireActivity().getColor(R.color.white))
-            .setAction(R.string.undo) { undoDelete() }
+        val snackbar: Snackbar =
+            Snackbar.make(viewAndString.first, viewAndString.second, Snackbar.LENGTH_LONG)
+        snackbar.setAction(R.string.ok) { snackbar.dismiss() }
+            .addAction(R.layout.alter_snackbar_button, R.string.undo) { undoDelete() }
+
+        val timer = object : CountDownTimer(3000, 1000) {
+            var tickDown = 3
+            override fun onTick(millisUntilFinished: Long) {
+                snackbar.setText("${context?.getString(viewAndString.second)}\t\t\t$tickDown")
+                tickDown--
+            }
+            override fun onFinish() {}
+        }
+        timer.start()
+
         snackbar.show()
+    }
+
+
+    private fun Snackbar.addAction(@LayoutRes aLayoutId: Int, @StringRes aLabel: Int, aListener: View.OnClickListener?) : Snackbar {
+        addAction(aLayoutId,context.getString(aLabel),aListener)
+        return this
+    }
+
+    private fun Snackbar.addAction(@LayoutRes aLayoutId: Int, aLabel: String, aListener: View.OnClickListener?) : Snackbar {
+        // Add our button
+        val button = LayoutInflater.from(view.context).inflate(aLayoutId, null) as Button
+        // Using our special knowledge of the snackbar action button id we can hook our extra button next to it
+        view.findViewById<Button>(com.google.android.material.R.id.snackbar_action).let {
+            // Copy layout
+            button.layoutParams = it.layoutParams
+            // Copy colors
+            (button as? Button)?.setTextColor(it.textColors)
+            (it.parent as? ViewGroup)?.addView(button)
+        }
+        button.text = aLabel
+        button.setOnClickListener {
+            this.dismiss()
+            aListener?.onClick(it)
+        }
+        return this
     }
 
 
