@@ -94,7 +94,7 @@
                         app:setErrorInputListName="@{viewModel.errorInputNameFromTitle}">
 
                         <EditText
-                            android:id="@+id/et_list_name_title"
+                            android:id="@+id/et_list_name_from_title"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="4"
@@ -136,7 +136,7 @@
                         app:setErrorInputListName="@{viewModel.errorInputNameFromContent}">
 
                         <EditText
-                            android:id="@+id/et_list_name_content"
+                            android:id="@+id/et_list_name_from_content"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="4"

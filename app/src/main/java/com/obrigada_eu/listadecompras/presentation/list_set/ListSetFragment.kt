@@ -68,7 +68,7 @@ class ListSetFragment(
                     with(binding){
                         if (!isVisible) {
 
-                            etListNameTitle.setText("")
+                            etListNameFromTitle.setText("")
                             cardNewList.visibility = View.GONE
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -76,15 +76,15 @@ class ListSetFragment(
                         } else {
 
                             cardNewList.visibility = View.VISIBLE
-                            etListNameTitle.tag = TAG_ERROR_INPUT_NAME
-                            etListNameTitle.setText(requireContext().resources.getString(R.string.new_list))
-                            etListNameTitle.requestFocus()
-                            etListNameTitle.setSelection(0, etListNameTitle.text.length)
-                            etListNameTitle.tag = null
+                            etListNameFromTitle.tag = TAG_ERROR_INPUT_NAME
+                            etListNameFromTitle.setText(requireContext().resources.getString(R.string.new_list))
+                            etListNameFromTitle.requestFocus()
+                            etListNameFromTitle.setSelection(0, etListNameFromTitle.text.length)
+                            etListNameFromTitle.tag = null
 
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                            inputMethodManager.showSoftInput(etListNameTitle, 0)
+                            inputMethodManager.showSoftInput(etListNameFromTitle, 0)
                         }
                     }
                 }
@@ -101,12 +101,12 @@ class ListSetFragment(
             buttonCreateList.setOnClickListener {
                 lifecycleScope.launch {
                     val alterName = if (fragmentListViewModel.listNameFromFileContent.first() != null) {
-                        etListNameContent.trimmedText()
+                        etListNameFromContent.trimmedText()
                     } else null
 
 //                    Log.d(TAG, "setupButtons: alterName = $alterName")
                     fragmentListViewModel.addShopList(
-                        etListNameTitle.trimmedText(),
+                        etListNameFromTitle.trimmedText(),
                         fragmentListViewModel.fromTxtFile.first(),
                         alterName = alterName
                     )
@@ -160,17 +160,17 @@ class ListSetFragment(
     private fun addEditTextFocusChangedListener(){
         with(binding){
             val editTextFocusChangedListener = OnFocusChangeListener { v, hasFocus ->
-                if (v == etListNameTitle && hasFocus) {
+                if (v == etListNameFromTitle && hasFocus) {
                     radioTilte.isChecked = true
                     fragmentListViewModel.setIsNameFromTitle(true)
                 }
-                if (v == etListNameContent && hasFocus) {
+                if (v == etListNameFromContent && hasFocus) {
                     radioContent.isChecked = true
                     fragmentListViewModel.setIsNameFromTitle(false)
                 }
             }
-            etListNameTitle.onFocusChangeListener = editTextFocusChangedListener
-            etListNameContent.onFocusChangeListener = editTextFocusChangedListener
+            etListNameFromTitle.onFocusChangeListener = editTextFocusChangedListener
+            etListNameFromContent.onFocusChangeListener = editTextFocusChangedListener
         }
     }
 
@@ -183,17 +183,17 @@ class ListSetFragment(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 with(binding) {
-                    if (etListNameTitle.text.hashCode() == s.hashCode()) {
-//                        Log.d(TAG, "onTextChanged: etListNameTitle.tag = ${etListNameTitle.tag}")
-                        if( etListNameTitle.tag == null ) {
+                    if (etListNameFromTitle.text.hashCode() == s.hashCode()) {
+//                        Log.d(TAG, "onTextChanged: etListNameFromTitle.tag = ${etListNameFromTitle.tag}")
+                        if( etListNameFromTitle.tag == null ) {
                             // Value changed by user
                             fragmentListViewModel.resetErrorInputNameTitle()
 //                            Log.d(TAG, "onTextChanged: resetErrorInputNameTitle")
                         }
                     }
-                    if (etListNameContent.text.hashCode() == s.hashCode()) {
-//                        Log.d(TAG, "onTextChanged: etListNameContent.tag = ${etListNameContent.tag}")
-                        if( etListNameContent.tag == null ) {
+                    if (etListNameFromContent.text.hashCode() == s.hashCode()) {
+//                        Log.d(TAG, "onTextChanged: etListNameFromContent.tag = ${etListNameFromContent.tag}")
+                        if( etListNameFromContent.tag == null ) {
                             // Value changed by user
                             fragmentListViewModel.resetErrorInputNameContent()
 //                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
@@ -206,8 +206,8 @@ class ListSetFragment(
             }
         }
         with(binding) {
-            etListNameTitle.addTextChangedListener(inputErrorListener)
-            etListNameContent.addTextChangedListener(inputErrorListener)
+            etListNameFromTitle.addTextChangedListener(inputErrorListener)
+            etListNameFromContent.addTextChangedListener(inputErrorListener)
         }
     }
 
