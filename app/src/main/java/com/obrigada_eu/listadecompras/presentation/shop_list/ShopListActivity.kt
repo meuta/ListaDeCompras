@@ -15,6 +15,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -322,7 +323,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         with(binding) {
 
             buttonSaveListName.setOnClickListener {
-                shopListViewModel.updateShopListName(etToolbarShopListActivity.text.toString())
+                shopListViewModel.updateShopListName(etToolbarShopListActivity.trimmedText())
                 lifecycleScope.launch {
                     if (!shopListViewModel.errorInputName.first()) {
                         shopListViewModel.setRenameListAppearance(false)
@@ -331,6 +332,16 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             }
         }
         addTextChangedListeners()
+    }
+
+    private fun EditText.trimmedText() = this.text.toString().let {
+        if (it.trim() != it){
+            this.setText(it.trim())
+            this.setSelection(it.trim().length)
+            it.trim()
+        } else {
+            it
+        }
     }
 
     private fun addTextChangedListeners() {

@@ -203,10 +203,12 @@ class ShopListRepositoryImpl @Inject constructor(
 
     @Throws(IOException::class)
     private fun saveFile(context: Context, fileName: String, text: String, extension: String) {
+//        Log.d(TAG, "saveFile: extension = $extension")
         val dirDocuments =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = separator.toString() + context.resources.getString(R.string.app_name)
         val dirDocumentsApp = File(dirDocuments.toString() + append)
+//        Log.d(TAG, "saveFile: dirDocumentsApp = $dirDocumentsApp")
         if (!dirDocuments.isDirectory) {
             dirDocuments.mkdir()
         }
@@ -234,8 +236,8 @@ class ShopListRepositoryImpl @Inject constructor(
         outputStream?.close()
     }
 
-    override suspend fun saveListToDb(shopListWithItems: ShopListWithItems): Boolean {
 
+    override suspend fun saveListToDb(shopListWithItems: ShopListWithItems): Boolean {
         Log.d("loadTxtList", "listName = ${shopListWithItems.name}")
 
         try {
@@ -349,7 +351,6 @@ class ShopListRepositoryImpl @Inject constructor(
 
     private fun retrieveContentFromContentUri(fileUri: Uri): String {
 
-
         val iStream: InputStream? = context.contentResolver.openInputStream(fileUri)
 
         val inputStreamReader = InputStreamReader(iStream)
@@ -376,6 +377,8 @@ class ShopListRepositoryImpl @Inject constructor(
         return filesTxtList
     }
 
+
+
     private val shopListIdFlow: StateFlow<Int> = shopListPreferences.data
         .catch { exception ->
             /*
@@ -394,7 +397,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     override suspend fun setCurrentListId(listId: Int) {
-//        Log.d(TAG, "setCurrentListId: listId = $listId")
+        Log.d(TAG, "setCurrentListId: listId = $listId")
         shopListPreferences.edit { preferences ->
             preferences[KEY_LIST_ID] = listId
         }

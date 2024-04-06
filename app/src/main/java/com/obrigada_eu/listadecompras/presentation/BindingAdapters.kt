@@ -37,7 +37,7 @@ fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
 
 @BindingAdapter("setErrorInputListName")
 fun bindErrorInputListName(til: TextInputLayout, error: String?){
-    Log.d("BindingAdapter", "error = $error ")
+//    Log.d("BindingAdapter", "error = $error ")
     til.errorIconDrawable = null
     til.error = error
 }
@@ -92,14 +92,14 @@ fun bindUnits(editText: EditText, itemId: Int, itemUnits: String?){
 
 @BindingAdapter("alterNameVisibility")
 fun setAlterNameVisibility(view: View, name: String?){
-    Log.d(TAG, "setAlterNameVisibility: name = $name")
+//    Log.d(TAG, "setAlterNameVisibility: name = $name")
     view.visibility = if (name == null) View.GONE else View.VISIBLE
 }
 
 
 @BindingAdapter("setEditTextName")
 fun bindEditTextName(editText: EditText, name: String?){
-    Log.d(TAG, "bindEditTextName: editText = ${editText.id}, name = $name")
+//    Log.d(TAG, "bindEditTextName: editText = ${editText.id}, name = $name")
     name?.let {
         with(editText) {
             tag = TAG_ERROR_INPUT_NAME
@@ -109,28 +109,28 @@ fun bindEditTextName(editText: EditText, name: String?){
         }
     }
 }
-@BindingAdapter("setEditTextNameTrimmed")
-fun bindEditTextNameTrimmed(editText: EditText, name: String?){
-    Log.d(TAG, "bindEditTextName: editText = ${editText.id}, name = $name")
-    name?.let {
-        with(editText) {
-            tag = TAG_ERROR_INPUT_NAME
-            setText(it)
-            setSelection(editText.text.length)
-            tag = null
-        }
-    }
-}
+//@BindingAdapter("setEditTextNameTrimmed")
+//fun bindEditTextNameTrimmed(editText: EditText, name: String?){
+////    Log.d(TAG, "bindEditTextName: editText = ${editText.id}, name = $name")
+//    name?.let {
+//        with(editText) {
+//            tag = TAG_ERROR_INPUT_NAME
+//            setText(it)
+//            setSelection(editText.text.length)
+//            tag = null
+//        }
+//    }
+//}
 
 @BindingAdapter("radioGroupClearCheck")
 fun bindRadioGroupClearCheck(radioGroup: RadioGroup, isNameFromTitle: Boolean?){
-    Log.d(TAG, "bindRadioGroupClearCheck: isNameFromTitle = $isNameFromTitle")
+//    Log.d(TAG, "bindRadioGroupClearCheck: isNameFromTitle = $isNameFromTitle")
     if (isNameFromTitle == null) radioGroup.clearCheck()
 }
 
 @BindingAdapter("etListNameFromTitleIsChecked")
 fun bindEditTextNameFromTitleIsChecked(editText: EditText, isNameFromTitle: Boolean?) {
-    Log.d(TAG, "bindEditTextNameFromTitleIsChecked: editText = ${editText.id}, isNameFromTitle = $isNameFromTitle")
+//    Log.d(TAG, "bindEditTextNameFromTitleIsChecked: editText = ${editText.id}, isNameFromTitle = $isNameFromTitle")
     with(editText) {
         if (isNameFromTitle == null) {
             setBackgroundResource(R.color.whitish_transparent)
@@ -152,7 +152,7 @@ fun bindEditTextNameFromTitleIsChecked(editText: EditText, isNameFromTitle: Bool
 
 @BindingAdapter("etListNameFromContentIsChecked")
 fun bindEditTextNameFromContentIsChecked(editText: EditText, isNameFromTitle: Boolean?) {
-    Log.d(TAG, "bindEditTextNameFromTitleIsChecked: editText = ${editText.id}, isNameFromTitle = $isNameFromTitle")
+//    Log.d(TAG, "bindEditTextNameFromTitleIsChecked: editText = ${editText.id}, isNameFromTitle = $isNameFromTitle")
     with(editText) {
         if (isNameFromTitle == null) {
             setBackgroundResource(R.color.whitish_transparent)

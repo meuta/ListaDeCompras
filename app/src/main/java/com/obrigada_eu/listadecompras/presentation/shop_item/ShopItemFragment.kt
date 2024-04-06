@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -162,9 +163,9 @@ class ShopItemFragment : Fragment() {
         with(binding) {
             btnSave.setOnClickListener {
                 shopItemViewModel.addShopItem(
-                    etName.text?.toString(),
-                    etCount.text?.toString(),
-                    etUnits.text?.toString(),
+                    etName.trimmedText(),
+                    etCount.trimmedText(),
+                    etUnits.trimmedText(),
                     listId
                 )
             }
@@ -176,13 +177,24 @@ class ShopItemFragment : Fragment() {
         with(binding) {
             btnSave.setOnClickListener {
                 shopItemViewModel.editShopItem(
-                    etName.text?.toString(),
-                    etCount.text?.toString(),
-                    etUnits.text?.toString()
+                    etName.trimmedText(),
+                    etCount.trimmedText(),
+                    etUnits.trimmedText()
                 )
             }
         }
     }
+
+    private fun EditText.trimmedText() = this.text.toString().let {
+        if (it.trim() != it){
+            this.setText(it.trim())
+            this.setSelection(it.trim().length)
+            it.trim()
+        } else {
+            it
+        }
+    }
+
 
     interface OnEditingFinishedListener {
         fun onEditingFinished()

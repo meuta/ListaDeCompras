@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
@@ -100,12 +101,12 @@ class ListSetFragment(
             buttonCreateList.setOnClickListener {
                 lifecycleScope.launch {
                     val alterName = if (fragmentListViewModel.listNameFromFileContent.first() != null) {
-                        etListNameContent.text?.toString()
+                        etListNameContent.trimmedText()
                     } else null
 
 //                    Log.d(TAG, "setupButtons: alterName = $alterName")
                     fragmentListViewModel.addShopList(
-                        etListNameTitle.text?.toString(),
+                        etListNameTitle.trimmedText(),
                         fragmentListViewModel.fromTxtFile.first(),
                         alterName = alterName
                     )
@@ -146,6 +147,15 @@ class ListSetFragment(
         }
     }
 
+    private fun EditText.trimmedText() = this.text.toString().let {
+        if (it.trim() != it){
+            this.setText(it.trim())
+            this.setSelection(it.trim().length)
+            it.trim()
+        } else {
+            it
+        }
+    }
 
     private fun addEditTextFocusChangedListener(){
         with(binding){
