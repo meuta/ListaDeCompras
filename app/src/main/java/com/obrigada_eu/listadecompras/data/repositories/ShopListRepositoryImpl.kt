@@ -156,7 +156,9 @@ class ShopListRepositoryImpl @Inject constructor(
     private fun getContent(shopListWithItems: ShopListWithShopItemsDbModel): Pair<String, String> {
         val listName = shopListWithItems.shopListDbModel.name
         val listEnabled = if (shopListWithItems.shopListDbModel.enabled) "-" else "+"
-        var content = String.format(
+
+        var content = context.getString(R.string.do_not_modify_this_file_top_warning)
+        content += String.format(
             "%-4s\t%s\n\n",
             listEnabled,
             listName
@@ -312,7 +314,7 @@ class ShopListRepositoryImpl @Inject constructor(
         val list = mutableListOf<ShopItem>()
         val lines = inputString.split("\n")
 
-        lines.drop(2).forEach { line ->
+        lines.drop(7).forEach { line ->
             val values = line.split("\t")
 
             val enabled = when (line.first()) {
@@ -330,9 +332,9 @@ class ShopListRepositoryImpl @Inject constructor(
 //            Log.d("loadTxtList", "item = $item")
             list.add(item)
         }
-        Log.d(TAG, "getListName: listEnabled = ${lines[0].first()}")
+        Log.d(TAG, "getListName: listEnabled = ${lines[5].first()}")
 
-        val listEnabled = when (lines[0].first()) {
+        val listEnabled = when (lines[5].first()) {
             '-' -> true
             '+' -> false
             else -> {
@@ -340,7 +342,7 @@ class ShopListRepositoryImpl @Inject constructor(
             }
         }
 
-        val listName = lines[0].split("\t")[1].trim()
+        val listName = lines[5].split("\t")[1].trim()
         Log.d("loadTxtList", "listName = $listName")
 
         val shopListWithItems = ShopListWithItems(listName, listEnabled, list)
