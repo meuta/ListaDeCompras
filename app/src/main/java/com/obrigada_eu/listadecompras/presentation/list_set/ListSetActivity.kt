@@ -89,7 +89,7 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_MAIN -> {
                 lifecycleScope.launch {
-                    val listId = listSetViewModel.shopListIdLD.first()
+                    val listId = listSetViewModel.shopListId.first()
                     Log.d(TAG, "handleIntent: listId = $listId")
                     if (listId != ShopList.UNDEFINED_ID) {
                         startShopListActivity()
@@ -99,7 +99,7 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_SEND -> {
 
-                setDefaultCardNewList()
+                resetCardNewList()
 
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
@@ -116,7 +116,7 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_VIEW -> {
 //                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
-                setDefaultCardNewList()
+                resetCardNewList()
 
                 when (intent.type) {
 
@@ -146,13 +146,15 @@ class ListSetActivity : AppCompatActivity() {
         }
     }
 
-    private fun setDefaultCardNewList() {
-        listSetViewModel.resetUserCheckedDifferNames()
-        listSetViewModel.resetErrorInputNameTitle()
-        listSetViewModel.resetErrorInputNameContent()
-        listSetViewModel.resetListNameFromContent()
+    private fun resetCardNewList() {
+        with(listSetViewModel) {
+            resetUserCheckedAlterName()
+            resetErrorInputNameTitle()
+            resetErrorInputNameContent()
+            resetListNameFromContent()
 
-        listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
+            setCurrentListId(ShopList.UNDEFINED_ID)
+        }
     }
 
 
@@ -160,7 +162,7 @@ class ListSetActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                listSetViewModel.shopListIdLD.collect { listId ->
+                listSetViewModel.shopListId.collect { listId ->
 
                     Log.d(TAG, "shopListIdLD.collect = $listId")
                     if (listId != ShopList.UNDEFINED_ID) {

@@ -76,11 +76,13 @@ class ListSetFragment(
                         } else {
 
                             cardNewList.visibility = View.VISIBLE
-                            etListNameFromTitle.tag = TAG_ERROR_INPUT_NAME
-                            etListNameFromTitle.setText(requireContext().resources.getString(R.string.new_list))
-                            etListNameFromTitle.requestFocus()
-                            etListNameFromTitle.setSelection(0, etListNameFromTitle.text.length)
-                            etListNameFromTitle.tag = null
+                            with(etListNameFromTitle) {
+                                tag = TAG_ERROR_INPUT_NAME
+                                setText(requireContext().resources.getString(R.string.new_list))
+                                requestFocus()
+                                setSelection(0, text.length)
+                                tag = null
+                            }
 
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -124,7 +126,7 @@ class ListSetFragment(
                     }
                     yesButton.setOnClickListener {
                         fragmentListViewModel.resetListNameFromContent()
-                        fragmentListViewModel.resetUserCheckedDifferNames()
+                        fragmentListViewModel.resetUserCheckedAlterName()
                         fragmentListViewModel.updateUiState(false, false, null, null, null)
                         alertDialog.dismiss()
                     }
@@ -136,7 +138,6 @@ class ListSetFragment(
 
             radioGroupListName.setOnCheckedChangeListener { group, checkedId ->
 //                Log.d(TAG, "radioGroupListName: checkedId = $checkedId")
-
                 fragmentListViewModel.setIsNameFromTitle(isFromTitle = when (checkedId) {
                     R.id.radio_tilte -> true
                     R.id.radio_content -> false
@@ -147,13 +148,15 @@ class ListSetFragment(
         }
     }
 
-    private fun EditText.trimmedText() = this.text.toString().let {
-        if (it.trim() != it){
-            this.setText(it.trim())
-            this.setSelection(it.trim().length)
-            it.trim()
-        } else {
-            it
+    private fun EditText.trimmedText() = this.text.toString().let { content ->
+        content.trim().let { trimmedContent ->
+            if (trimmedContent != content) {
+                this.setText(trimmedContent)
+                this.setSelection(trimmedContent.length)
+                trimmedContent
+            } else {
+                content
+            }
         }
     }
 
@@ -242,7 +245,7 @@ class ListSetFragment(
                     val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
                     if (isVisible) {
-                        fragmentListViewModel.resetUserCheckedDifferNames()
+                        fragmentListViewModel.resetUserCheckedAlterName()
                         fragmentListViewModel.updateUiState(false, false, null, null, null)
                     } else {
                         isEnabled = false

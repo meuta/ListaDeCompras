@@ -26,12 +26,6 @@ class ShopItemViewModel @Inject constructor(
     val shopItem: LiveData<ShopItem>
         get() = _shopItem
 
-    fun getShopItem(itemId: Int) {
-        viewModelScope.launch {
-            val item = getShopItemByIdUseCase(itemId)
-            item?.let { _shopItem.value = it }
-        }
-    }
 
     private val _errorInputCount = MutableStateFlow<Boolean>(false)
     val errorInputCount: StateFlow<Boolean> = _errorInputCount
@@ -39,6 +33,13 @@ class ShopItemViewModel @Inject constructor(
     private val _closeScreen = MutableLiveData<Unit>()
     val closeScreen: LiveData<Unit>
         get() = _closeScreen
+
+    fun getShopItem(itemId: Int) {
+        viewModelScope.launch {
+            val item = getShopItemByIdUseCase(itemId)
+            item?.let { _shopItem.value = it }
+        }
+    }
 
     fun addShopItem(inputName: String?, inputCount: String?, inputUnits: String?, listId: Int) {
         val name = parseName(inputName)
@@ -62,13 +63,11 @@ class ShopItemViewModel @Inject constructor(
         val fieldsValid = validateInput(name, count, units)
         if (fieldsValid) {
             _shopItem.value?.let {
-
                 viewModelScope.launch {
                     val item = it.copy(name = name, count = count, units = units)
                     editShopItemUseCase(item)
                     finishScreen()
                 }
-
             }
         }
     }
@@ -103,7 +102,6 @@ class ShopItemViewModel @Inject constructor(
             _errorInputCount.value = true
             result = false
         }
-
 
         return result
     }

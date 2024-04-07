@@ -38,7 +38,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ListSetViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val getAllListsWithoutItemsFlowUseCase: GetAllListsWithoutItemsFlowUseCase,
+    getAllListsWithoutItemsFlowUseCase: GetAllListsWithoutItemsFlowUseCase,
     private val getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase,
     private val deleteShopListUseCase: DeleteShopListUseCase,
@@ -63,8 +63,8 @@ class ListSetViewModel @Inject constructor(
     val errorInputNameFromContent: StateFlow<String?> = _errorInputNameFromContent
 
 
-    private val _shopListIdLD = MutableStateFlow<Int>(ShopList.UNDEFINED_ID)
-    val shopListIdLD: StateFlow<Int> = _shopListIdLD
+    private val _shopListId = MutableStateFlow<Int>(ShopList.UNDEFINED_ID)
+    val shopListId: StateFlow<Int> = _shopListId
 
     val allListsWithoutItems = getAllListsWithoutItemsFlowUseCase().asLiveData(scope.coroutineContext)
 
@@ -72,15 +72,14 @@ class ListSetViewModel @Inject constructor(
     private val _cardNewListVisibilityStateFlow = MutableStateFlow(false)
     val cardNewListVisibilityStateFlow: StateFlow<Boolean> = _cardNewListVisibilityStateFlow
 
-    private var _fromTxtFile = MutableStateFlow(false)
+    private val _fromTxtFile = MutableStateFlow(false)
     val fromTxtFile: StateFlow<Boolean> = _fromTxtFile
 
-    private var _oldFileName: MutableLiveData<String?> = MutableLiveData(null)
-    val oldFileName: LiveData<String?>
-        get() = _oldFileName
+    private val _listNameFromFileTitle = MutableStateFlow<String?>(null)
+    val listNameFromFileTitle: StateFlow<String?> = _listNameFromFileTitle
 
 
-    private var _fileWithoutErrors = MutableStateFlow(true)
+    private val _fileWithoutErrors = MutableStateFlow(true)
     val fileWithoutErrors: StateFlow<Boolean> = _fileWithoutErrors
 
 //    private var namesList = listOf<String>()
@@ -89,16 +88,21 @@ class ListSetViewModel @Inject constructor(
     private var fileUri: Uri? = null
 
 
-    private var _isNameFromTitle = MutableStateFlow<Boolean?>(null)
+    private val _isNameFromTitle = MutableStateFlow<Boolean?>(null)
     val isNameFromTitle: StateFlow<Boolean?> = _isNameFromTitle
 
 
-    private var _listNameFromFileContent = MutableStateFlow<String?>(null)
+    private val _listNameFromFileContent = MutableStateFlow<String?>(null)
     val listNameFromFileContent: StateFlow<String?> = _listNameFromFileContent
 
 
-    private var _userCheckedAlterName = MutableStateFlow<Boolean>(false)
+    private val _userCheckedAlterName = MutableStateFlow<Boolean>(false)
     val userCheckedAlterName: StateFlow<Boolean> = _userCheckedAlterName
+
+
+    private val _filesList = MutableLiveData<List<String>?>()
+    val filesList: LiveData<List<String>?>
+        get() = _filesList
 
     init {
 //        Log.d(TAG, "1. namesList = $namesList ")
@@ -112,7 +116,7 @@ class ListSetViewModel @Inject constructor(
         viewModelScope.launch {
             getCurrentListIdUseCase().collect{
                 Log.d(TAG,"init id = $it")
-                _shopListIdLD.value = it
+                _shopListId.value = it
             }
         }
     }
@@ -122,11 +126,11 @@ class ListSetViewModel @Inject constructor(
         _cardNewListVisibilityStateFlow.update { cardNewListVisibility }
         _fromTxtFile.update { showCreateListForFile }
 
-        if (this._oldFileName.value == null) {
-            this._oldFileName.value = oldFileName
+        if (this._listNameFromFileTitle.value == null) {
+            this._listNameFromFileTitle.value = oldFileName
         } else {
             if (oldFileName == null) {
-                this._oldFileName.value = null
+                this._listNameFromFileTitle.value = null
             }
         }
 //        Log.d(TAG,"oldFileName = $oldFileName")
@@ -138,10 +142,6 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
-
-    private var _filesList = MutableLiveData<List<String>?>()
-    val filesList: LiveData<List<String>?>
-        get() = _filesList
 
 
     fun setCurrentListId(listId: Int){
@@ -180,7 +180,7 @@ class ListSetViewModel @Inject constructor(
             } else {
                 // getting list from text file
 
-                val oldName = _oldFileName.value ?: name
+                val oldName = _listNameFromFileTitle.value ?: name
 
                 val myFilePath = filePath ?: path
                 val myFileUri = fileUri ?: uri
@@ -331,7 +331,7 @@ class ListSetViewModel @Inject constructor(
         _listNameFromFileContent.value = null
     }
 
-    fun resetUserCheckedDifferNames() {
+    fun resetUserCheckedAlterName() {
         _userCheckedAlterName.value = false
     }
 

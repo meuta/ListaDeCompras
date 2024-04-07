@@ -334,13 +334,15 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         addTextChangedListeners()
     }
 
-    private fun EditText.trimmedText() = this.text.toString().let {
-        if (it.trim() != it){
-            this.setText(it.trim())
-            this.setSelection(it.trim().length)
-            it.trim()
-        } else {
-            it
+    private fun EditText.trimmedText() = this.text.toString().let { content ->
+        content.trim().let { trimmedContent ->
+            if (trimmedContent != content) {
+                this.setText(trimmedContent)
+                this.setSelection(trimmedContent.length)
+                trimmedContent
+            } else {
+                content
+            }
         }
     }
 

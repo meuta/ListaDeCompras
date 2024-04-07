@@ -106,7 +106,7 @@
                             android:textColor="@color/grayish"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            app:setEditTextName="@{viewModel.oldFileName}"
+                            app:setEditTextName="@{viewModel.listNameFromFileTitle}"
                             app:etListNameFromTitleIsChecked="@{viewModel.isNameFromTitle}"
                             tools:ignore="LabelFor"
                             tools:text="@string/new_list" />
