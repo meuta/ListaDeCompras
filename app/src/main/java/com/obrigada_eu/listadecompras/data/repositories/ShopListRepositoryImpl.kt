@@ -147,7 +147,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
         val shopListWithItems = shopListDao.getShopListWithItems(listId)
         val nameAndContent = getContent(shopListWithItems)
-        saveFile(context, nameAndContent.first, nameAndContent.second, "txt")
+        saveFile(context, nameAndContent.first, nameAndContent.second)
     }
 
 
@@ -170,7 +170,7 @@ class ShopListRepositoryImpl @Inject constructor(
                 it.count ?: "",
                 it.units ?: ""
             )
-            content += row + "\n"
+            content += "$row\n"
         }
         content = content.dropLast(1)
         return Pair(listName, content)
@@ -201,13 +201,10 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    private fun saveFile(context: Context, fileName: String, text: String, extension: String) {
-//        Log.d(TAG, "saveFile: extension = $extension")
-        val dirDocuments =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val append = separator.toString() + context.resources.getString(R.string.app_name)
-        val dirDocumentsApp = File(dirDocuments.toString() + append)
-//        Log.d(TAG, "saveFile: dirDocumentsApp = $dirDocumentsApp")
+    private fun saveFile(context: Context, fileName: String, text: String) {
+        val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val append = "$separator${context.resources.getString(R.string.app_name)}"
+        val dirDocumentsApp = File("$dirDocuments$append")
         if (!dirDocuments.isDirectory) {
             dirDocuments.mkdir()
         }
@@ -220,13 +217,13 @@ class ShopListRepositoryImpl @Inject constructor(
             values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
             values.put(
                 MediaStore.MediaColumns.RELATIVE_PATH,
-                Environment.DIRECTORY_DOCUMENTS + append
+                "${Environment.DIRECTORY_DOCUMENTS}$append"
             )
             val extVolumeUri: Uri = MediaStore.Files.getContentUri("external")
             val fileUri: Uri? = context.contentResolver.insert(extVolumeUri, values)
             fileUri?.let { context.contentResolver.openOutputStream(it) }
         } else {
-            val file = File(dirDocumentsApp.absolutePath, "$fileName.$extension")
+            val file = File(dirDocumentsApp.absolutePath, "$fileName.txt")
             FileOutputStream(file)
         }
 
@@ -264,11 +261,9 @@ class ShopListRepositoryImpl @Inject constructor(
         if (uri == null) {
 
             val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-            val append = separator.toString() + context.resources.getString(R.string.app_name) + separator.toString()
-            val dirDocumentsApp = dirDocuments.toString() + append
-            val path = "$dirDocumentsApp$fileName.txt"
+            val append = "$separator${context.resources.getString(R.string.app_name)}"
 
-            val file = File(path)
+            val file = File("$dirDocuments$append$separator$fileName.txt")
             Log.d(TAG, "getListFromTxtFile: file = $file")
             if (file.exists()) {
                 Log.d(TAG, "getListFromTxtFile: file.exists()")
@@ -354,8 +349,8 @@ class ShopListRepositoryImpl @Inject constructor(
     override suspend fun loadFilesList(): List<String>? {
         val dirDocuments =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val append = separator.toString() + context.resources.getString(R.string.app_name)
-        val dirDocumentsApp = File(dirDocuments.toString() + append)
+        val append = "$separator${context.resources.getString(R.string.app_name)}"
+        val dirDocumentsApp = File("$dirDocuments$append")
 //        if (!dirDocumentsApp.isDirectory) {
 //            Log.d("loadFilesList", "!dirDocumentsApp.isDirectory")
 //        }
