@@ -5,6 +5,6 @@ import javax.inject.Inject
 
 class GetListFromTxtFileUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
-    operator fun invoke(fileName: String, myFilePath: String? = null, uri: Uri? = null): ShopListWithItems? =
-        shopListRepository.getListFromTxtFile(fileName, myFilePath, uri)
+    operator fun invoke(fileName: String, uri: Uri? = null): ShopListWithItems? =
+        shopListRepository.getListFromTxtFile(fileName, uri)
 }

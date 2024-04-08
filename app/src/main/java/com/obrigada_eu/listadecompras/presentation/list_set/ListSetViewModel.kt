@@ -84,7 +84,6 @@ class ListSetViewModel @Inject constructor(
 
 //    private var namesList = listOf<String>()
 
-    private var filePath: String? = null
     private var fileUri: Uri? = null
 
 
@@ -121,8 +120,8 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
-    fun updateUiState(cardNewListVisibility: Boolean, showCreateListForFile: Boolean, oldFileName: String? = null, filePath: String? = null, uri: Uri? = null) {
-        Log.d(TAG, "updateUiState: cardNewListVisibility = $cardNewListVisibility, showCreateListForFile = $showCreateListForFile, oldFileName = $oldFileName, filePath = $filePath, uri= $uri")
+    fun updateUiState(cardNewListVisibility: Boolean, showCreateListForFile: Boolean, oldFileName: String? = null, uri: Uri? = null) {
+        Log.d(TAG, "updateUiState: cardNewListVisibility = $cardNewListVisibility, showCreateListForFile = $showCreateListForFile, oldFileName = $oldFileName, uri= $uri")
         _cardNewListVisibilityStateFlow.update { cardNewListVisibility }
         _fromTxtFile.update { showCreateListForFile }
 
@@ -134,7 +133,6 @@ class ListSetViewModel @Inject constructor(
             }
         }
 //        Log.d(TAG,"oldFileName = $oldFileName")
-        this.filePath = filePath
         this.fileUri = uri
 
         if (!cardNewListVisibility) {
@@ -154,7 +152,6 @@ class ListSetViewModel @Inject constructor(
     fun addShopList(
         inputName: String?,
         fromTxtFile: Boolean = false,
-        path: String? = null,
         uri: Uri? = null,
         alterName: String? = null // editText content
     ) {
@@ -164,7 +161,6 @@ class ListSetViewModel @Inject constructor(
 //        Log.d("addShopList", "namesList = $namesList")
 
 //        var fieldsValid = !namesList.contains(name)
-//
 //        if (!fieldsValid) {
 //            _errorInputNameTitle.value = true
 //        }
@@ -175,17 +171,15 @@ class ListSetViewModel @Inject constructor(
             if (!fromTxtFile) {
                 if (fieldIsValid) {
                     addShopListUseCase(name)
-                    updateUiState(false, false, null, null, null)
+                    updateUiState(false, false, null, null)
                 }
             } else {
                 // getting list from text file
 
                 val oldName = _listNameFromFileTitle.value ?: name
-
-                val myFilePath = filePath ?: path
                 val myFileUri = fileUri ?: uri
 
-                val listWithItems = getListFromTxtFileUseCase(oldName, myFilePath, myFileUri)
+                val listWithItems = getListFromTxtFileUseCase(oldName, myFileUri)
                 _fileWithoutErrors.value = listWithItems != null
 
                 listWithItems?.let {
@@ -216,7 +210,7 @@ class ListSetViewModel @Inject constructor(
                         val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
                         Log.d(TAG, "addShopList: listSaved = $listSaved")
 
-                        updateUiState(false, false, null, null, null)
+                        updateUiState(false, false, null, null)
 
                         _listNameFromFileContent.value = null
 
@@ -230,7 +224,7 @@ class ListSetViewModel @Inject constructor(
                                 val listSaved = saveListToDbUseCase(listWithItems.copy(name = listNameFromText))
                                 Log.d(TAG, "addShopList: listSaved = $listSaved")
 
-                                updateUiState(false, false, null, null, null)
+                                updateUiState(false, false, null, null)
 
                                 _listNameFromFileContent.value = null
                                 _userCheckedAlterName.value = false
@@ -239,7 +233,7 @@ class ListSetViewModel @Inject constructor(
                                 val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
                                 Log.d(TAG, "addShopList: listSaved = $listSaved")
 
-                                updateUiState(false, false, null, null, null)
+                                updateUiState(false, false, null, null)
 
                                 _listNameFromFileContent.value = null
                                 _userCheckedAlterName.value = false
@@ -247,13 +241,13 @@ class ListSetViewModel @Inject constructor(
 
                                 _userCheckedAlterName.value = true
                                 Log.d(TAG, "addShopList: _userCheckedDifferNames.value = ${_userCheckedAlterName.value}")
-                                updateUiState(true, true, name, myFilePath, myFileUri)
+                                updateUiState(true, true, name, myFileUri)
                             }
 
                         } else {
                             // names from title and content are equals, name is not valid:
 
-                            updateUiState(true, true, name, myFilePath, myFileUri)
+                            updateUiState(true, true, name, myFileUri)
                         }
                     }
                 }

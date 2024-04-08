@@ -35,7 +35,7 @@ interface ShopListRepository {
 
     suspend fun saveListToDb(shopListWithItems: ShopListWithItems): Boolean
 
-    fun getListFromTxtFile(fileName: String, myFilePath: String? = null, uri: Uri? = null): ShopListWithItems?
+    fun getListFromTxtFile(fileName: String, uri: Uri? = null): ShopListWithItems?
 
     suspend fun undoDelete()
 

@@ -146,12 +146,10 @@ class ShopListRepositoryImpl @Inject constructor(
     override suspend fun exportListToTxt(listId: Int) {
 
         val shopListWithItems = shopListDao.getShopListWithItems(listId)
-
         val nameAndContent = getContent(shopListWithItems)
-
-
         saveFile(context, nameAndContent.first, nameAndContent.second, "txt")
     }
+
 
     private fun getContent(shopListWithItems: ShopListWithShopItemsDbModel): Pair<String, String> {
         val listName = shopListWithItems.shopListDbModel.name
@@ -203,7 +201,6 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    @Throws(IOException::class)
     private fun saveFile(context: Context, fileName: String, text: String, extension: String) {
 //        Log.d(TAG, "saveFile: extension = $extension")
         val dirDocuments =
@@ -261,30 +258,20 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override fun getListFromTxtFile(fileName: String, myFilePath: String?, uri: Uri?): ShopListWithItems? {
+    override fun getListFromTxtFile(fileName: String, uri: Uri?): ShopListWithItems? {
 
-        Log.d(
-            "loadTxtList",
-            "fileName = $fileName, myFilePath = $myFilePath, uri = $uri"
-        )
+        Log.d("loadTxtList", "fileName = $fileName, uri = $uri")
         if (uri == null) {
 
-            val path = if (myFilePath == null) {
-
-                val dirDocuments =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                val append =
-                    separator.toString() + context.resources.getString(R.string.app_name) + separator.toString()
-                val dirDocumentsApp = dirDocuments.toString() + append
-                "$dirDocumentsApp$fileName.txt"
-
-            } else {
-
-                separator.toString() + myFilePath.drop(8)
-            }
+            val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            val append = separator.toString() + context.resources.getString(R.string.app_name) + separator.toString()
+            val dirDocumentsApp = dirDocuments.toString() + append
+            val path = "$dirDocumentsApp$fileName.txt"
 
             val file = File(path)
+            Log.d(TAG, "getListFromTxtFile: file = $file")
             if (file.exists()) {
+                Log.d(TAG, "getListFromTxtFile: file.exists()")
                 return try {
                     val bufferedReader: BufferedReader = file.bufferedReader()
                     val contentString = bufferedReader.use { it.readText() }
@@ -310,7 +297,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     private fun getListWithItemsFromString(inputString: String): ShopListWithItems {
-
+        Log.d(TAG, "getListWithItemsFromString: inputString = $inputString")
         val list = mutableListOf<ShopItem>()
         val lines = inputString.split("\n")
 

@@ -127,7 +127,7 @@ class ListSetFragment(
                     yesButton.setOnClickListener {
                         fragmentListViewModel.resetListNameFromContent()
                         fragmentListViewModel.resetUserCheckedAlterName()
-                        fragmentListViewModel.updateUiState(false, false, null, null, null)
+                        fragmentListViewModel.updateUiState(false, false, null, null)
                         alertDialog.dismiss()
                     }
                     alertDialog.setView(root)
@@ -246,7 +246,7 @@ class ListSetFragment(
 
                     if (isVisible) {
                         fragmentListViewModel.resetUserCheckedAlterName()
-                        fragmentListViewModel.updateUiState(false, false, null, null, null)
+                        fragmentListViewModel.updateUiState(false, false, null, null)
                     } else {
                         isEnabled = false
                         requireActivity().finish()
@@ -269,7 +269,7 @@ class ListSetFragment(
 
             if (!isVisible) {
                 fragmentListViewModel.setCurrentListId(itemId)
-                fragmentListViewModel.updateUiState(false, false, null, null, null)
+                fragmentListViewModel.updateUiState(false, false, null, null)
             }
         }
     }
@@ -279,7 +279,7 @@ class ListSetFragment(
             val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
             if (!isVisible) {
-                fragmentListViewModel.updateUiState(true, false, null, null, null)
+                fragmentListViewModel.updateUiState(true, false, null, null)
             }
         }
     }

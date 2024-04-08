@@ -61,7 +61,7 @@ class ListSetActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
-            listSetViewModel.updateUiState(false, false, null, null, null)
+            listSetViewModel.updateUiState(false, false, null, null)
             with(binding.filesList) {
                 if (visibility == View.VISIBLE) {
                     visibility = View.GONE
@@ -83,14 +83,14 @@ class ListSetActivity : AppCompatActivity() {
 
 
     private fun handleIntent(intent: Intent) {
-        Log.d(TAG, "handleIntent: intent = $intent")
+//        Log.d(TAG, "handleIntent: intent = $intent")
 
         when (intent.action) {
 
             Intent.ACTION_MAIN -> {
                 lifecycleScope.launch {
                     val listId = listSetViewModel.shopListId.first()
-                    Log.d(TAG, "handleIntent: listId = $listId")
+//                    Log.d(TAG, "handleIntent: listId = $listId")
                     if (listId != ShopList.UNDEFINED_ID) {
                         startShopListActivity()
                     }
@@ -110,35 +110,25 @@ class ListSetActivity : AppCompatActivity() {
                 uri?.let {
 //                    Log.d(TAG, "handleIntent: myFilePath = ${it.path}")
                     val fileName = listSetViewModel.getFileName(it)
-                    listSetViewModel.addShopList(fileName, true, null, it)
+                    listSetViewModel.addShopList(fileName, true, it)
                 }
             }
 
             Intent.ACTION_VIEW -> {
-//                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
+                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
                 resetCardNewList()
 
                 when (intent.type) {
 
                     "text/plain" -> {
 
-                        val data: Uri? = intent.data
-//                        Log.d(TAG, "handleIntent: data = $data")
-//                        Log.d(TAG, "handleIntent: myFilePath = ${data?.path}")
-                        data?.let {
-                            if (it.path?.take(5) == "/tree") {
+                        val dataUri: Uri? = intent.data
+                        Log.d(TAG, "handleIntent: data = $dataUri")
+                        Log.d(TAG, "handleIntent: myFilePath = ${dataUri?.path}")
+                        dataUri?.let {uri ->
 
-                                val myFilePath = it.lastPathSegment
-                                val parts = myFilePath?.split("/")
-                                val myFileName = parts?.last()?.dropLast(4)
-//                                Log.d(TAG, "handleIntent: myFilePath = $myFilePath")
-//                                Log.d(TAG, "handleIntent: myFileName = $myFileName")
-                                listSetViewModel.addShopList(myFileName, true, myFilePath)
-                            } else {
-
-                                val fileName = listSetViewModel.getFileName(it)
-                                listSetViewModel.addShopList(fileName, true, null, it)
-                            }
+                            val fileName = listSetViewModel.getFileName(uri)
+                            listSetViewModel.addShopList(fileName, true, uri)
                         }
                     }
                 }
@@ -231,7 +221,7 @@ class ListSetActivity : AppCompatActivity() {
         when (item.itemId) {
 
             R.id.action_load_txt -> {
-                listSetViewModel.updateUiState(false, false, null, null, null)
+                listSetViewModel.updateUiState(false, false, null, null)
                 if (
                     Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
                         this,
