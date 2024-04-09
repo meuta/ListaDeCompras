@@ -192,7 +192,6 @@ class ShopListRepositoryImpl @Inject constructor(
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 putExtra(Intent.EXTRA_STREAM, uri)
             }
             intent
