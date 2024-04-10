@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -74,9 +75,16 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun observeViewModel() {
 
-        shopListViewModel.shopListNameLD.observe(this) {
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                shopListViewModel.shopListNameFlow.collect {
 //            Log.d(TAG, "shopListName.observe = $it")
-            if (it?.isNotEmpty() == true) binding.tvToolbarShopListActivity.text = it
+                    if (it != binding.tvToolbarShopListActivity.text) {
+                        binding.tvToolbarShopListActivity.text = it
+                    }
+                }
+            }
         }
 
         shopListViewModel.allListsWithoutItems.observe(this) {
@@ -135,13 +143,16 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             }
         }
 
-
-        shopListViewModel.intent.observe(this) {
+        lifecycleScope.launch{
+            repeatOnLifecycle(Lifecycle.State.CREATED){
+                shopListViewModel.intent.collect {
 //            Log.d(TAG, "observeViewModel: intent = $it")
-            it?.let {
-                startActivity(it)
-                shopListViewModel.resetIntent()
-                shopListViewModel.setRenameListAppearance(false)
+                    it?.let {
+                        startActivity(it)
+                        shopListViewModel.resetIntent()
+                        shopListViewModel.setRenameListAppearance(false)
+                    }
+                }
             }
         }
     }

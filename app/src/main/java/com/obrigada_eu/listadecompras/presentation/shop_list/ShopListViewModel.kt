@@ -1,9 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation.shop_list
 
 import android.content.Intent
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_item.DeleteShopItemUseCase
@@ -46,10 +43,9 @@ class ShopListViewModel @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private val shopListIdFlow: StateFlow<Int> = getCurrentListIdUseCase()
-    val shopListIdLD = shopListIdFlow.asLiveData(scope.coroutineContext)
+    val shopListIdFlow: StateFlow<Int> = getCurrentListIdUseCase()
 
-    val shopListNameLD = getShopListNameUseCase(shopListIdFlow.value).asLiveData()
+    val shopListNameFlow = getShopListNameUseCase(shopListIdFlow.value)
 
     val shopListLD = getShopListUseCase(shopListIdFlow.value).asLiveData(scope.coroutineContext, 500)
 
@@ -61,9 +57,8 @@ class ShopListViewModel @Inject constructor(
 
     val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
 
-    private var _intent = MutableLiveData<Intent?>()
-    val intent: LiveData<Intent?>
-        get() = _intent
+    private val _intent = MutableStateFlow<Intent?>(null)
+    val intent: StateFlow<Intent?> = _intent
 
     fun updateShopListIdState(listId: Int) {
         scope.launch {
