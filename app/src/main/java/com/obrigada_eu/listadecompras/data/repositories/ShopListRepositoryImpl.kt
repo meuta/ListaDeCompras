@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -18,7 +17,6 @@ import com.obrigada_eu.listadecompras.BuildConfig
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.data.database.ShopItemDao
 import com.obrigada_eu.listadecompras.data.database.ShopListDao
-import com.obrigada_eu.listadecompras.data.datastore.ShopListPreferences
 import com.obrigada_eu.listadecompras.data.mapper.ShopListMapper
 import com.obrigada_eu.listadecompras.data.model.ListEnabled
 import com.obrigada_eu.listadecompras.data.model.ListName
@@ -34,7 +32,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -233,7 +230,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     override suspend fun saveListToDb(shopListWithItems: ShopListWithItems): Boolean {
-        Log.d("loadTxtList", "listName = ${shopListWithItems.name}")
+//        Log.d("loadTxtList", "listName = ${shopListWithItems.name}")
 
         try {
             addShopList(shopListWithItems.name, shopListWithItems.enabled)
@@ -256,22 +253,22 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getListFromTxtFile(fileName: String, uri: Uri?): ShopListWithItems? {
 
-        Log.d("loadTxtList", "fileName = $fileName, uri = $uri")
+//        Log.d("loadTxtList", "fileName = $fileName, uri = $uri")
         if (uri == null) {
 
             val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
             val append = "$separator${context.resources.getString(R.string.app_name)}"
 
             val file = File("$dirDocuments$append$separator$fileName.txt")
-            Log.d(TAG, "getListFromTxtFile: file = $file")
+//            Log.d(TAG, "getListFromTxtFile: file = $file")
             if (file.exists()) {
-                Log.d(TAG, "getListFromTxtFile: file.exists()")
+//                Log.d(TAG, "getListFromTxtFile: file.exists()")
                 return try {
                     val bufferedReader: BufferedReader = file.bufferedReader()
                     val contentString = bufferedReader.use { it.readText() }
                     getListWithItemsFromString(contentString)
                 } catch (e: Exception) {
-                    Log.d(TAG, "getListFromTxtFile: Exception = $e")
+//                    Log.d(TAG, "getListFromTxtFile: Exception = $e")
                     null
                 }
             }
@@ -281,7 +278,7 @@ class ShopListRepositoryImpl @Inject constructor(
                 val contentString: String = retrieveContentFromContentUri(uri)
                 getListWithItemsFromString(contentString)
             } catch (e: Exception) {
-                Log.d(TAG, "getListFromTxtFile: Exception = $e")
+//                Log.d(TAG, "getListFromTxtFile: Exception = $e")
                 null
             }
         }
@@ -291,7 +288,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     private fun getListWithItemsFromString(inputString: String): ShopListWithItems {
-        Log.d(TAG, "getListWithItemsFromString: inputString = $inputString")
+//        Log.d(TAG, "getListWithItemsFromString: inputString = $inputString")
         val list = mutableListOf<ShopItem>()
         val lines = inputString.split("\n")
 
@@ -313,7 +310,7 @@ class ShopListRepositoryImpl @Inject constructor(
 //            Log.d("loadTxtList", "item = $item")
             list.add(item)
         }
-        Log.d(TAG, "getListName: listEnabled = ${lines[5].first()}")
+//        Log.d(TAG, "getListName: listEnabled = ${lines[5].first()}")
 
         val listEnabled = when (lines[5].first()) {
             '-' -> true
@@ -324,11 +321,9 @@ class ShopListRepositoryImpl @Inject constructor(
         }
 
         val listName = lines[5].split("\t")[1].trim()
-        Log.d("loadTxtList", "listName = $listName")
+//        Log.d("loadTxtList", "listName = $listName")
 
-        val shopListWithItems = ShopListWithItems(listName, listEnabled, list)
-
-        return shopListWithItems
+        return ShopListWithItems(listName, listEnabled, list)
     }
 
 
@@ -337,10 +332,9 @@ class ShopListRepositoryImpl @Inject constructor(
         val iStream: InputStream? = context.contentResolver.openInputStream(fileUri)
 
         val inputStreamReader = InputStreamReader(iStream)
-        val inputString = inputStreamReader.use { it.readText() }
-//        Log.d(TAG, "createFileFromContentUri: inputString = $inputString")
+        //        Log.d(TAG, "createFileFromContentUri: inputString = $inputString")
 
-        return inputString
+        return inputStreamReader.use { it.readText() }
 
     }
 
@@ -354,10 +348,7 @@ class ShopListRepositoryImpl @Inject constructor(
 //            Log.d("loadFilesList", "!dirDocumentsApp.isDirectory")
 //        }
 
-        val filesTxtList =
-            dirDocumentsApp.list { _, filename -> filename.endsWith(".txt") }?.toList()
-
-        return filesTxtList
+        return dirDocumentsApp.list { _, filename -> filename.endsWith(".txt") }?.toList()
     }
 
 
@@ -380,7 +371,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     override suspend fun setCurrentListId(listId: Int) {
-        Log.d(TAG, "setCurrentListId: listId = $listId")
+//        Log.d(TAG, "setCurrentListId: listId = $listId")
         shopListPreferences.edit { preferences ->
             preferences[KEY_LIST_ID] = listId
         }
@@ -392,14 +383,6 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    suspend fun fetchInitialPreferences() =
-        mapShopListPreferences(shopListPreferences.data.first().toPreferences())
-
-    private fun mapShopListPreferences(preferences: Preferences): ShopListPreferences {
-        val listId = preferences[KEY_LIST_ID] ?: ShopList.UNDEFINED_ID
-
-        return ShopListPreferences(listId)
-    }
 
     private companion object {
 

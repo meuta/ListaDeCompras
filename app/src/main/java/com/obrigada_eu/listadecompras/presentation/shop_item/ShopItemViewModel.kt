@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation.shop_item
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.obrigada_eu.listadecompras.domain.shop_item.AddShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.EditShopItemUseCase
@@ -22,17 +23,17 @@ class ShopItemViewModel @Inject constructor(
     val errorInputName: StateFlow<Boolean> = _errorInputName
 
 
-    private val _shopItem = MutableLiveData<ShopItem>()
-    val shopItem: LiveData<ShopItem>
-        get() = _shopItem
+    private val _shopItem = MutableStateFlow<ShopItem?>(null)
+    val shopItem: StateFlow<ShopItem?> = _shopItem
 
 
     private val _errorInputCount = MutableStateFlow<Boolean>(false)
     val errorInputCount: StateFlow<Boolean> = _errorInputCount
 
-    private val _closeScreen = MutableLiveData<Unit>()
-    val closeScreen: LiveData<Unit>
-        get() = _closeScreen
+
+    private val _closeScreen = MutableStateFlow<Unit?>(null)
+    val closeScreen: StateFlow<Unit?> = _closeScreen
+
 
     fun getShopItem(itemId: Int) {
         viewModelScope.launch {
@@ -114,4 +115,9 @@ class ShopItemViewModel @Inject constructor(
         _errorInputCount.value = false
     }
 
+
+
+    companion object{
+        private const val TAG = "ShopItemViewModel"
+    }
 }

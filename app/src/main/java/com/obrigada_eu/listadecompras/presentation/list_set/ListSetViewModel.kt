@@ -82,8 +82,6 @@ class ListSetViewModel @Inject constructor(
     private val _fileWithoutErrors = MutableStateFlow(true)
     val fileWithoutErrors: StateFlow<Boolean> = _fileWithoutErrors
 
-//    private var namesList = listOf<String>()
-
     private var fileUri: Uri? = null
 
 
@@ -95,8 +93,7 @@ class ListSetViewModel @Inject constructor(
     val listNameFromFileContent: StateFlow<String?> = _listNameFromFileContent
 
 
-    private val _userCheckedAlterName = MutableStateFlow<Boolean>(false)
-    val userCheckedAlterName: StateFlow<Boolean> = _userCheckedAlterName
+    private val userCheckedAlterName = MutableStateFlow<Boolean>(false)
 
 
     private val _filesList = MutableLiveData<List<String>?>()
@@ -104,24 +101,17 @@ class ListSetViewModel @Inject constructor(
         get() = _filesList
 
     init {
-//        Log.d(TAG, "1. namesList = $namesList ")
-//        scope.launch {
-//            getAllListsWithoutItemsFlowUseCase().collect{list ->
-//                namesList = list.map { it.name }
-////                Log.d(TAG, "2. namesList = $namesList ")
-//
-//            }
-//        }
         viewModelScope.launch {
             getCurrentListIdUseCase().collect{
-                Log.d(TAG,"init id = $it")
+//                Log.d(TAG,"init id = $it")
                 _shopListId.value = it
             }
         }
     }
 
+
     fun updateUiState(cardNewListVisibility: Boolean, showCreateListForFile: Boolean, oldFileName: String? = null, uri: Uri? = null) {
-        Log.d(TAG, "updateUiState: cardNewListVisibility = $cardNewListVisibility, showCreateListForFile = $showCreateListForFile, oldFileName = $oldFileName, uri= $uri")
+//        Log.d(TAG, "updateUiState: cardNewListVisibility = $cardNewListVisibility, showCreateListForFile = $showCreateListForFile, oldFileName = $oldFileName, uri= $uri")
         _cardNewListVisibilityStateFlow.update { cardNewListVisibility }
         _fromTxtFile.update { showCreateListForFile }
 
@@ -157,13 +147,6 @@ class ListSetViewModel @Inject constructor(
     ) {
         val name = parseName(inputName)
 
-//        Log.d(TAG, "addShopList: inputName = $inputName, fromTxtFile = $fromTxtFile, path = $path, uri = $uri")
-//        Log.d("addShopList", "namesList = $namesList")
-
-//        var fieldsValid = !namesList.contains(name)
-//        if (!fieldsValid) {
-//            _errorInputNameTitle.value = true
-//        }
 
         viewModelScope.launch {
             val fieldIsValid = validateInput(name, "title")
@@ -171,7 +154,12 @@ class ListSetViewModel @Inject constructor(
             if (!fromTxtFile) {
                 if (fieldIsValid) {
                     addShopListUseCase(name)
-                    updateUiState(false, false, null, null)
+                    updateUiState(
+                        cardNewListVisibility = false,
+                        showCreateListForFile = false,
+                        oldFileName = null,
+                        uri = null
+                    )
                 }
             } else {
                 // getting list from text file
@@ -184,22 +172,17 @@ class ListSetViewModel @Inject constructor(
 
                 listWithItems?.let {
                     var listNameFromText = it.name
-                    Log.d("addShopList", "name1 = $oldName")
-                    Log.d("addShopList", "name2 = $listNameFromText")
-                    Log.d("addShopList", "alterName = $alterName")
+//                    Log.d("addShopList", "name1 = $oldName")
+//                    Log.d("addShopList", "name2 = $listNameFromText")
+//                    Log.d("addShopList", "alterName = $alterName")
 
                     var fieldIsValidContent = true
                     if (listNameFromText != oldName) {
                         alterName?.let {
                             listNameFromText = parseName(alterName)
                         }
-                        Log.d(TAG, "addShopList: listNameFromText = $listNameFromText")
+//                        Log.d(TAG, "addShopList: listNameFromText = $listNameFromText")
                         _listNameFromFileContent.value = listNameFromText
-//                        var fieldsValidContent = !namesList.contains(listNameFromText)
-//
-//                        if (!fieldsValidContent) {
-//                            _errorInputNameContent.value = true
-//                        }
 
                         fieldIsValidContent = validateInput(listNameFromText, "content")
                     }
@@ -208,9 +191,14 @@ class ListSetViewModel @Inject constructor(
                         // names from title and content are equals, name is valid:
 
                         val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
-                        Log.d(TAG, "addShopList: listSaved = $listSaved")
+//                        Log.d(TAG, "addShopList: listSaved = $listSaved")
 
-                        updateUiState(false, false, null, null)
+                        updateUiState(
+                            cardNewListVisibility = false,
+                            showCreateListForFile = false,
+                            oldFileName = null,
+                            uri = null
+                        )
 
                         _listNameFromFileContent.value = null
 
@@ -218,36 +206,56 @@ class ListSetViewModel @Inject constructor(
                         if (listNameFromText != oldName){
                             // names from title and content are different:
 
-                            Log.d(TAG, "addShopList: isTitle.value = ${isNameFromTitle.value}")
+//                            Log.d(TAG, "addShopList: isTitle.value = ${isNameFromTitle.value}")
 
-                            if (fieldIsValidContent && isNameFromTitle.value == false && _userCheckedAlterName.value) {
+                            if (fieldIsValidContent && isNameFromTitle.value == false && userCheckedAlterName.value) {
                                 val listSaved = saveListToDbUseCase(listWithItems.copy(name = listNameFromText))
-                                Log.d(TAG, "addShopList: listSaved = $listSaved")
+//                                Log.d(TAG, "addShopList: listSaved = $listSaved")
 
-                                updateUiState(false, false, null, null)
+                                updateUiState(
+                                    cardNewListVisibility = false,
+                                    showCreateListForFile = false,
+                                    oldFileName = null,
+                                    uri = null
+                                )
 
                                 _listNameFromFileContent.value = null
-                                _userCheckedAlterName.value = false
+                                userCheckedAlterName.value = false
 
-                            } else if (fieldIsValid && isNameFromTitle.value == true && _userCheckedAlterName.value) {
+                            } else if (fieldIsValid && isNameFromTitle.value == true && userCheckedAlterName.value) {
                                 val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
-                                Log.d(TAG, "addShopList: listSaved = $listSaved")
+//                                Log.d(TAG, "addShopList: listSaved = $listSaved")
 
-                                updateUiState(false, false, null, null)
+                                updateUiState(
+                                    cardNewListVisibility = false,
+                                    showCreateListForFile = false,
+                                    oldFileName = null,
+                                    uri = null
+                                )
 
                                 _listNameFromFileContent.value = null
-                                _userCheckedAlterName.value = false
+                                userCheckedAlterName.value = false
                             } else {
 
-                                _userCheckedAlterName.value = true
-                                Log.d(TAG, "addShopList: _userCheckedDifferNames.value = ${_userCheckedAlterName.value}")
-                                updateUiState(true, true, name, myFileUri)
+                                userCheckedAlterName.value = true
+//                                Log.d(TAG, "addShopList: _userCheckedDifferNames.value = ${userCheckedAlterName.value}")
+                                updateUiState(
+                                    cardNewListVisibility = true,
+                                    showCreateListForFile = true,
+                                    oldFileName = name,
+                                    uri = myFileUri
+                                )
                             }
 
                         } else {
                             // names from title and content are equals, name is not valid:
 
-                            updateUiState(true, true, name, myFileUri)
+                            updateUiState(
+                                cardNewListVisibility = true,
+                                showCreateListForFile = true,
+                                oldFileName = name,
+                                uri = myFileUri
+                            )
                         }
                     }
                 }
@@ -257,7 +265,7 @@ class ListSetViewModel @Inject constructor(
 
 
     private suspend fun validateInput(name: String, field: String): Boolean {
-        Log.d("validateInput", "name = $name")
+//        Log.d("validateInput", "name = $name")
         if (name.isBlank()) {
             if (field  == "title"){
                 _errorInputNameFromTitle.value = context.getString(R.string.error_input_list_name_empty)
@@ -268,7 +276,7 @@ class ListSetViewModel @Inject constructor(
             return false
         }
         val myNamesList = getAllListsWithoutItemsUseCase().map { it.name }
-        Log.d("validateInput", "myNamesList = $myNamesList")
+//        Log.d("validateInput", "myNamesList = $myNamesList")
         if (myNamesList.contains(name)) {
             if (field  == "title"){
                 _errorInputNameFromTitle.value = context.getString(R.string.error_input_list_name_duplicated)
@@ -308,12 +316,12 @@ class ListSetViewModel @Inject constructor(
     }
 
     fun resetErrorInputNameTitle() {
-        Log.d(TAG, "resetErrorInputNameTitle: ")
+//        Log.d(TAG, "resetErrorInputNameTitle: ")
         _errorInputNameFromTitle.value = null
     }
 
     fun resetErrorInputNameContent() {
-        Log.d(TAG, "resetErrorInputNameContent: ")
+//        Log.d(TAG, "resetErrorInputNameContent: ")
         _errorInputNameFromContent.value = null
     }
 
@@ -326,7 +334,7 @@ class ListSetViewModel @Inject constructor(
     }
 
     fun resetUserCheckedAlterName() {
-        _userCheckedAlterName.value = false
+        userCheckedAlterName.value = false
     }
 
 

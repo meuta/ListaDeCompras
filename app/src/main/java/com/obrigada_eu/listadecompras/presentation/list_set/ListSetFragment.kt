@@ -127,7 +127,12 @@ class ListSetFragment(
                     yesButton.setOnClickListener {
                         fragmentListViewModel.resetListNameFromContent()
                         fragmentListViewModel.resetUserCheckedAlterName()
-                        fragmentListViewModel.updateUiState(false, false, null, null)
+                        fragmentListViewModel.updateUiState(
+                            cardNewListVisibility = false,
+                            showCreateListForFile = false,
+                            oldFileName = null,
+                            uri = null
+                        )
                         alertDialog.dismiss()
                     }
                     alertDialog.setView(root)
@@ -162,12 +167,12 @@ class ListSetFragment(
 
     private fun addEditTextFocusChangedListener(){
         with(binding){
-            val editTextFocusChangedListener = OnFocusChangeListener { v, hasFocus ->
-                if (v == etListNameFromTitle && hasFocus) {
+            val editTextFocusChangedListener = OnFocusChangeListener { view, hasFocus ->
+                if (view == etListNameFromTitle && hasFocus) {
                     radioTilte.isChecked = true
                     fragmentListViewModel.setIsNameFromTitle(true)
                 }
-                if (v == etListNameFromContent && hasFocus) {
+                if (view == etListNameFromContent && hasFocus) {
                     radioContent.isChecked = true
                     fragmentListViewModel.setIsNameFromTitle(false)
                 }
@@ -246,7 +251,12 @@ class ListSetFragment(
 
                     if (isVisible) {
                         fragmentListViewModel.resetUserCheckedAlterName()
-                        fragmentListViewModel.updateUiState(false, false, null, null)
+                        fragmentListViewModel.updateUiState(
+                            cardNewListVisibility = false,
+                            showCreateListForFile = false,
+                            oldFileName = null,
+                            uri = null
+                        )
                     } else {
                         isEnabled = false
                         requireActivity().finish()
@@ -264,12 +274,17 @@ class ListSetFragment(
         lifecycleScope.launch {
             val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
-            Log.d(TAG, "onListItemClick: isVisible = $isVisible")
-            Log.d(TAG, "onListItemClick: itemId = $itemId")
+//            Log.d(TAG, "onListItemClick: isVisible = $isVisible")
+//            Log.d(TAG, "onListItemClick: itemId = $itemId")
 
             if (!isVisible) {
                 fragmentListViewModel.setCurrentListId(itemId)
-                fragmentListViewModel.updateUiState(false, false, null, null)
+                fragmentListViewModel.updateUiState(
+                    cardNewListVisibility = false,
+                    showCreateListForFile = false,
+                    oldFileName = null,
+                    uri = null
+                )
             }
         }
     }
@@ -279,7 +294,12 @@ class ListSetFragment(
             val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
             if (!isVisible) {
-                fragmentListViewModel.updateUiState(true, false, null, null)
+                fragmentListViewModel.updateUiState(
+                    cardNewListVisibility = true,
+                    showCreateListForFile = false,
+                    oldFileName = null,
+                    uri = null
+                )
             }
         }
     }

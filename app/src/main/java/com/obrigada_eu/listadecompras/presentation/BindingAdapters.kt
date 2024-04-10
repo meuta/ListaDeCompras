@@ -54,13 +54,15 @@ fun bindErrorInputListName(til: TextInputLayout, error: String?){
 //}
 
 @BindingAdapter("itemId", "setCountToEditText")
-fun bindCount(editText: EditText, itemId: Int, itemCount: Double?){
-    if (itemId != UNDEFINED_ID){
-        itemCount?.let {
-            if (it.rem(1).equals(0.0)) {
-                editText.setText(it.roundToInt().toString())
-            } else {
-                editText.setText(it.toString())
+fun bindCount(editText: EditText, itemId: Int?, itemCount: Double?){
+    itemId?.let {
+        if (itemId != UNDEFINED_ID){
+            itemCount?.let {
+                if (it.rem(1).equals(0.0)) {
+                    editText.setText(it.roundToInt().toString())
+                } else {
+                    editText.setText(it.toString())
+                }
             }
         }
     }
@@ -84,9 +86,11 @@ fun bindUnits(textView: TextView, itemUnits: String?) {
 }
 
 @BindingAdapter("itemId", "setUnitsToEditText")
-fun bindUnits(editText: EditText, itemId: Int, itemUnits: String?){
-    if (itemId != UNDEFINED_ID) {
-        itemUnits?.let { editText.setText(it) }
+fun bindUnits(editText: EditText, itemId: Int?, itemUnits: String?){
+    itemId?.let {
+        if (itemId != UNDEFINED_ID) {
+            itemUnits?.let { editText.setText(it) }
+        }
     }
 }
 
@@ -109,18 +113,7 @@ fun bindEditTextName(editText: EditText, name: String?){
         }
     }
 }
-//@BindingAdapter("setEditTextNameTrimmed")
-//fun bindEditTextNameTrimmed(editText: EditText, name: String?){
-////    Log.d(TAG, "bindEditTextName: editText = ${editText.id}, name = $name")
-//    name?.let {
-//        with(editText) {
-//            tag = TAG_ERROR_INPUT_NAME
-//            setText(it)
-//            setSelection(editText.text.length)
-//            tag = null
-//        }
-//    }
-//}
+
 
 @BindingAdapter("radioGroupClearCheck")
 fun bindRadioGroupClearCheck(radioGroup: RadioGroup, isNameFromTitle: Boolean?){

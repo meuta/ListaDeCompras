@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +13,14 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.obrigada_eu.listadecompras.databinding.FragmentShopItemBinding
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ShopItemFragment : Fragment() {
@@ -79,24 +84,35 @@ class ShopItemFragment : Fragment() {
             etName.requestFocus()
             WindowCompat.getInsetsController(requireActivity().window, etName)
                 .show(WindowInsetsCompat.Type.ime())
-//            val inputMethodManager =
-//                activity?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//            inputMethodManager.showSoftInput(etName, SHOW_IMPLICIT)
         }
     }
 
 
     private fun observeViewModel() {
-        shopItemViewModel.closeScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressedDispatcher?.onBackPressed()
+
+        lifecycleScope.launch{
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                shopItemViewModel.closeScreen.collect {
+//                    Log.d(TAG, "observeViewModel: closeScreen.collect = $it")
+                    it?.let { activity?.onBackPressedDispatcher?.onBackPressed() }
+                }
+            }
         }
-        shopItemViewModel.shopItem.observe(viewLifecycleOwner){ item ->
-            with(binding) {
-                etName.setText(item.name)
-                etName.setSelection(item.name.length)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                shopItemViewModel.shopItem.collect { item ->
+                    item?.let {
+                        with(binding) {
+                            etName.setText(item.name)
+                            etName.setSelection(item.name.length)
+                        }
+                    }
+                }
             }
         }
     }
+
 
     private fun launchRightMode() {
         when (screenMode) {
@@ -203,6 +219,9 @@ class ShopItemFragment : Fragment() {
     }
 
     companion object {
+
+        private const val TAG = "ShopItemFragment"
+
         private const val SECOND_SCREEN_MODE = "second_screen_mode"
         private const val SHOP_ITEM_ID = "shop_item_id"
         private const val SHOP_LIST_ID = "shop_list_id"

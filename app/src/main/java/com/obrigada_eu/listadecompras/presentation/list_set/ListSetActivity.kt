@@ -38,7 +38,7 @@ class ListSetActivity : AppCompatActivity() {
     private val listSetViewModel: ListSetViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate: intent = $intent")
+//        Log.d(TAG, "onCreate: intent = $intent")
         super.onCreate(savedInstanceState)
         binding = ActivityListSetBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -57,11 +57,16 @@ class ListSetActivity : AppCompatActivity() {
 
 
     override fun onNewIntent(intent: Intent?) {
-        Log.d(TAG, "onNewIntent: intent = $intent")
+//        Log.d(TAG, "onNewIntent: intent = $intent")
         super.onNewIntent(intent)
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
-            listSetViewModel.updateUiState(false, false, null, null)
+            listSetViewModel.updateUiState(
+                cardNewListVisibility = false,
+                showCreateListForFile = false,
+                oldFileName = null,
+                uri = null
+            )
             with(binding.filesList) {
                 if (visibility == View.VISIBLE) {
                     visibility = View.GONE
@@ -89,9 +94,7 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_MAIN -> {
                 lifecycleScope.launch {
-                    val listId = listSetViewModel.shopListId.first()
-//                    Log.d(TAG, "handleIntent: listId = $listId")
-                    if (listId != ShopList.UNDEFINED_ID) {
+                    if (listSetViewModel.shopListId.first() != ShopList.UNDEFINED_ID) {
                         startShopListActivity()
                     }
                 }
@@ -115,7 +118,7 @@ class ListSetActivity : AppCompatActivity() {
             }
 
             Intent.ACTION_VIEW -> {
-                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
+//                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
                 resetCardNewList()
 
                 when (intent.type) {
@@ -123,8 +126,8 @@ class ListSetActivity : AppCompatActivity() {
                     "text/plain" -> {
 
                         val dataUri: Uri? = intent.data
-                        Log.d(TAG, "handleIntent: data = $dataUri")
-                        Log.d(TAG, "handleIntent: myFilePath = ${dataUri?.path}")
+//                        Log.d(TAG, "handleIntent: data = $dataUri")
+//                        Log.d(TAG, "handleIntent: myFilePath = ${dataUri?.path}")
                         dataUri?.let {uri ->
 
                             val fileName = listSetViewModel.getFileName(uri)
@@ -154,7 +157,7 @@ class ListSetActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 listSetViewModel.shopListId.collect { listId ->
 
-                    Log.d(TAG, "shopListIdLD.collect = $listId")
+//                    Log.d(TAG, "shopListIdLD.collect = $listId")
                     if (listId != ShopList.UNDEFINED_ID) {
                         startShopListActivity()
                     }
@@ -221,7 +224,12 @@ class ListSetActivity : AppCompatActivity() {
         when (item.itemId) {
 
             R.id.action_load_txt -> {
-                listSetViewModel.updateUiState(false, false, null, null)
+                listSetViewModel.updateUiState(
+                    cardNewListVisibility = false,
+                    showCreateListForFile = false,
+                    oldFileName = null,
+                    uri = null
+                )
                 if (
                     Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
                         this,
@@ -326,8 +334,5 @@ class ListSetActivity : AppCompatActivity() {
         private const val STORAGE_PERMISSION_CODE = 101
         private const val TAG = "ListSetActivity"
 
-        fun newIntent(context: Context): Intent {
-            return Intent(context, ListSetActivity::class.java)
-        }
     }
 }

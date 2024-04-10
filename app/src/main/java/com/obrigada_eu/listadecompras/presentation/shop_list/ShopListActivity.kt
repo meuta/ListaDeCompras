@@ -415,8 +415,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         private const val TAG = "ShopListActivity"
 
         fun newIntent(context: Context): Intent {
-            val intent = Intent(context, ShopListActivity::class.java)
-            return intent
+            return Intent(context, ShopListActivity::class.java)
         }
 
     }
