@@ -4,6 +4,9 @@ import android.content.Context
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.databinding.FragmentShopListBinding
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
@@ -11,6 +14,7 @@ import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapAdapter
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ShopListFragment : SwipeSwapListFragment<
@@ -41,9 +45,13 @@ class ShopListFragment : SwipeSwapListFragment<
 
     override fun observeViewModel() {
 
-        fragmentListViewModel.shopListLD.observe(viewLifecycleOwner) {
-            fragmentListAdapter.submitList(it)
-//            Log.d("ShopListFragment", "shopList.observe = ${it.map { listOf(it.name, it.count, it.units) }}")
+        lifecycleScope.launch{
+            repeatOnLifecycle(Lifecycle.State.CREATED){
+                fragmentListViewModel.shopListFlow.collect { shopList ->
+                    fragmentListAdapter.submitList(shopList)
+//            Log.d("ShopListFragment", "shopList.collect = ${shopList.map { listOf(it.name, it.count, it.units) }}")
+                }
+            }
         }
     }
 

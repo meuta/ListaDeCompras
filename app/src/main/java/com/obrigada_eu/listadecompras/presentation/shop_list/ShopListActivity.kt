@@ -98,9 +98,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             }
         }
 
-        shopListViewModel.allListsWithoutItems.observe(this) {
-//            Log.d(TAG, "allListsWithItems.observe =\n $it")
-        }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){

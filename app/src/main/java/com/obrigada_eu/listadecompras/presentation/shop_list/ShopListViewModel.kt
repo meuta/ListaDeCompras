@@ -1,7 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation.shop_list
 
 import android.content.Intent
-import androidx.lifecycle.asLiveData
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_item.DeleteShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.DragShopItemUseCase
@@ -21,7 +21,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -47,7 +49,7 @@ class ShopListViewModel @Inject constructor(
 
     val shopListNameFlow = getShopListNameUseCase(shopListIdFlow.value)
 
-    val shopListLD = getShopListUseCase(shopListIdFlow.value).asLiveData(scope.coroutineContext, 500)
+    val shopListFlow = getShopListUseCase(shopListIdFlow.value)
 
     private val _errorInputName = MutableStateFlow<Boolean>(false)
     val errorInputName: StateFlow<Boolean> = _errorInputName
@@ -55,10 +57,24 @@ class ShopListViewModel @Inject constructor(
     private val _renameListAppearance = MutableStateFlow<Boolean>(false)
     val renameListAppearance: StateFlow<Boolean> = _renameListAppearance
 
-    val allListsWithoutItems = getAllListsWithoutItemsUseCase().asLiveData(scope.coroutineContext, 500)
+    private val allListsWithoutItemsStateFlow = getAllListsWithoutItemsUseCase().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(1000),
+        initialValue = emptyList()
+    )
 
     private val _intent = MutableStateFlow<Intent?>(null)
     val intent: StateFlow<Intent?> = _intent
+
+
+    init {
+        scope.launch{
+            allListsWithoutItemsStateFlow.collect() {
+//                Log.d(TAG, "allListsWithItems.collect =\n $it")
+            }
+        }
+    }
+
 
     fun updateShopListIdState(listId: Int) {
         scope.launch {
@@ -104,17 +120,15 @@ class ShopListViewModel @Inject constructor(
             return false
         }
 
+        val names = allListsWithoutItemsStateFlow.value.map { it.name }
+//        Log.d("validateInput", "namesSet = $names")
 
-        val names = allListsWithoutItems.value?.map { it.name }
-//        Log.d("validateInput", "names = $names")
-        names?.let {
-            if (names.contains(name)) {
-                val id = allListsWithoutItems.value?.find { it.name == name }?.id
-                if (id != shopListIdFlow.value) {
-                    _errorInputName.value = true
-//                    Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
-                    result = false
-                }
+        if (names.contains(name)) {
+            val id = allListsWithoutItemsStateFlow.value.find { it.name == name }?.id
+            if (id != shopListIdFlow.value) {
+                _errorInputName.value = true
+//                   Log.d("validateInput", "_errorInputName.value = ${_errorInputName.value}")
+                result = false
             }
         }
         return result
@@ -155,5 +169,9 @@ class ShopListViewModel @Inject constructor(
         scope.launch {
             undoDeleteItemUseCase()
         }
+    }
+
+    companion object{
+        private const val TAG = "ShopListViewModel"
     }
 }
