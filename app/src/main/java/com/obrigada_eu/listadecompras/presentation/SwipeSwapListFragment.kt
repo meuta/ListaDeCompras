@@ -399,7 +399,7 @@ abstract class SwipeSwapListFragment<
     }
 
     interface OnFabClickListener {
-        fun onFabClick(listId: Int? = null)
+        fun onFabClick()
     }
 
     override fun onDestroyView() {

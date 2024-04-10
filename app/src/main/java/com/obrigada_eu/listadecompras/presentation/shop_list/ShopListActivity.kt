@@ -29,6 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.databinding.ActivityShopListBinding
+import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemActivity
 import com.obrigada_eu.listadecompras.presentation.shop_item.ShopItemFragment
@@ -75,11 +76,21 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun observeViewModel() {
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED){
+                shopListViewModel.shopListIdFlow.collect{
+//            Log.d("ShopListActivity", "shopListIdLD.collect = $it")
+                    if (it == ShopList.UNDEFINED_ID){
+                        this@ShopListActivity.finish()
+                    }
+                }
+            }
+        }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 shopListViewModel.shopListNameFlow.collect {
-//            Log.d(TAG, "shopListName.observe = $it")
+//            Log.d(TAG, "shopListName.collect = $it")
                     if (it != binding.tvToolbarShopListActivity.text) {
                         binding.tvToolbarShopListActivity.text = it
                     }
@@ -94,7 +105,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 shopListViewModel.errorInputName.collect {
-//                    Log.d(TAG, "errorInputName.observe = $it")
+//                    Log.d(TAG, "errorInputName.collect = $it")
                     with(binding) {
                         if (it) {
                             tvErrorToolbarShopListActivity.text =
@@ -146,7 +157,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         lifecycleScope.launch{
             repeatOnLifecycle(Lifecycle.State.CREATED){
                 shopListViewModel.intent.collect {
-//            Log.d(TAG, "observeViewModel: intent = $it")
+//            Log.d(TAG, "observeViewModel: intent.collect = $it")
                     it?.let {
                         startActivity(it)
                         shopListViewModel.resetIntent()
@@ -173,8 +184,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     private fun setupCoverView(){
 
         with(binding){
-            coverView.setOnTouchListener { v, event ->
-                v.performClick()
+            coverView.setOnTouchListener { view, event ->
+                view.performClick()
                 if (event.action == MotionEvent.ACTION_DOWN ) {
                     lifecycleScope.launch {
                         if (shopListViewModel.renameListAppearance.first()) {
@@ -400,7 +411,11 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     override fun onListItemClick(itemId: Int) {
         if (isOnePaneMode()) {
-            val intent = ShopItemActivity.newIntentEditItem(this, itemId, binding.tvToolbarShopListActivity.text.toString())
+            val intent = ShopItemActivity.newIntentEditItem(
+                this,
+                itemId,
+                binding.tvToolbarShopListActivity.text.toString()
+            )
             startActivity(intent)
         } else {
             val fragment = ShopItemFragment.newInstanceEditItem(itemId)
@@ -408,14 +423,21 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         }
     }
 
-    override fun onFabClick(listId: Int?) {
-        listId?.let {
-            if (isOnePaneMode()) {
-                val intent = ShopItemActivity.newIntentAddItem(this@ShopListActivity, it, binding.tvToolbarShopListActivity.text.toString())
-                startActivity(intent)
-            } else {
-                val fragment = ShopItemFragment.newInstanceAddItem(it)
-                launchFragment(fragment)
+    override fun onFabClick() {
+
+        lifecycleScope.launch {
+            shopListViewModel.shopListIdFlow.first().let {
+                if (isOnePaneMode()) {
+                    val intent = ShopItemActivity.newIntentAddItem(
+                        this@ShopListActivity,
+                        it,
+                        binding.tvToolbarShopListActivity.text.toString()
+                    )
+                    startActivity(intent)
+                } else {
+                    val fragment = ShopItemFragment.newInstanceAddItem(it)
+                    launchFragment(fragment)
+                }
             }
         }
     }

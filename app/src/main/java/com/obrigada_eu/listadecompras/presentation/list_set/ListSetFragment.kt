@@ -289,7 +289,7 @@ class ListSetFragment(
         }
     }
 
-    override fun onFabClick(listId: Int?) {
+    override fun onFabClick() {
         lifecycleScope.launch {
             val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 

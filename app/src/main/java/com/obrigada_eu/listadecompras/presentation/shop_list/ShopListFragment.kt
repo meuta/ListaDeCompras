@@ -4,9 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.databinding.FragmentShopListBinding
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
@@ -14,7 +11,6 @@ import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapAdapter
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ShopListFragment : SwipeSwapListFragment<
@@ -32,8 +28,6 @@ class ShopListFragment : SwipeSwapListFragment<
 
     override lateinit var listLayoutManager: LinearLayoutManager
 
-    private var listId = ShopList.UNDEFINED_ID
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -46,17 +40,6 @@ class ShopListFragment : SwipeSwapListFragment<
     }
 
     override fun observeViewModel() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED){
-                fragmentListViewModel.shopListIdFlow.collect{
-//            Log.d("ShopListFragment", "shopListIdLD.observe = $it")
-                    listId = it
-                    if (it == ShopList.UNDEFINED_ID){
-                        requireActivity().finish()
-                    }
-                }
-            }
-        }
 
         fragmentListViewModel.shopListLD.observe(viewLifecycleOwner) {
             fragmentListAdapter.submitList(it)
@@ -67,7 +50,7 @@ class ShopListFragment : SwipeSwapListFragment<
     override fun setupButtons() {
         with(binding) {
             buttonAddItem.setOnClickListener {
-                onFabClickListener.onFabClick(listId)
+                onFabClickListener.onFabClick()
             }
         }
     }
