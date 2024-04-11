@@ -4,5 +4,5 @@ import javax.inject.Inject
 
 class LoadFilesListUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
-    suspend operator fun invoke(): List<String>? = shopListRepository.loadFilesList()
+    operator fun invoke(): List<String>? = shopListRepository.loadFilesList()
 }

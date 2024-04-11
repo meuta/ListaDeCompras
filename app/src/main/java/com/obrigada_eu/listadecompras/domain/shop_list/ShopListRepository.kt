@@ -31,7 +31,7 @@ interface ShopListRepository {
 
     fun shareTxtList(listId: Int): Flow<Intent>
 
-    suspend fun loadFilesList(): List<String>?
+    fun loadFilesList(): List<String>?
 
     suspend fun saveListToDb(shopListWithItems: ShopListWithItems): Boolean
 

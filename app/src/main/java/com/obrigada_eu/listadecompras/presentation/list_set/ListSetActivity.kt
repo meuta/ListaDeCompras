@@ -1,7 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation.list_set
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -283,27 +282,25 @@ class ListSetActivity : AppCompatActivity() {
     }
 
     private fun setupFilesListView() {
-        listSetViewModel.loadFilesList()
-        listSetViewModel.filesList.observe(this) {
-            it?.let {
-                val listAdapter =
-                    ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, it)
-                binding.filesList.adapter = listAdapter
-                binding.filesList.setOnItemClickListener { parent, _, position, _ ->
-                    val fileName = listAdapter.getItem(position)?.dropLast(4)
+        listSetViewModel.loadFilesList()?.let {
+            val listAdapter = ArrayAdapter(this@ListSetActivity,
+                android.R.layout.simple_list_item_1,
+                it
+            )
+            binding.filesList.adapter = listAdapter
+            binding.filesList.setOnItemClickListener { parent, _, position, _ ->
+                val fileName = listAdapter.getItem(position)?.dropLast(4)
 //                    Log.d("filesList.setOnItemClickListener", "element = $fileName")
-                    fileName?.let { name ->
-                        loadFromTxtFile(name)
-                    }
-
-                    parent.visibility = View.GONE
-                    filesListBackPressedCallback.isEnabled = false
+                fileName?.let { name ->
+                    loadFromTxtFile(name)
                 }
+                parent.visibility = View.GONE
+                filesListBackPressedCallback.isEnabled = false
             }
-//            Log.d("ListSetActivity", "filesList.observe = $it")
         }
         filesListBackPressedCallback.isEnabled = true
     }
+
 
     private fun loadFromTxtFile(fileName: String) {
         listSetViewModel.addShopList(fileName, true)

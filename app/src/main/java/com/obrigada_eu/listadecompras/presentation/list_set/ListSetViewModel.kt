@@ -5,8 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.R
@@ -95,10 +93,6 @@ class ListSetViewModel @Inject constructor(
 
     private val userCheckedAlterName = MutableStateFlow<Boolean>(false)
 
-
-    private val _filesList = MutableLiveData<List<String>?>()
-    val filesList: LiveData<List<String>?>
-        get() = _filesList
 
     init {
         viewModelScope.launch {
@@ -365,10 +359,8 @@ class ListSetViewModel @Inject constructor(
     }
 
 
-    fun loadFilesList() {
-        viewModelScope.launch {
-            _filesList.value = loadFilesListUseCase()
-        }
+    fun loadFilesList(): List<String>? {
+        return loadFilesListUseCase()
     }
 
     fun setIsNameFromTitle(isFromTitle: Boolean?) {

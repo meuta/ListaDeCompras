@@ -339,7 +339,7 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun loadFilesList(): List<String>? {
+    override fun loadFilesList(): List<String>? {
         val dirDocuments =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = "$separator${context.resources.getString(R.string.app_name)}"
