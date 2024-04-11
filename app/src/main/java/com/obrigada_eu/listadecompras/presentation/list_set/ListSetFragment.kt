@@ -55,11 +55,14 @@ class ListSetFragment(
     }
 
     override fun observeViewModel() {
-        fragmentListViewModel.allListsWithoutItems.observe(viewLifecycleOwner) {
-            fragmentListAdapter.submitList(it)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                fragmentListViewModel.allListsWithoutItemsStateFlow.collect {
+                    fragmentListAdapter.submitList(it)
 //            Log.d(TAG, "listSet.observe = ${it.map { it.name}}")
+                }
+            }
         }
-
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED){

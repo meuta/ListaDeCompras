@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.domain.shop_list.AddShopListUseCase
@@ -27,7 +26,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -64,8 +65,11 @@ class ListSetViewModel @Inject constructor(
     private val _shopListId = MutableStateFlow<Int>(ShopList.UNDEFINED_ID)
     val shopListId: StateFlow<Int> = _shopListId
 
-    val allListsWithoutItems = getAllListsWithoutItemsFlowUseCase().asLiveData(scope.coroutineContext)
-
+    val allListsWithoutItemsStateFlow = getAllListsWithoutItemsFlowUseCase().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(1000),
+        initialValue = emptyList()
+    )
 
     private val _cardNewListVisibilityStateFlow = MutableStateFlow(false)
     val cardNewListVisibilityStateFlow: StateFlow<Boolean> = _cardNewListVisibilityStateFlow
