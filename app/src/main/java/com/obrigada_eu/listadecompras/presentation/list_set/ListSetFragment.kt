@@ -80,17 +80,6 @@ class ListSetFragment(
                         } else {
 
                             cardNewList.visibility = View.VISIBLE
-                            with(etListNameFromTitle) {
-                                tag = TAG_ERROR_INPUT_NAME
-                                setText(requireContext().resources.getString(R.string.new_list))
-                                requestFocus()
-                                setSelection(0, text.length)
-                                tag = null
-                            }
-                            delay(50)
-                            val inputMethodManager =
-                                activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                            inputMethodManager.showSoftInput(etListNameFromTitle, 0)
                         }
                     }
                 }
@@ -304,6 +293,20 @@ class ListSetFragment(
                     oldFileName = null,
                     uri = null
                 )
+
+                binding.cardNewList.visibility = View.VISIBLE
+
+                with(binding.etListNameFromTitle) {
+                    tag = TAG_ERROR_INPUT_NAME
+                    setText(requireContext().resources.getString(R.string.new_list))
+                    tag = null
+                    requestFocus()
+                    delay(10)
+                    val inputMethodManager =
+                        activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.showSoftInput(this, 0)
+                    selectAll()
+                }
             }
         }
     }
