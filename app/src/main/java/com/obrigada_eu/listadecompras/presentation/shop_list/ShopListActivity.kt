@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -265,6 +264,8 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                         ),
                         STORAGE_PERMISSION_CODE
                     )
+                    shopListViewModel.setRequestForFileSaving(true)
+
                 } else {
                     exportListToTxt()
                 }
@@ -300,9 +301,15 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             if (grantResults.isNotEmpty()
                 && grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED
             ) {
-                // perform the action as soon as authorisation is granted
-                exportListToTxt()
-
+                lifecycleScope.launch{
+                    shopListViewModel.requestForFileSaving.first().let{
+                        if (it){
+                            // perform the action as soon as permission is granted
+                            shopListViewModel.setRequestForFileSaving(false)
+                            exportListToTxt()
+                        }
+                    }
+                }
             } else {
                 Toast.makeText(
                     this,
@@ -316,13 +323,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun exportListToTxt() {
         shopListViewModel.exportListToTxt()
-//        val dir =
-//            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-//                .absolutePath + File.separator.toString() + this.resources.getString(
-//                R.string.app_name
-//            )
-//        Toast.makeText(this, "List has been saved to the directory:\n$dir", Toast.LENGTH_LONG)
-//            .show()
     }
 
 

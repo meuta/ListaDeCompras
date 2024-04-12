@@ -250,17 +250,18 @@ class ListSetActivity : AppCompatActivity() {
                     uri = null
                 )
                 if (
-                    Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
+                    Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
+                    && ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.READ_EXTERNAL_STORAGE
-                    )
-                    != PackageManager.PERMISSION_GRANTED
+                    ) != PackageManager.PERMISSION_GRANTED
                 ) {
                     ActivityCompat.requestPermissions(
                         this,
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                         STORAGE_PERMISSION_CODE
                     )
+                    listSetViewModel.setRequestForFileLoading(true)
                 } else {
                     loadFilesList()
                 }
@@ -282,8 +283,15 @@ class ListSetActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty()
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED
             ) {
-                // perform the action as soon as authorisation is granted
-                loadFilesList()
+                lifecycleScope.launch{
+                    listSetViewModel.requestForFileLoading.first().let{
+                        if (it){
+                            // perform the action as soon as permission is granted
+                            listSetViewModel.setRequestForFileLoading(false)
+                            loadFilesList()
+                        }
+                    }
+                }
 
             } else {
                 Toast.makeText(

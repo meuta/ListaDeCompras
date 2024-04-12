@@ -99,6 +99,8 @@ class ListSetViewModel @Inject constructor(
 
     private val userCheckedAlterName = MutableStateFlow<Boolean>(false)
 
+    private val _requestForFileLoading = MutableStateFlow<Boolean>(false)
+    val requestForFileLoading: StateFlow<Boolean> = _requestForFileLoading
 
     init {
         viewModelScope.launch {
@@ -109,6 +111,10 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
+
+    fun setRequestForFileLoading(isRequest: Boolean){
+        _requestForFileLoading.value = isRequest
+    }
 
     fun updateUiState(cardNewListVisibility: Boolean, showCreateListForFile: Boolean, oldFileName: String? = null, uri: Uri? = null) {
 //        Log.d(TAG, "updateUiState: cardNewListVisibility = $cardNewListVisibility, showCreateListForFile = $showCreateListForFile, oldFileName = $oldFileName, uri= $uri")

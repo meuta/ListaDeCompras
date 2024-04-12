@@ -1,7 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation.shop_list
 
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_item.DeleteShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.DragShopItemUseCase
@@ -70,6 +69,9 @@ class ShopListViewModel @Inject constructor(
     private val _fileSaved: MutableStateFlow<String?>  = MutableStateFlow(null)
     val fileSaved: StateFlow<String?> = _fileSaved
 
+    private val _requestForFileSaving = MutableStateFlow<Boolean>(false)
+    val requestForFileSaving: StateFlow<Boolean> = _requestForFileSaving
+
 
     init {
         scope.launch{
@@ -79,6 +81,9 @@ class ShopListViewModel @Inject constructor(
         }
     }
 
+    fun setRequestForFileSaving(isRequest: Boolean){
+        _requestForFileSaving.value = isRequest
+    }
 
     fun updateShopListIdState(listId: Int) {
         scope.launch {
