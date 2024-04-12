@@ -296,29 +296,30 @@ class ListSetActivity : AppCompatActivity() {
     }
 
     private fun loadFilesList() {
-
-        setupFilesListView()
-        binding.filesList.visibility = View.VISIBLE
-    }
-
-    private fun setupFilesListView() {
-        listSetViewModel.loadFilesList()?.let {
-            val listAdapter = ArrayAdapter(this@ListSetActivity,
-                android.R.layout.simple_list_item_1,
-                it
-            )
-            binding.filesList.adapter = listAdapter
-            binding.filesList.setOnItemClickListener { parent, _, position, _ ->
-                val fileName = listAdapter.getItem(position)?.dropLast(4)
+        listSetViewModel.loadFilesList().let {
+            if (!it.isNullOrEmpty()) {
+                val listAdapter = ArrayAdapter(this,
+                    android.R.layout.simple_list_item_1,
+                    it
+                )
+                binding.filesList.adapter = listAdapter
+                binding.filesList.setOnItemClickListener { parent, _, position, _ ->
+                    val fileName = listAdapter.getItem(position)?.dropLast(4)
 //                    Log.d("filesList.setOnItemClickListener", "element = $fileName")
-                fileName?.let { name ->
-                    loadFromTxtFile(name)
+                    fileName?.let { name ->
+                        loadFromTxtFile(name)
+                    }
+                    parent.visibility = View.GONE
+                    filesListBackPressedCallback.isEnabled = false
                 }
-                parent.visibility = View.GONE
-                filesListBackPressedCallback.isEnabled = false
+                filesListBackPressedCallback.isEnabled = true
+
+                binding.filesList.visibility = View.VISIBLE
+
+            } else {
+                Toast.makeText(this, "No files in the directory\nDocuments/Lista de Compras", Toast.LENGTH_LONG).show()
             }
         }
-        filesListBackPressedCallback.isEnabled = true
     }
 
 

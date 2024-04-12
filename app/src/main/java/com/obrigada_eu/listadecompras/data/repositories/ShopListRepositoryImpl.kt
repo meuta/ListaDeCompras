@@ -350,13 +350,9 @@ class ShopListRepositoryImpl @Inject constructor(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = "$separator${context.resources.getString(R.string.app_name)}"
         val dirDocumentsApp = File("$dirDocuments$append")
-//        if (!dirDocumentsApp.isDirectory) {
-//            Log.d("loadFilesList", "!dirDocumentsApp.isDirectory")
-//        }
 
         return dirDocumentsApp.list { _, filename -> filename.endsWith(".txt") }?.toList()
     }
-
 
 
     private val shopListIdFlow: StateFlow<Int> = shopListPreferences.data
