@@ -80,6 +80,10 @@ class ListSetFragment(
                         } else {
 
                             cardNewList.visibility = View.VISIBLE
+                            delay(25)
+                            val inputMethodManager =
+                                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                            inputMethodManager.showSoftInput(etListNameFromTitle, 0)
                         }
                     }
                 }

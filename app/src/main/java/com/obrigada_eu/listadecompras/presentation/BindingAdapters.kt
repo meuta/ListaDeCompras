@@ -1,9 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation
 
-import android.content.Context
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -113,9 +111,6 @@ fun bindEditTextName(editText: EditText, name: String?){
             tag = null
             requestFocus()
             setSelection(editText.text.length)
-            val inputMethodManager =
-                editText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.showSoftInput(this, 0)
         }
     }
 }
