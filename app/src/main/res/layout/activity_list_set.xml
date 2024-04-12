@@ -34,6 +34,7 @@
                 android:id="@+id/list_set_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingBottom="8sp"
                 tools:context=".presentation.list_set.ListSetActivity"
                 tools:layout="@layout/fragment_list_set" />
 
