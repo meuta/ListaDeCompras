@@ -141,11 +141,14 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun exportListToTxt(listId: Int) {
-
-        val shopListWithItems = shopListDao.getShopListWithItems(listId)
-        val nameAndContent = getContent(shopListWithItems)
-        saveFile(context, nameAndContent.first, nameAndContent.second)
+    override suspend fun exportListToTxt(listId: Int): String {
+        return try {
+            val shopListWithItems = shopListDao.getShopListWithItems(listId)
+            val nameAndContent = getContent(shopListWithItems)
+            saveFile(context, nameAndContent.first, nameAndContent.second)
+        } catch (e: Exception) {
+            ""
+        }
     }
 
 
@@ -198,7 +201,7 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    private fun saveFile(context: Context, fileName: String, text: String) {
+    private fun saveFile(context: Context, fileName: String, text: String): String {
         val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = "$separator${context.resources.getString(R.string.app_name)}"
         val dirDocumentsApp = File("$dirDocuments$append")
@@ -227,6 +230,8 @@ class ShopListRepositoryImpl @Inject constructor(
         val bytes = text.toByteArray()
         outputStream?.write(bytes)
         outputStream?.close()
+
+        return "${dirDocuments.path.split("/").last()}$append"
     }
 
 

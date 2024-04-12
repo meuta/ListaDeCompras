@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -37,7 +36,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.io.File
 
 @AndroidEntryPoint
 class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener,
@@ -159,6 +157,24 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
                         startActivity(it)
                         shopListViewModel.resetIntent()
                         shopListViewModel.setRenameListAppearance(false)
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                shopListViewModel.fileSaved.collect {
+//                    Log.d(TAG, "observeViewModel: fileWithoutErrors = $it")
+                    it?.let {
+
+                        Toast.makeText(
+                            this@ShopListActivity,
+                            if (it.isNotEmpty()) "File saved to:\n$it" else "File saving error",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                        shopListViewModel.resetFileSaved()
                     }
                 }
             }
@@ -300,13 +316,13 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     private fun exportListToTxt() {
         shopListViewModel.exportListToTxt()
-        val dir =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                .absolutePath + File.separator.toString() + this.resources.getString(
-                R.string.app_name
-            )
-        Toast.makeText(this, "List has been saved to the directory:\n$dir", Toast.LENGTH_LONG)
-            .show()
+//        val dir =
+//            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+//                .absolutePath + File.separator.toString() + this.resources.getString(
+//                R.string.app_name
+//            )
+//        Toast.makeText(this, "List has been saved to the directory:\n$dir", Toast.LENGTH_LONG)
+//            .show()
     }
 
 

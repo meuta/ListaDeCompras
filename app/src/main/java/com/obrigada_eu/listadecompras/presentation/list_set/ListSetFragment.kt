@@ -23,6 +23,7 @@ import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapAdapter
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -86,7 +87,7 @@ class ListSetFragment(
                                 setSelection(0, text.length)
                                 tag = null
                             }
-
+                            delay(50)
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                             inputMethodManager.showSoftInput(etListNameFromTitle, 0)

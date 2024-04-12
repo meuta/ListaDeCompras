@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.domain.shop_list.AddShopListUseCase
@@ -81,8 +80,11 @@ class ListSetViewModel @Inject constructor(
     val listNameFromFileTitle: StateFlow<String?> = _listNameFromFileTitle
 
 
-    private val _fileWithoutErrors = MutableStateFlow(true)
-    val fileWithoutErrors: StateFlow<Boolean> = _fileWithoutErrors
+    private val _fileReadingError = MutableStateFlow(false)
+    val fileReadingError: StateFlow<Boolean> = _fileReadingError
+
+    private val _listSaved: MutableStateFlow<Boolean?>  = MutableStateFlow(null)
+    val listSaved: StateFlow<Boolean?> = _listSaved
 
     private var fileUri: Uri? = null
 
@@ -166,7 +168,7 @@ class ListSetViewModel @Inject constructor(
                 val myFileUri = fileUri ?: uri
 
                 val listWithItems = getListFromTxtFileUseCase(oldName, myFileUri)
-                _fileWithoutErrors.value = listWithItems != null
+                _fileReadingError.value = listWithItems == null
 
                 listWithItems?.let {
                     var listNameFromText = it.name
@@ -188,7 +190,7 @@ class ListSetViewModel @Inject constructor(
                     if (fieldIsValid && listNameFromText == oldName) {
                         // names from title and content are equals, name is valid:
 
-                        val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
+                        _listSaved.value = saveListToDbUseCase(listWithItems.copy(name = name))
 //                        Log.d(TAG, "addShopList: listSaved = $listSaved")
 
                         updateUiState(
@@ -207,7 +209,7 @@ class ListSetViewModel @Inject constructor(
 //                            Log.d(TAG, "addShopList: isTitle.value = ${isNameFromTitle.value}")
 
                             if (fieldIsValidContent && isNameFromTitle.value == false && userCheckedAlterName.value) {
-                                val listSaved = saveListToDbUseCase(listWithItems.copy(name = listNameFromText))
+                                _listSaved.value = saveListToDbUseCase(listWithItems.copy(name = listNameFromText))
 //                                Log.d(TAG, "addShopList: listSaved = $listSaved")
 
                                 updateUiState(
@@ -221,7 +223,7 @@ class ListSetViewModel @Inject constructor(
                                 userCheckedAlterName.value = false
 
                             } else if (fieldIsValid && isNameFromTitle.value == true && userCheckedAlterName.value) {
-                                val listSaved = saveListToDbUseCase(listWithItems.copy(name = name))
+                                _listSaved.value = saveListToDbUseCase(listWithItems.copy(name = name))
 //                                Log.d(TAG, "addShopList: listSaved = $listSaved")
 
                                 updateUiState(
@@ -324,7 +326,11 @@ class ListSetViewModel @Inject constructor(
     }
 
     fun resetFileWithoutErrors() {
-        _fileWithoutErrors.value = true
+        _fileReadingError.value = false
+    }
+
+    fun resetListSaved() {
+        _listSaved.value = null
     }
 
     fun resetListNameFromContent() {

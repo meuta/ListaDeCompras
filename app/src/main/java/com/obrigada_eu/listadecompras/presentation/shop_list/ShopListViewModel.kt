@@ -67,6 +67,10 @@ class ShopListViewModel @Inject constructor(
     val intent: StateFlow<Intent?> = _intent
 
 
+    private val _fileSaved: MutableStateFlow<String?>  = MutableStateFlow(null)
+    val fileSaved: StateFlow<String?> = _fileSaved
+
+
     init {
         scope.launch{
             allListsWithoutItemsStateFlow.collect() {
@@ -152,7 +156,7 @@ class ShopListViewModel @Inject constructor(
 
     fun exportListToTxt() {
         scope.launch {
-            exportListToTxtUseCase(shopListIdFlow.value)
+            _fileSaved.value = exportListToTxtUseCase(shopListIdFlow.value)
         }
     }
 
@@ -170,6 +174,12 @@ class ShopListViewModel @Inject constructor(
             undoDeleteItemUseCase()
         }
     }
+
+
+    fun resetFileSaved() {
+        _fileSaved.value = null
+    }
+
 
     companion object{
         private const val TAG = "ShopListViewModel"

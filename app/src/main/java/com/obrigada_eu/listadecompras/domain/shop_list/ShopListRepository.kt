@@ -27,7 +27,7 @@ interface ShopListRepository {
 
     fun getCurrentListId(): StateFlow<Int>
 
-    suspend fun exportListToTxt(listId: Int)
+    suspend fun exportListToTxt(listId: Int): String
 
     fun shareTxtList(listId: Int): Flow<Intent>
 

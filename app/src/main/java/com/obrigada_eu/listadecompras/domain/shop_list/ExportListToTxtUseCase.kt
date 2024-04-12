@@ -4,5 +4,5 @@ import javax.inject.Inject
 
 class ExportListToTxtUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
-    suspend operator fun invoke(listId: Int) = shopListRepository.exportListToTxt(listId)
+    suspend operator fun invoke(listId: Int): String = shopListRepository.exportListToTxt(listId)
 }

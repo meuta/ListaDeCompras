@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -102,6 +101,7 @@ class ListSetActivity : AppCompatActivity() {
             Intent.ACTION_SEND -> {
 
                 resetCardNewList()
+                listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
 
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
@@ -119,6 +119,7 @@ class ListSetActivity : AppCompatActivity() {
             Intent.ACTION_VIEW -> {
 //                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
                 resetCardNewList()
+                listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
 
                 when (intent.type) {
 
@@ -144,8 +145,6 @@ class ListSetActivity : AppCompatActivity() {
             resetErrorInputNameTitle()
             resetErrorInputNameContent()
             resetListNameFromContent()
-
-            setCurrentListId(ShopList.UNDEFINED_ID)
         }
     }
 
@@ -166,19 +165,40 @@ class ListSetActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                listSetViewModel.fileWithoutErrors.collect {
+                listSetViewModel.fileReadingError.collect {
 //                    Log.d(TAG, "observeViewModel: fileWithoutErrors = $it")
-                    if (!it) {
+                    if (it) {
                         Toast.makeText(
                             this@ListSetActivity,
                             "File reading error",
                             Toast.LENGTH_LONG
                         )
                             .show()
-                        delay(100)
                         listSetViewModel.resetFileWithoutErrors()
-                        listSetViewModel.resetErrorInputNameTitle()
-                        listSetViewModel.resetErrorInputNameContent()
+
+                        listSetViewModel.updateUiState(
+                            cardNewListVisibility = false,
+                            showCreateListForFile = false,
+                            oldFileName = null,
+                            uri = null
+                        )
+                        resetCardNewList()
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listSetViewModel.listSaved.collect {
+//                    Log.d(TAG, "observeViewModel: fileWithoutErrors = $it")
+                    it?.let {
+                        Toast.makeText(
+                            this@ListSetActivity,
+                            if (it) "New list loaded" else "List loading error",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        listSetViewModel.resetListSaved()
                     }
                 }
             }
