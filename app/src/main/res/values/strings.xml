@@ -11,12 +11,12 @@
     <string name="error_input_list_name_duplicated">this name is not unique</string>
     <string name="error_input_list_name_empty">this name is empty</string>
     <string name="new_list">New List</string>
-    <string name="my_lists">My Lists</string>
+    <string name="my_lists">My List Collection</string>
     <string name="create_list">Create List</string>
     <string name="cansel_create_list">Cancel</string>
     <string name="save_name">Save Name</string>
     <string name="save_as_text_file">Save as text file</string>
-    <string name="load_text_file">Load file</string>
+    <string name="load_text_file">Load from file</string>
     <string name="snack_bar_undo_delete_item_text" tools:ignore="TypographyEllipsis">Item deleting ...</string>
     <string name="snack_bar_undo_delete_list_text" tools:ignore="TypographyEllipsis">List deleting ...</string>
     <string name="undo">\nUNDO\n</string>

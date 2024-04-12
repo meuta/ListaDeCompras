@@ -313,7 +313,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             } else {
                 Toast.makeText(
                     this,
-                    "Storage permissions denied,\nyou cannot save the file",
+                    "Storage permissions denied,\nso you cannot save the file",
                     Toast.LENGTH_LONG
                 ).show()
             }

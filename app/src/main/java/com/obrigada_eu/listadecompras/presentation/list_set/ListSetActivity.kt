@@ -296,7 +296,7 @@ class ListSetActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this,
-                    "Storage permissions denied,\nyou cannot see the list of files",
+                    "Storage permissions denied,\nso you don't have access to the files",
                     Toast.LENGTH_LONG
                 ).show()
             }
