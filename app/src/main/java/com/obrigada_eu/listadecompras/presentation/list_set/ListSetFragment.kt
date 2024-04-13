@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.OnFocusChangeListener
@@ -118,29 +117,7 @@ class ListSetFragment(
             }
 
             buttonCanselCreateList.setOnClickListener {
-
-                val alertDialog = AlertDialog.Builder(requireActivity())
-                    .create()
-                val dialogBinding = AreYouShureDialogLayoutBinding.inflate(layoutInflater)
-                with(dialogBinding){
-                    noButton.setOnClickListener {
-                        alertDialog.dismiss()
-                    }
-                    yesButton.setOnClickListener {
-                        fragmentListViewModel.resetListNameFromContent()
-                        fragmentListViewModel.resetUserCheckedAlterName()
-                        fragmentListViewModel.updateUiState(
-                            cardNewListVisibility = false,
-                            showCreateListForFile = false,
-                            oldFileName = null,
-                            uri = null
-                        )
-                        alertDialog.dismiss()
-                    }
-                    alertDialog.setView(root)
-                }
-                alertDialog.setCanceledOnTouchOutside(false)
-                alertDialog.show()
+                showAlertDialog()
             }
 
             radioGroupListName.setOnCheckedChangeListener { _, checkedId ->
@@ -252,13 +229,10 @@ class ListSetFragment(
                     val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
                     if (isVisible) {
-                        fragmentListViewModel.resetUserCheckedAlterName()
-                        fragmentListViewModel.updateUiState(
-                            cardNewListVisibility = false,
-                            showCreateListForFile = false,
-                            oldFileName = null,
-                            uri = null
-                        )
+
+
+                        showAlertDialog()
+
                     } else {
                         isEnabled = false
                         requireActivity().finish()
@@ -270,6 +244,30 @@ class ListSetFragment(
             this,
             callback
         )
+    }
+
+    private fun showAlertDialog() {
+        val alertDialog = AlertDialog.Builder(requireActivity()).create()
+        val dialogBinding = AreYouShureDialogLayoutBinding.inflate(layoutInflater)
+        with(dialogBinding) {
+            noButton.setOnClickListener {
+                alertDialog.dismiss()
+            }
+            yesButton.setOnClickListener {
+                fragmentListViewModel.resetListNameFromContent()
+                fragmentListViewModel.resetUserCheckedAlterName()
+                fragmentListViewModel.updateUiState(
+                    cardNewListVisibility = false,
+                    showCreateListForFile = false,
+                    oldFileName = null,
+                    uri = null
+                )
+                alertDialog.dismiss()
+            }
+            alertDialog.setView(root)
+        }
+        alertDialog.setCanceledOnTouchOutside(false)
+        alertDialog.show()
     }
 
     override fun onListItemClick(itemId: Int) {
