@@ -9,7 +9,7 @@
     <string name="error_input_count">please enter a positive value</string>
     <string name="error_input_list_name">please enter a unique name</string>
     <string name="error_input_list_name_duplicated">this name is not unique</string>
-    <string name="error_input_list_name_empty">this name is empty</string>
+    <string name="error_input_list_name_empty">the field is empty</string>
     <string name="new_list">New List</string>
     <string name="my_lists">My List Collection</string>
     <string name="create_list">Create List</string>
