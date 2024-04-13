@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.obrigada_eu.listadecompras.presentation.list_set.ListSetViewModel" />
@@ -16,22 +17,55 @@
         android:background="@color/blackish"
         tools:context=".presentation.list_set.ListSetFragment">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_list_set"
+        <FrameLayout
+            android:id="@+id/fl_list_set"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:fastScrollAlwaysVisible="true"
-            app:fastScrollEnabled="true"
-            app:fastScrollHorizontalThumbDrawable="@drawable/list_set_thumb_drawable"
-            app:fastScrollHorizontalTrackDrawable="@drawable/shop_list_track_drawable"
-            app:fastScrollVerticalThumbDrawable="@drawable/list_set_thumb_drawable"
-            app:fastScrollVerticalTrackDrawable="@drawable/shop_list_track_drawable"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_list_enabled" />
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_list_set"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fastScrollAlwaysVisible="true"
+                app:fastScrollEnabled="true"
+                app:fastScrollHorizontalThumbDrawable="@drawable/list_set_thumb_drawable"
+                app:fastScrollHorizontalTrackDrawable="@drawable/shop_list_track_drawable"
+                app:fastScrollVerticalThumbDrawable="@drawable/list_set_thumb_drawable"
+                app:fastScrollVerticalTrackDrawable="@drawable/shop_list_track_drawable"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_list_enabled" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/button_add_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:alpha="0.85"
+                android:clickable="true"
+                android:contentDescription="@string/add_shop_item_content_description"
+                android:focusable="true"
+                app:backgroundTint="@color/list_set_fab_color_2"
+                android:layout_gravity="end|bottom"
+                app:pressedTranslationZ="0dp"
+                app:srcCompat="@drawable/ic_add" />
+
+            <View
+                android:id="@+id/cover_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/grayish"
+                android:focusable="true"
+                android:clickable="true"
+                android:elevation="6dp"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_new_list"
@@ -63,15 +97,15 @@
                         android:id="@+id/tv_card_new_list_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toTopOf="@+id/til_list_name_title"
-                        app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
-                        android:text="@string/card_new_list_title"
-                        android:padding="20dp"
                         android:gravity="center"
+                        android:padding="20dp"
+                        android:text="@string/card_new_list_title"
+                        android:textColor="@color/blackish"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="@color/blackish"/>
+                        app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
+                        app:layout_constraintBottom_toTopOf="@+id/til_list_name_title"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/til_list_name_title"
@@ -106,8 +140,8 @@
                             android:textColor="@color/grayish"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            app:setEditTextName="@{viewModel.listNameFromFileTitle}"
                             app:etListNameFromTitleIsChecked="@{viewModel.isNameFromTitle}"
+                            app:setEditTextName="@{viewModel.listNameFromFileTitle}"
                             tools:ignore="LabelFor"
                             tools:text="@string/new_list" />
 
@@ -145,11 +179,11 @@
                             android:hint="@string/name_hint"
                             android:inputType="textCapSentences"
                             android:paddingTop="30dp"
-                            app:setEditTextName="@{viewModel.listNameFromFileContent}"
                             android:textColor="@color/grayish"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             app:etListNameFromContentIsChecked="@{viewModel.isNameFromTitle()}"
+                            app:setEditTextName="@{viewModel.listNameFromFileContent}"
                             tools:ignore="LabelFor"
                             tools:text="@string/new_list" />
 
@@ -174,8 +208,7 @@
                             android:layout_height="0dp"
                             android:layout_marginBottom="6dp"
                             android:layout_weight="1"
-                            android:buttonTint="@color/blackish"
-                            />
+                            android:buttonTint="@color/blackish" />
 
                         <RadioButton
                             android:id="@+id/radio_content"
@@ -220,20 +253,6 @@
         </com.google.android.material.card.MaterialCardView>
 
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/button_add_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:alpha="0.85"
-            android:clickable="true"
-            android:contentDescription="@string/add_shop_item_content_description"
-            android:focusable="true"
-            app:backgroundTint="@color/list_set_fab_color_2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:pressedTranslationZ="0dp"
-            app:srcCompat="@drawable/ic_add" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

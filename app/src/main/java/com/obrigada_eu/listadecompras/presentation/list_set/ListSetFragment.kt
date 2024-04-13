@@ -6,7 +6,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.View.GONE
 import android.view.View.OnFocusChangeListener
+import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
@@ -73,13 +75,16 @@ class ListSetFragment(
                         if (!isVisible) {
 
                             etListNameFromTitle.setText("")
-                            cardNewList.visibility = View.GONE
+                            cardNewList.visibility = GONE
+                            coverView.visibility = GONE
                             val inputMethodManager =
                                 activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                             inputMethodManager.hideSoftInputFromWindow(cardNewList.windowToken, 0)
-                        } else {
 
-                            cardNewList.visibility = View.VISIBLE
+
+                        } else {
+                            coverView.visibility = VISIBLE
+                            cardNewList.visibility = VISIBLE
                             delay(25)
                             val inputMethodManager =
                                 requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -138,7 +143,7 @@ class ListSetFragment(
                 alertDialog.show()
             }
 
-            radioGroupListName.setOnCheckedChangeListener { group, checkedId ->
+            radioGroupListName.setOnCheckedChangeListener { _, checkedId ->
 //                Log.d(TAG, "radioGroupListName: checkedId = $checkedId")
                 fragmentListViewModel.setIsNameFromTitle(isFromTitle = when (checkedId) {
                     R.id.radio_tilte -> true
@@ -268,49 +273,37 @@ class ListSetFragment(
     }
 
     override fun onListItemClick(itemId: Int) {
-        lifecycleScope.launch {
-            val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
-
-//            Log.d(TAG, "onListItemClick: isVisible = $isVisible")
-//            Log.d(TAG, "onListItemClick: itemId = $itemId")
-
-            if (!isVisible) {
-                fragmentListViewModel.setCurrentListId(itemId)
-                fragmentListViewModel.updateUiState(
-                    cardNewListVisibility = false,
-                    showCreateListForFile = false,
-                    oldFileName = null,
-                    uri = null
-                )
-            }
-        }
+        fragmentListViewModel.setCurrentListId(itemId)
+        fragmentListViewModel.updateUiState(
+            cardNewListVisibility = false,
+            showCreateListForFile = false,
+            oldFileName = null,
+            uri = null
+        )
     }
 
     override fun onFabClick() {
         lifecycleScope.launch {
-            val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
-            if (!isVisible) {
-                fragmentListViewModel.updateUiState(
-                    cardNewListVisibility = true,
-                    showCreateListForFile = false,
-                    oldFileName = null,
-                    uri = null
-                )
+            fragmentListViewModel.updateUiState(
+                cardNewListVisibility = true,
+                showCreateListForFile = false,
+                oldFileName = null,
+                uri = null
+            )
 
-                binding.cardNewList.visibility = View.VISIBLE
+                binding.cardNewList.visibility = VISIBLE
 
-                with(binding.etListNameFromTitle) {
-                    tag = TAG_ERROR_INPUT_NAME
-                    setText(requireContext().resources.getString(R.string.new_list))
-                    tag = null
-                    requestFocus()
-                    delay(10)
-                    val inputMethodManager =
-                        activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputMethodManager.showSoftInput(this, 0)
-                    selectAll()
-                }
+            with(binding.etListNameFromTitle) {
+                tag = TAG_ERROR_INPUT_NAME
+                setText(requireContext().resources.getString(R.string.new_list))
+                tag = null
+                requestFocus()
+                delay(10)
+                val inputMethodManager =
+                    activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.showSoftInput(this, 0)
+                selectAll()
             }
         }
     }
