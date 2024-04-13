@@ -84,9 +84,13 @@ class ListSetFragment(
                         } else {
                             coverView.visibility = VISIBLE
                             cardNewList.visibility = VISIBLE
-                            delay(25)
+
                             val inputMethodManager =
                                 requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                            inputMethodManager.showSoftInput(etListNameFromTitle, 0)
+
+                            //sometimes th keyboard is not displayed, so:
+                            delay(100)
                             inputMethodManager.showSoftInput(etListNameFromTitle, 0)
                         }
                     }
