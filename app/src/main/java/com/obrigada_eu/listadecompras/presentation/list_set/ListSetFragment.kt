@@ -1,13 +1,16 @@
 package com.obrigada_eu.listadecompras.presentation.list_set
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.OnFocusChangeListener
 import android.view.View.VISIBLE
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
@@ -82,6 +85,12 @@ class ListSetFragment(
 
 
                         } else {
+
+                            val orientation = requireActivity().resources.configuration.orientation
+                            binding.cardNewList.layoutParams.width =
+                                if (orientation == Configuration.ORIENTATION_LANDSCAPE) 1200
+                                else ViewGroup.LayoutParams.MATCH_PARENT
+
                             coverView.visibility = VISIBLE
                             cardNewList.visibility = VISIBLE
 
@@ -89,15 +98,20 @@ class ListSetFragment(
                                 requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                             inputMethodManager.showSoftInput(etListNameFromTitle, 0)
 
-                            //sometimes th keyboard is not displayed, so:
+                            // sometimes the keyboard is not displayed, so:
                             delay(100)
                             inputMethodManager.showSoftInput(etListNameFromTitle, 0)
+
+                            // for showing a scrollbar if the content is partially invisible:
+                            delay(500)
+                            binding.cardNewListScrollView.isScrollbarFadingEnabled = false
                         }
                     }
                 }
             }
         }
     }
+
 
     override fun setupButtons() {
         with(binding) {
@@ -294,7 +308,7 @@ class ListSetFragment(
                 uri = null
             )
 
-                binding.cardNewList.visibility = VISIBLE
+            binding.cardNewList.visibility = VISIBLE
 
             with(binding.etListNameFromTitle) {
                 tag = TAG_ERROR_INPUT_NAME

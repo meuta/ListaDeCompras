@@ -85,10 +85,17 @@
             tools:visibility="visible">
 
             <ScrollView
+                android:id="@+id/card_new_list_scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:fadeScrollbars="false"
+                android:scrollbarThumbVertical="@drawable/card_new_list_thumb"
+                android:scrollbarTrackVertical="@drawable/card_new_list_track"
+                >
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/card_new_list_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="20dp">
