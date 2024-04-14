@@ -6,7 +6,7 @@
     <string name="units_hint">Units:</string>
     <string name="save_btn">SAVE</string>
     <string name="error_input_name">please enter a name</string>
-    <string name="error_input_count">please enter a positive value</string>
+    <string name="error_input_count">please enter a positive value or remove units</string>
     <string name="error_input_list_name">please enter a unique name</string>
     <string name="error_input_list_name_duplicated">this name is not unique</string>
     <string name="error_input_list_name_empty">the field is empty</string>
