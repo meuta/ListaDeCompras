@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteException
 import androidx.core.database.getDoubleOrNull
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -18,8 +19,11 @@ import com.obrigada_eu.listadecompras.data.model.ShopListDbModel
         ShopItemDbModel::class,
         ShopListDbModel::class
     ],
-    version = 15,
-    exportSchema = true
+    version = 16,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration (from = 15, to = 16)
+    ]
 )
 abstract class AppDatabase : RoomDatabase() {
 
