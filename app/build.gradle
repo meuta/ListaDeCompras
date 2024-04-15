@@ -13,10 +13,10 @@ android {
         applicationId 'com.obrigada_eu.listadecompras'
         minSdk 23
         targetSdk 33
-        versionCode 5
-        versionName "5.0"
+        versionCode 7
+        versionName "7.0"
 
-        testInstrumentationRunner "com.obrigada_eu.listadecompras.HiltTestRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
             annotationProcessorOptions {
