@@ -27,7 +27,6 @@ data class ShopItemDbModel(
     @ColumnInfo(name = "shop_item_order")
     var position: Int = -1,
 //    @ColumnInfo(name = "shop_list_id", index = true)
-//    @ColumnInfo(name = "shop_list_id")
-    @ColumnInfo(name = "shop_list_id", defaultValue = "0")
+    @ColumnInfo(name = "shop_list_id")
     val shopListId: Int
 )

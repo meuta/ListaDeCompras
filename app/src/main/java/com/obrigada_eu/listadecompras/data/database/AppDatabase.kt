@@ -53,24 +53,20 @@ abstract class AppDatabase : RoomDatabase() {
                         createNewShopItemsTable2To11(db)
 
                         if (c1.moveToFirst()) {
-//                            var position = -1
                             val cv = ContentValues()
                             while (!c1.isAfterLast) {
-//                                position++
                                 cv.clear()
                                 cv.put(
                                     "shop_item_id",
-                                    c1.getInt(c1.getColumnIndex("shop_item_id"))
+                                    c1.getInt(c1.getColumnIndex("id"))
                                 )
                                 cv.put("name", c1.getString(c1.getColumnIndex("name")))
-                                cv.put("count", c1.getDoubleOrNull(c1.getColumnIndex("count")))
+                                cv.put("count", c1.getDouble(c1.getColumnIndex("count")))
                                 cv.put("enabled", c1.getInt(c1.getColumnIndex("enabled")))
                                 cv.put(
                                     "shop_item_order",
                                     c1.getInt(c1.getColumnIndex("shop_item_order"))
                                 )
-
-//                                cv.put("shop_list_order", position)
                                 cv.put("shop_list_id", 0)
 
                                 db.insert("shop_items_new", 0, cv)
@@ -83,29 +79,21 @@ abstract class AppDatabase : RoomDatabase() {
 
 
                     val c2 = db.query("SELECT * FROM shop_items")
-                    c1.use {
+                    c2.use {
                         createNewShopListsTable2To11(db)
 
 
-
                         if (c2.moveToFirst()) {
-//                            var position = -1
-                            val listId = 0
-                            val position = 0
+
                             val enabled = true
                             val listName = "My First List"
                             val cv = ContentValues()
-                            while (!c2.isAfterLast) {
                                 cv.clear()
-                                cv.put("id", listId)
                                 cv.put("shop_list_name", listName)
                                 cv.put("shop_list_enabled", enabled)
-                                cv.put("shop_list_order", position)
                                 db.insert("shop_lists_new", 0, cv)
-                                c2.moveToNext()
-                            }
                         }
-//                        db.execSQL("DROP TABLE IF EXISTS `shop_lists`")
+                        db.execSQL("DROP TABLE IF EXISTS `shop_lists`")
                         db.execSQL("ALTER TABLE shop_lists_new RENAME TO shop_lists")
 
 
@@ -171,10 +159,8 @@ abstract class AppDatabase : RoomDatabase() {
                         c.use {
                             createNewShopItemsTable(db)
                             if (c.moveToFirst()) {
-//                                var position = -1
                                 val cv = ContentValues()
                                 while (!c.isAfterLast) {
-//                                    position++
                                     cv.clear()
                                     cv.put(
                                         "shop_item_id",
@@ -226,7 +212,7 @@ abstract class AppDatabase : RoomDatabase() {
                     """CREATE TABLE IF NOT EXISTS `shop_items_new` (
                             `shop_item_id` INTEGER NOT NULL,
                             `name` TEXT NOT NULL,
-                            `count` REAL,
+                            `count` REAL NOT NULL,
                             `enabled` INTEGER NOT NULL,
                             `shop_item_order` INTEGER NOT NULL,
                             `shop_list_id` INTEGER NOT NULL,
@@ -234,6 +220,7 @@ abstract class AppDatabase : RoomDatabase() {
                             FOREIGN KEY(`shop_list_id`) REFERENCES `shop_lists`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE)""".trimIndent()
                 )
             }
+
 
             private fun createNewShopListsTable(database: SupportSQLiteDatabase) {
                 database.execSQL(
