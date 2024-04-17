@@ -16,4 +16,6 @@ interface ShopListRepository {
 
     suspend fun dragShopItem(from:Int, to: Int)
 
+    suspend fun undoDelete()
+
 }

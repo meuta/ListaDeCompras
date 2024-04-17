@@ -1,11 +1,11 @@
 package com.obrigada_eu.listadecompras.domain
 
-data class ShopItem(
+
+data class ShopListWithItems(
     val name: String,
-    val count: Double,
     var enabled: Boolean,
-    val id: Int = UNDEFINED_ID,
-    val shopListId: Int = UNDEFINED_ID
+    val itemList: List<ShopItem>,
+    val id: Int = UNDEFINED_ID
 )
 {
     companion object{

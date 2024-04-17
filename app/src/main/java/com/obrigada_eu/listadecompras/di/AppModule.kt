@@ -1,10 +1,11 @@
 package com.obrigada_eu.listadecompras.di
 
 import android.content.Context
-import com.obrigada_eu.listadecompras.data.AppDatabase
-import com.obrigada_eu.listadecompras.data.ShopListDao
+//import com.obrigada_eu.listadecompras.data.AppDatabase
+import com.obrigada_eu.listadecompras.data.database.ShopItemDao
 import com.obrigada_eu.listadecompras.data.ShopListMapper
 import com.obrigada_eu.listadecompras.data.ShopListRepositoryImpl
+import com.obrigada_eu.listadecompras.data.database.AppDatabase
 import com.obrigada_eu.listadecompras.domain.ShopListRepository
 import dagger.Module
 import dagger.Provides
@@ -25,14 +26,14 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideShopListDao(db: AppDatabase): ShopListDao {
-        return db.shopListDao()
+    fun provideShopListDao(db: AppDatabase): ShopItemDao {
+        return db.shopItemDao()
     }
 
     @Singleton
     @Provides
     fun provideRepository(
-        dao: ShopListDao, mapper: ShopListMapper
+        dao: ShopItemDao, mapper: ShopListMapper
     ): ShopListRepository {
         return ShopListRepositoryImpl(dao, mapper)
     }
