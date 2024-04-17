@@ -25,7 +25,7 @@ class ShopListRepositoryImpl @Inject constructor(
 
     override fun getShopList(): Flow<List<ShopItem>> {
 
-        return shopItemDao.getShopList(0).map {
+        return shopItemDao.getShopList(1).map {
             shopListDbModel = it.toMutableList()
             mapper.mapListDbModelToEntity(it)
         }

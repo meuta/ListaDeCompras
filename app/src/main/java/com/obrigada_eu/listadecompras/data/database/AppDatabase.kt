@@ -67,7 +67,7 @@ abstract class AppDatabase : RoomDatabase() {
                                     "shop_item_order",
                                     c1.getInt(c1.getColumnIndex("shop_item_order"))
                                 )
-                                cv.put("shop_list_id", 0)
+                                cv.put("shop_list_id", 1)
 
                                 db.insert("shop_items_new", 0, cv)
                                 c1.moveToNext()
