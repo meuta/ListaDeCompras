@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.obrigada_eu.listadecompras.presentation.list_set.ListSetViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/list_set"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blackish"
+        tools:context=".presentation.list_set.ListSetFragment">
+
+        <FrameLayout
+            android:id="@+id/fl_list_set"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_list_set"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fastScrollAlwaysVisible="true"
+                app:fastScrollEnabled="true"
+                app:fastScrollHorizontalThumbDrawable="@drawable/list_set_thumb_drawable"
+                app:fastScrollHorizontalTrackDrawable="@drawable/shop_list_track_drawable"
+                app:fastScrollVerticalThumbDrawable="@drawable/list_set_thumb_drawable"
+                app:fastScrollVerticalTrackDrawable="@drawable/shop_list_track_drawable"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_list_enabled" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/button_add_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:alpha="0.85"
+                android:clickable="true"
+                android:contentDescription="@string/add_shop_item_content_description"
+                android:focusable="true"
+                app:backgroundTint="@color/list_set_fab_color_2"
+                android:layout_gravity="end|bottom"
+                app:pressedTranslationZ="0dp"
+                app:srcCompat="@drawable/ic_add" />
+
+            <View
+                android:id="@+id/cover_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/grayish"
+                android:focusable="true"
+                android:clickable="true"
+                android:elevation="6dp"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_new_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="12dp"
+            android:outlineProvider="none"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/list_set_card_new_list_color"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="8dp"
+            app:cardUseCompatPadding="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible">
+
+            <ScrollView
+                android:id="@+id/card_new_list_scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:fadeScrollbars="false"
+                android:scrollbarThumbVertical="@drawable/card_new_list_thumb"
+                android:scrollbarTrackVertical="@drawable/card_new_list_track"
+                >
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/card_new_list_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tv_card_new_list_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="20dp"
+                        android:text="@string/card_new_list_title"
+                        android:textColor="@color/blackish"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
+                        app:layout_constraintBottom_toTopOf="@+id/til_list_name_title"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_list_name_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:theme="@style/text_selection_appearance"
+                        app:boxBackgroundColor="@color/whitish"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp"
+                        app:cursorErrorColor="@color/grayish"
+                        app:errorEnabled="true"
+                        app:errorIconTint="@color/whitish"
+                        app:errorTextAppearance="@style/error_appearance_list_set"
+                        app:errorTextColor="@color/background_color_delete"
+                        app:expandedHintEnabled="false"
+                        app:layout_constraintEnd_toStartOf="@+id/radio_group_list_name"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_card_new_list_title"
+                        app:setErrorInputListName="@{viewModel.errorInputNameFromTitle}">
+
+                        <EditText
+                            android:id="@+id/et_list_name_from_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="4"
+                            android:autofillHints="list name"
+                            android:background="@color/whitish"
+                            android:hint="@string/name_hint"
+                            android:inputType="textCapSentences"
+                            android:paddingTop="30dp"
+                            android:textColor="@color/grayish"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:etListNameFromTitleIsChecked="@{viewModel.isNameFromTitle}"
+                            app:setEditTextName="@{viewModel.listNameFromFileTitle}"
+                            tools:ignore="LabelFor"
+                            tools:text="@string/new_list" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_list_name_content"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:theme="@style/text_selection_appearance"
+                        app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
+                        app:boxBackgroundColor="@color/whitish"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp"
+                        app:cursorErrorColor="@color/grayish"
+                        app:errorEnabled="true"
+                        app:errorIconTint="@color/whitish"
+                        app:errorTextAppearance="@style/error_appearance_list_set"
+                        app:errorTextColor="@color/background_color_delete"
+                        app:expandedHintEnabled="false"
+                        app:layout_constraintEnd_toStartOf="@+id/radio_group_list_name"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/til_list_name_title"
+                        app:setErrorInputListName="@{viewModel.errorInputNameFromContent}">
+
+                        <EditText
+                            android:id="@+id/et_list_name_from_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="4"
+                            android:autofillHints="list name"
+                            android:background="@color/whitish"
+                            android:hint="@string/name_hint"
+                            android:inputType="textCapSentences"
+                            android:paddingTop="30dp"
+                            android:textColor="@color/grayish"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:etListNameFromContentIsChecked="@{viewModel.isNameFromTitle()}"
+                            app:setEditTextName="@{viewModel.listNameFromFileContent}"
+                            tools:ignore="LabelFor"
+                            tools:text="@string/new_list" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <RadioGroup
+                        android:id="@+id/radio_group_list_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:orientation="vertical"
+                        app:alterNameVisibility="@{viewModel.listNameFromFileContent}"
+                        app:layout_constraintBottom_toBottomOf="@id/til_list_name_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/til_list_name_title"
+                        app:radioGroupClearCheck="@{viewModel.isNameFromTitle}"
+                        tools:visibility="visible">
+
+                        <RadioButton
+                            android:id="@+id/radio_tilte"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_marginBottom="6dp"
+                            android:layout_weight="1"
+                            android:buttonTint="@color/blackish" />
+
+                        <RadioButton
+                            android:id="@+id/radio_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_weight="1"
+                            android:buttonTint="@color/blackish" />
+                    </RadioGroup>
+
+                    <Button
+                        android:id="@+id/button_cansel_create_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/grayish"
+                        android:text="@string/cansel_create_list"
+                        android:textColor="@color/whitish"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/til_list_name_content" />
+
+                    <Button
+                        android:id="@+id/button_create_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/grayish"
+                        android:text="@string/create_list"
+                        android:textColor="@color/whitish"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </ScrollView>
+        </com.google.android.material.card.MaterialCardView>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

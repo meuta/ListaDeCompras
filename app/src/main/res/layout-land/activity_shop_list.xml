@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.obrigada_eu.listadecompras.presentation.shop_list.ShopListViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blackish"
+        android:orientation="vertical"
+        tools:context=".presentation.shop_list.ShopListActivity">
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/Theme.ListaDeCompras.AppBarOverlay">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar_shop_list_activity"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/Theme.ListaDeCompras.PopupOverlay">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4">
+
+                        <TextView
+                            android:id="@+id/tv_toolbar_shop_list_activity"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/blackish"
+                            android:gravity="center|start"
+                            android:textColor="@color/white"
+                            android:textIsSelectable="true"
+                            android:textSize="20sp"
+                            tools:text="My List" />
+
+                        <EditText
+                            android:id="@+id/et_toolbar_shop_list_activity"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:autofillHints="list name"
+                            android:background="@color/blackish"
+                            android:gravity="center_vertical"
+                            android:inputType="textCapSentences"
+                            android:visibility="invisible"
+                            tools:ignore="LabelFor" />
+
+                    </FrameLayout>
+
+                    <ImageButton
+                        android:id="@+id/button_save_list_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="16dp"
+                        android:background="@color/item_background_color"
+                        android:contentDescription="@string/save_name"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:padding="16dp"
+                        android:visibility="invisible"
+                        app:srcCompat="@drawable/ic_check_24_black"
+                        tools:visibility="visible" />
+                </LinearLayout>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:id="@+id/tv_error_toolbar_shop_list_activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/orange_error_color"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grayish">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/blackish"
+                tools:context=".presentation.shop_list.ShopListActivity">
+
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/shop_list_container"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="@id/guideline_middle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:context=".presentation.shop_list.ShopListActivity"
+                    tools:layout="@layout/fragment_shop_list" />
+
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_middle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/shop_item_container"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guideline_middle"
+                    tools:context=".presentation.shop_item.ShopItemActivity"
+                    tools:layout="@layout/fragment_shop_item" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/cover_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/grayish"
+                android:focusable="true"
+                android:clickable="true"
+                android:visibility="gone" />
+        </FrameLayout>
+    </LinearLayout>
+</layout>

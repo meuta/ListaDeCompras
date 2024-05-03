@@ -8,3 +8,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/schemas/com.obrigada_eu.listadecompras.data.database.AppDatabase/16.json
+/release/app-release.aab

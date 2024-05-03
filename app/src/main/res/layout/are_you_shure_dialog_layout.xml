@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/list_set_card_new_list_color"
+        android:gravity="center"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_are_you_sure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginVertical="20dp"
+            android:gravity="center_horizontal"
+            android:text="@string/cancel_the_list_creation_are_you_sure"
+            android:textColor="@color/whitish"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/no_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tv_are_you_sure"
+            android:text="@string/no"
+            android:textAllCaps="false"
+            android:textColor="@color/whitish"
+            android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/yes_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_are_you_sure"
+            android:layout_alignParentEnd="true"
+            android:text="@string/yes"
+            android:textAllCaps="false"
+            android:textColor="@color/whitish"
+            android:textSize="16sp"/>
+
+    </RelativeLayout>
+</layout>
