@@ -1,7 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation.shop_item
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_item.AddShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.EditShopItemUseCase
 import com.obrigada_eu.listadecompras.domain.shop_item.GetShopItemUseCase
@@ -116,8 +116,4 @@ class ShopItemViewModel @Inject constructor(
     }
 
 
-
-    companion object{
-        private const val TAG = "ShopItemViewModel"
-    }
 }

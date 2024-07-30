@@ -34,11 +34,6 @@ class ShopListMapper @Inject constructor() {
 
     fun mapListSetToEntity(set: List<ShopListDbModel>) = set.map { mapShopListDbModelToEntity(it) }
 
-    fun mapShopListEntityToDbModel(shopList: ShopList) = ShopListDbModel(
-        id = shopList.id,
-        name = shopList.name,
-        enabled = shopList.enabled,
-    )
 
     fun mapShopListDbModelToEntity(
         shopListDbModel: ShopListDbModel

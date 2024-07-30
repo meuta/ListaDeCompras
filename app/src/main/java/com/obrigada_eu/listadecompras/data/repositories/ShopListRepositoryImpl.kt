@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -230,7 +229,6 @@ class ShopListRepositoryImpl @Inject constructor(
         val bytes = text.toByteArray()
         outputStream?.write(bytes)
         outputStream?.close()
-
         return "${dirDocuments.path.split("/").last()}$append"
     }
 

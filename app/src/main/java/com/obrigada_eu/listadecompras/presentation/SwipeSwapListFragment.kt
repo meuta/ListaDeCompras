@@ -7,7 +7,6 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -362,7 +361,7 @@ abstract class SwipeSwapListFragment<
             // Copy layout
             button.layoutParams = it.layoutParams
             // Copy colors
-            (button as? Button)?.setTextColor(it.textColors)
+            button.setTextColor(it.textColors)
             (it.parent as? ViewGroup)?.addView(button)
         }
         button.text = aLabel

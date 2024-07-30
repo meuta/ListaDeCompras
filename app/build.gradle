@@ -13,8 +13,8 @@ android {
         applicationId 'com.obrigada_eu.listadecompras'
         minSdk 23
         targetSdk 33
-        versionCode 7
-        versionName "7.0"
+        versionCode 8
+        versionName "8.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

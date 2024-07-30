@@ -1,9 +1,8 @@
 package com.obrigada_eu.listadecompras.data.repositories
 
-import android.util.Log
-import com.obrigada_eu.listadecompras.data.model.ShopItemDbModel
-import com.obrigada_eu.listadecompras.data.mapper.ShopListMapper
 import com.obrigada_eu.listadecompras.data.database.ShopItemDao
+import com.obrigada_eu.listadecompras.data.mapper.ShopListMapper
+import com.obrigada_eu.listadecompras.data.model.ShopItemDbModel
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem
 import com.obrigada_eu.listadecompras.domain.shop_item.ShopItemRepository
 import kotlinx.coroutines.flow.Flow

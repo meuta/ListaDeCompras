@@ -6,9 +6,9 @@ import android.widget.EditText
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem.Companion.UNDEFINED_ID
 import com.google.android.material.textfield.TextInputLayout
 import com.obrigada_eu.listadecompras.R
+import com.obrigada_eu.listadecompras.domain.shop_item.ShopItem.Companion.UNDEFINED_ID
 import kotlin.math.roundToInt
 
 private const val TAG = "BindingAdapter"
@@ -42,16 +42,6 @@ fun bindErrorInputListName(til: TextInputLayout, error: String?){
     til.error = error
 }
 
-//@BindingAdapter("setTextViewErrorInputListName")
-//fun bindTextViewErrorInputListName(textView: TextView, isError: Boolean){
-//    Log.d("BindingAdapter", "isError = $isError ")
-//    val message = if (isError) {
-//        textView.context.getString(R.string.error_input_list_name)
-//    } else {
-//        ""
-//    }
-//    textView.text = message
-//}
 
 @BindingAdapter("itemId", "setCountToEditText")
 fun bindCount(editText: EditText, itemId: Int?, itemCount: Double?){
