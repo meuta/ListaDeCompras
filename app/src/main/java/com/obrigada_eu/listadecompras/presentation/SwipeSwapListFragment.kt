@@ -45,8 +45,8 @@ abstract class SwipeSwapListFragment<
     protected abstract fun createAdapter(context: Context?): SwipeSwapAdapter<T>
 
 
-    protected abstract var onFabClickListener: OnFabClickListener
-    protected abstract var onListItemClickListener: OnListItemClickListener
+    protected abstract var onFabClickListener: OnFabClickListener?
+    protected abstract var onListItemClickListener: OnListItemClickListener?
 
 
     private var _binding: VB? = null
@@ -381,7 +381,7 @@ abstract class SwipeSwapListFragment<
 
                 else -> throw RuntimeException("Unknown item type: $item")
             }
-            onListItemClickListener.onListItemClick(id)
+            onListItemClickListener?.onListItemClick(id)
         }
     }
 
@@ -404,6 +404,12 @@ abstract class SwipeSwapListFragment<
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        onFabClickListener = null
+        onListItemClickListener = null
     }
 
 }

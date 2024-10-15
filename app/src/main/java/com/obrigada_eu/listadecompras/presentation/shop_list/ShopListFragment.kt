@@ -25,8 +25,8 @@ class ShopListFragment : SwipeSwapListFragment<
 
     override val fragmentListViewModel: ShopListViewModel by activityViewModels()
 
-    override lateinit var onFabClickListener: OnFabClickListener
-    override lateinit var onListItemClickListener: OnListItemClickListener
+    override var onFabClickListener: OnFabClickListener? = null
+    override var onListItemClickListener: OnListItemClickListener? = null
 
     override lateinit var fragmentListAdapter: SwipeSwapAdapter<ShopItem>
 
@@ -58,7 +58,7 @@ class ShopListFragment : SwipeSwapListFragment<
     override fun setupButtons() {
         with(binding) {
             buttonAddItem.setOnClickListener {
-                onFabClickListener.onFabClick()
+                onFabClickListener?.onFabClick()
             }
         }
     }

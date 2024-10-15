@@ -27,7 +27,7 @@ class ShopItemFragment : Fragment() {
 
     private val shopItemViewModel: ShopItemViewModel by viewModels()
 
-    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
+    private var onEditingFinishedListener: OnEditingFinishedListener? = null
 
     private var _binding: FragmentShopItemBinding? = null
     private val binding: FragmentShopItemBinding      //We can use it just between onCreateView and onDestroyView not inclusive.
@@ -76,7 +76,11 @@ class ShopItemFragment : Fragment() {
         observeViewModel()
 
         setFocus()
+    }
 
+    override fun onDetach() {
+        super.onDetach()
+        onEditingFinishedListener = null
     }
 
     private fun setFocus() {

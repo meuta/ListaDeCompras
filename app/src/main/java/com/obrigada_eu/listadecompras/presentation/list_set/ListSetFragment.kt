@@ -42,8 +42,8 @@ class ListSetFragment(
     SwipeSwapListFragment.OnListItemClickListener
 {
 
-    override lateinit var onFabClickListener: OnFabClickListener
-    override lateinit var onListItemClickListener: OnListItemClickListener
+    override var onFabClickListener: OnFabClickListener? = null
+    override var onListItemClickListener: OnListItemClickListener? = null
 
     override val fragmentListViewModel: ListSetViewModel by activityViewModels()
 
@@ -116,7 +116,7 @@ class ListSetFragment(
     override fun setupButtons() {
         with(binding) {
             buttonAddItem.setOnClickListener {
-                onFabClickListener.onFabClick()
+                onFabClickListener?.onFabClick()
             }
 
             buttonCreateList.setOnClickListener {
