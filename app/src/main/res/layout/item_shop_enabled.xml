@@ -35,9 +35,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/grayish"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    style="@style/ListItemTextStyle"
                     android:text="@{shopItem.name}"
                     tools:text="Queijo" />
 
@@ -45,9 +43,7 @@
                     android:id="@+id/tv_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/grayish"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    style="@style/ListItemTextStyle"
                     app:setCount="@{shopItem.count}"
                     tools:text="1.0" />
 
@@ -56,9 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:textColor="@color/grayish"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    style="@style/ListItemTextStyle"
                     app:setUnits="@{shopItem.units}"
                     tools:text="kg" />
 

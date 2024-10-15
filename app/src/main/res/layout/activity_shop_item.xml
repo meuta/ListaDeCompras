@@ -8,7 +8,8 @@
         android:layout_height="match_parent"
         android:background="@color/blackish"
         android:orientation="vertical"
-        tools:context=".presentation.shop_item.ShopItemActivity">
+        tools:context=".presentation.shop_item.ShopItemActivity"
+        android:windowBackground="@color/background_dark_gray_color">
 
 
         <com.google.android.material.appbar.AppBarLayout

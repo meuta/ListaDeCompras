@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="error_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/orange_error_color</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="error_appearance_list_set" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/background_color_delete</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="text_selection_appearance">
+        <item name="colorPrimary">@color/grayish_opaque</item>
+        <item name="colorSecondary">@color/blackish_transparent</item>
+    </style>
+
+    <style name="text_selection_dark_appearance">
+        <item name="colorPrimary">@color/item_background_color</item>
+        <item name="colorSecondary">@color/item_background_color</item>
+    </style>
+
+    <style name="ListItemTextStyle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+</resources>
