@@ -181,11 +181,8 @@ class ShopListRepositoryImpl @Inject constructor(
             val nameAndContent = getContent(list)
 
             val file = File(context.cacheDir, "${nameAndContent.first}.txt")
-            PrintWriter(file).also {
-                it.print("")
-                it.close()
-            }
-            file.appendText(nameAndContent.second)
+
+            PrintWriter(file).use { it.print(nameAndContent.second) }
 
             val uri = FileProvider.getUriForFile(context, FILE_PROVIDER_AUTHORITY, file)
 
@@ -195,8 +192,8 @@ class ShopListRepositoryImpl @Inject constructor(
                 putExtra(Intent.EXTRA_STREAM, uri)
             }
             intent
-        }
-            .flowOn(Dispatchers.IO)
+
+        }.flowOn(Dispatchers.IO)
     }
 
 
@@ -211,24 +208,24 @@ class ShopListRepositoryImpl @Inject constructor(
             dirDocumentsApp.mkdir()
         }
         val outputStream: OutputStream? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val values = ContentValues()
-            values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-            values.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
-            values.put(
-                MediaStore.MediaColumns.RELATIVE_PATH,
-                "${Environment.DIRECTORY_DOCUMENTS}$append"
-            )
+
             val extVolumeUri: Uri = MediaStore.Files.getContentUri("external")
+
+            val values = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_DOCUMENTS}$append")
+            }
+
             val fileUri: Uri? = context.contentResolver.insert(extVolumeUri, values)
             fileUri?.let { context.contentResolver.openOutputStream(it) }
+
         } else {
             val file = File(dirDocumentsApp.absolutePath, "$fileName.txt")
             FileOutputStream(file)
         }
 
-        val bytes = text.toByteArray()
-        outputStream?.write(bytes)
-        outputStream?.close()
+        outputStream?.use { it.write(text.toByteArray()) }
         return "${dirDocuments.path.split("/").last()}$append"
     }
 
@@ -332,20 +329,14 @@ class ShopListRepositoryImpl @Inject constructor(
 
 
     private fun retrieveContentFromContentUri(fileUri: Uri): String {
-
         val iStream: InputStream? = context.contentResolver.openInputStream(fileUri)
-
         val inputStreamReader = InputStreamReader(iStream)
-        //        Log.d(TAG, "createFileFromContentUri: inputString = $inputString")
-
         return inputStreamReader.use { it.readText() }
-
     }
 
 
     override fun loadFilesList(): List<String>? {
-        val dirDocuments =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = "$separator${context.resources.getString(R.string.app_name)}"
         val dirDocumentsApp = File("$dirDocuments$append")
 
