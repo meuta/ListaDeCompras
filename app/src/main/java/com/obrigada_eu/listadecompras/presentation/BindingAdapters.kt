@@ -1,6 +1,5 @@
 package com.obrigada_eu.listadecompras.presentation
 
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.RadioGroup
@@ -99,29 +98,29 @@ fun bindEditTextName(editText: EditText, name: String?){
             tag = TAG_ERROR_INPUT_NAME
             setText(it)
             tag = null
-            requestFocus()
             setSelection(editText.text.length)
         }
     }
 }
 
 
-@BindingAdapter("radioGroupClearCheck")
-fun bindRadioGroupClearCheck(radioGroup: RadioGroup, isNameFromTitle: Boolean?){
-//    Log.d(TAG, "bindRadioGroupClearCheck: isNameFromTitle = $isNameFromTitle")
+@BindingAdapter("radioGroupClearCheck", "radioGroupCheckTitle")
+fun bindRadioGroupClearCheck(radioGroup: RadioGroup, isNameFromTitle: Boolean?, nameFromContent: String?){
     if (isNameFromTitle == null) radioGroup.clearCheck()
+    nameFromContent?.let { if (radioGroup.checkedRadioButtonId == -1) radioGroup.check(R.id.radio_tilte) }
 }
 
-@BindingAdapter("etListNameFromTitleIsChecked")
-fun bindEditTextNameFromTitleIsChecked(editText: EditText, isNameFromTitle: Boolean?) {
-//    Log.d(TAG, "bindEditTextNameFromTitleIsChecked: editText = ${editText.id}, isNameFromTitle = $isNameFromTitle")
+
+@BindingAdapter("etListNameIsChecked")
+fun bindEditTextNameIsChecked(editText: EditText, isNameFromTitle: Boolean?) {
     with(editText) {
         if (isNameFromTitle == null) {
             setBackgroundResource(R.color.whitish_transparent)
             setTextColor(context.getColor(R.color.blackish_transparent))
             clearFocus()
         } else {
-            if (isNameFromTitle == true) {
+            if (editText.id == R.id.et_list_name_from_title && isNameFromTitle ||
+                editText.id == R.id.et_list_name_from_content && !isNameFromTitle) {
                 setBackgroundResource(R.color.whitish)
                 setTextColor(context.getColor(R.color.grayish))
                 requestFocus()
@@ -134,24 +133,3 @@ fun bindEditTextNameFromTitleIsChecked(editText: EditText, isNameFromTitle: Bool
     }
 }
 
-@BindingAdapter("etListNameFromContentIsChecked")
-fun bindEditTextNameFromContentIsChecked(editText: EditText, isNameFromTitle: Boolean?) {
-//    Log.d(TAG, "bindEditTextNameFromTitleIsChecked: editText = ${editText.id}, isNameFromTitle = $isNameFromTitle")
-    with(editText) {
-        if (isNameFromTitle == null) {
-            setBackgroundResource(R.color.whitish_transparent)
-            setTextColor(context.getColor(R.color.blackish_transparent))
-            clearFocus()
-        } else {
-            if (isNameFromTitle == false) {
-                setBackgroundResource(R.color.whitish)
-                setTextColor(context.getColor(R.color.grayish))
-                requestFocus()
-                setSelection(text.length)
-            } else {
-                setBackgroundResource(R.color.whitish_transparent)
-                setTextColor(context.getColor(R.color.blackish_transparent))
-            }
-        }
-    }
-}

@@ -100,7 +100,12 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_SEND -> {
 
-                resetCardNewList()
+                listSetViewModel.updateUiState(
+                    cardNewListVisibility = false,
+                    showCreateListForFile = false,
+                    oldFileName = null,
+                    uri = null
+                )
                 listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
 
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -118,7 +123,12 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_VIEW -> {
 //                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
-                resetCardNewList()
+                listSetViewModel.updateUiState(
+                    cardNewListVisibility = false,
+                    showCreateListForFile = false,
+                    oldFileName = null,
+                    uri = null
+                )
                 listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
 
                 when (intent.type) {
@@ -136,15 +146,6 @@ class ListSetActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-    }
-
-    private fun resetCardNewList() {
-        with(listSetViewModel) {
-            resetUserCheckedAlterName()
-            resetErrorInputNameTitle()
-            resetErrorInputNameContent()
-            resetListNameFromContent()
         }
     }
 
@@ -172,9 +173,7 @@ class ListSetActivity : AppCompatActivity() {
                             this@ListSetActivity,
                             "File reading error",
                             Toast.LENGTH_LONG
-                        )
-                            .show()
-                        listSetViewModel.resetFileWithoutErrors()
+                        ).show()
 
                         listSetViewModel.updateUiState(
                             cardNewListVisibility = false,
@@ -182,7 +181,6 @@ class ListSetActivity : AppCompatActivity() {
                             oldFileName = null,
                             uri = null
                         )
-                        resetCardNewList()
                     }
                 }
             }

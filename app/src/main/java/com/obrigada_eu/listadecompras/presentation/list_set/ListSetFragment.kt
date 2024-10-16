@@ -3,8 +3,6 @@ package com.obrigada_eu.listadecompras.presentation.list_set
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.View.GONE
@@ -15,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -180,39 +179,27 @@ class ListSetFragment(
     }
 
 
-    private fun addTextChangedListeners() {
-        val inputErrorListener = object : TextWatcher {
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                with(binding) {
-                    if (etListNameFromTitle.text.hashCode() == s.hashCode()) {
-//                        Log.d(TAG, "onTextChanged: etListNameFromTitle.tag = ${etListNameFromTitle.tag}")
-                        if( etListNameFromTitle.tag == null ) {
-                            // Value changed by user
-                            fragmentListViewModel.resetErrorInputNameTitle()
-//                            Log.d(TAG, "onTextChanged: resetErrorInputNameTitle")
-                        }
+    private fun resetErrorInputName(editText: EditText, text: CharSequence?) {
+//        Log.d(TAG, "resetErrorInputName: ")
+        with(binding) {
+            if (editText.text == text) {
+//                Log.d(TAG, "onTextChanged: tag = ${editText.tag}")
+                if (editText.tag == null) {
+                    // Value changed by user
+                    when(editText) {
+                        etListNameFromTitle -> fragmentListViewModel.resetErrorInputName(NAME_FROM_TITLE_FIELD)
+                        etListNameFromContent -> fragmentListViewModel.resetErrorInputName(NAME_FROM_CONTENT_FIELD)
                     }
-                    if (etListNameFromContent.text.hashCode() == s.hashCode()) {
-//                        Log.d(TAG, "onTextChanged: etListNameFromContent.tag = ${etListNameFromContent.tag}")
-                        if( etListNameFromContent.tag == null ) {
-                            // Value changed by user
-                            fragmentListViewModel.resetErrorInputNameContent()
-//                            Log.d(TAG, "onTextChanged: resetErrorInputName()")
-                        }
-                    }
+//                    Log.d(TAG, "onTextChanged: ${editText.id}")
                 }
             }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
         }
+    }
+
+    private fun addTextChangedListeners() {
         with(binding) {
-            etListNameFromTitle.addTextChangedListener(inputErrorListener)
-            etListNameFromContent.addTextChangedListener(inputErrorListener)
+            etListNameFromTitle.doOnTextChanged { text, _, _, _ -> resetErrorInputName(etListNameFromTitle, text) }
+            etListNameFromContent.doOnTextChanged { text, _, _, _ -> resetErrorInputName(etListNameFromContent, text) }
         }
     }
 
@@ -248,7 +235,6 @@ class ListSetFragment(
 
                     if (isVisible) {
 
-
                         showAlertDialog()
 
                     } else {
@@ -272,8 +258,6 @@ class ListSetFragment(
                 alertDialog.dismiss()
             }
             yesButton.setOnClickListener {
-                fragmentListViewModel.resetListNameFromContent()
-                fragmentListViewModel.resetUserCheckedAlterName()
                 fragmentListViewModel.updateUiState(
                     cardNewListVisibility = false,
                     showCreateListForFile = false,
@@ -329,6 +313,8 @@ class ListSetFragment(
         private const val TAG = "ListSetFragment"
         private const val TAG_ERROR_INPUT_NAME = 101
         private const val NO_RADIO_BUTTON_CHECKED_ID = -1
+        const val NAME_FROM_TITLE_FIELD = "title"
+        const val NAME_FROM_CONTENT_FIELD = "content"
 
         fun newInstance() = ListSetFragment()
     }
