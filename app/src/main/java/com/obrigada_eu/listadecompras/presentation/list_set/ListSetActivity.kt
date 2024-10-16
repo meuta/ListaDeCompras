@@ -12,9 +12,10 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -247,22 +248,7 @@ class ListSetActivity : AppCompatActivity() {
                     oldFileName = null,
                     uri = null
                 )
-                if (
-                    Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
-                    && ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                        STORAGE_PERMISSION_CODE
-                    )
-                    listSetViewModel.setRequestForFileLoading(true)
-                } else {
-                    loadFilesList()
-                }
+                actionLoadFromTxtFile()
 
                 return true
             }
@@ -270,34 +256,59 @@ class ListSetActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun actionLoadFromTxtFile() {
+        if (
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
+            && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestReadStoragePermission()
+        } else {
+            loadFilesList()
+        }
+    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == STORAGE_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty()
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            ) {
-                lifecycleScope.launch{
-                    listSetViewModel.requestForFileLoading.first().let{
-                        if (it){
-                            // perform the action as soon as permission is granted
-                            listSetViewModel.setRequestForFileLoading(false)
-                            loadFilesList()
-                        }
-                    }
+    // register a permissions activity launcher for a single permission:
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+        ::onRequestReadStoragePermissionResult
+    )
+
+    // callback:
+    private fun onRequestReadStoragePermissionResult(granted: Boolean) {
+        if (granted) {
+            loadFilesList()
+        } else {
+            Toast.makeText(
+                this,
+                "STORAGE permission denied,\nyou cannot save files",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun requestReadStoragePermission() {
+
+        if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            AlertDialog.Builder(this)
+                .setTitle("Storage Permission")
+                .setMessage("STORAGE permission is needed in order to load files")
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    Toast.makeText(
+                        this,
+                        "STORAGE permission denied,\nyou cannot load files",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    dialog.dismiss()
                 }
-
-            } else {
-                Toast.makeText(
-                    this,
-                    "Storage permissions denied,\nyou don't have access to the files",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+                .setPositiveButton("OK") { _, _ ->
+                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+                .show()
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 
@@ -355,7 +366,6 @@ class ListSetActivity : AppCompatActivity() {
 
     companion object {
 
-        private const val STORAGE_PERMISSION_CODE = 101
         private const val TAG = "ListSetActivity"
 
     }

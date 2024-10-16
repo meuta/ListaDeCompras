@@ -65,13 +65,8 @@ class ShopListViewModel @Inject constructor(
     private val _intent = MutableStateFlow<Intent?>(null)
     val intent: StateFlow<Intent?> = _intent
 
-
     private val _fileSaved: MutableStateFlow<String?>  = MutableStateFlow(null)
     val fileSaved: StateFlow<String?> = _fileSaved
-
-    private val _requestForFileSaving = MutableStateFlow<Boolean>(false)
-    val requestForFileSaving: StateFlow<Boolean> = _requestForFileSaving
-
 
     init {
         scope.launch{
@@ -79,10 +74,6 @@ class ShopListViewModel @Inject constructor(
 //                Log.d(TAG, "allListsWithItems.collect =\n $it")
             }
         }
-    }
-
-    fun setRequestForFileSaving(isRequest: Boolean){
-        _requestForFileSaving.value = isRequest
     }
 
     fun updateShopListIdState(listId: Int) {

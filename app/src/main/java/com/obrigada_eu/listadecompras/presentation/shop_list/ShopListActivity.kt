@@ -17,9 +17,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -243,80 +244,82 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+
             R.id.action_save_txt -> {
-
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
-                    && ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    )
-                    + ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-                    ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ),
-                        STORAGE_PERMISSION_CODE
-                    )
-                    shopListViewModel.setRequestForFileSaving(true)
-
-                } else {
-                    exportListToTxt()
-                }
+                actionSaveTxt()
                 return true
             }
-
 
             R.id.action_share_file -> {
                 shareTxtList()
             }
 
-
             R.id.action_rename_list -> {
                 shopListViewModel.setRenameListAppearance(true)
                 return true
             }
-
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun actionSaveTxt() {
+        if (
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
+            && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestWriteStoragePermission()
+        } else {
+            exportListToTxt()
+        }
     }
 
     private fun shareTxtList(){
         shopListViewModel.shareTxtList()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == STORAGE_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty()
-                && grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED
-            ) {
-                lifecycleScope.launch{
-                    shopListViewModel.requestForFileSaving.first().let{
-                        if (it){
-                            // perform the action as soon as permission is granted
-                            shopListViewModel.setRequestForFileSaving(false)
-                            exportListToTxt()
-                        }
-                    }
+
+    // register a permissions activity launcher for a single permission:
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+        ::onRequestWriteStoragePermissionResult
+    )
+
+    // callback:
+    private fun onRequestWriteStoragePermissionResult(granted: Boolean) {
+        if (granted) {
+            exportListToTxt()
+        } else {
+            Toast.makeText(
+                this,
+                "STORAGE permission denied,\nyou cannot save files",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun requestWriteStoragePermission() {
+
+        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            AlertDialog.Builder(this)
+                .setTitle("Storage Permission")
+                .setMessage("STORAGE permission is needed in order to save a file")
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    Toast.makeText(
+                        this,
+                        "STORAGE permission denied,\nyou cannot save files",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    dialog.dismiss()
                 }
-            } else {
-                Toast.makeText(
-                    this,
-                    "Storage permissions denied,\nyou cannot save files",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+                .setPositiveButton("OK") { _, _ ->
+                    requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+                .show()
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
     }
 
@@ -457,7 +460,6 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
 
     companion object {
 
-        private const val STORAGE_PERMISSION_CODE = 101
         private const val TAG = "ShopListActivity"
 
         fun newIntent(context: Context): Intent {
