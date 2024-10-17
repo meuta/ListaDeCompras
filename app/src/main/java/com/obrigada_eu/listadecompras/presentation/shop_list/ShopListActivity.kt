@@ -1,6 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation.shop_list
 
-import android.Manifest
+import android.Manifest.permission.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -267,10 +267,13 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
             Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
             && ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                WRITE_EXTERNAL_STORAGE
+            ) + ContextCompat.checkSelfPermission(
+                this,
+                READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestWriteStoragePermission()
+            requestStoragePermission(arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE))
         } else {
             exportListToTxt()
         }
@@ -281,48 +284,43 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     }
 
 
-    // register a permissions activity launcher for a single permission:
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-        ::onRequestWriteStoragePermissionResult
-    )
-
-    // callback:
-    private fun onRequestWriteStoragePermissionResult(granted: Boolean) {
-        if (granted) {
+    private val requestStoragePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissionMap ->
+        if (permissionMap.all { it.value }) {
             exportListToTxt()
         } else {
             Toast.makeText(
                 this,
-                "STORAGE permission denied,\nyou cannot save files",
+                "Storage permission denied,\nyou cannot save files",
                 Toast.LENGTH_LONG
             ).show()
         }
     }
 
-    private fun requestWriteStoragePermission() {
 
-        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+    private fun requestStoragePermission(permissions: Array<String>) {
+
+        if (permissions.any { shouldShowRequestPermissionRationale(it) }) {
             AlertDialog.Builder(this)
                 .setTitle("Storage Permission")
-                .setMessage("STORAGE permission is needed in order to save a file")
+                .setMessage("Storage permission is needed in order to load a file")
                 .setNegativeButton("Cancel") { dialog, _ ->
                     Toast.makeText(
                         this,
-                        "STORAGE permission denied,\nyou cannot save files",
+                        "Storage permission denied,\nyou cannot load files",
                         Toast.LENGTH_LONG
                     ).show()
                     dialog.dismiss()
                 }
                 .setPositiveButton("OK") { _, _ ->
-                    requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    requestStoragePermissionsLauncher.launch(permissions)
                 }
                 .show()
         } else {
-            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            requestStoragePermissionsLauncher.launch(permissions)
         }
     }
-
 
     private fun exportListToTxt() {
         shopListViewModel.exportListToTxt()

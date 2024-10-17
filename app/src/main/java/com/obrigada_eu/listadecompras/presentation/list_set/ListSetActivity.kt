@@ -1,6 +1,6 @@
 package com.obrigada_eu.listadecompras.presentation.list_set
 
-import android.Manifest
+import android.Manifest.permission.*
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -258,57 +258,64 @@ class ListSetActivity : AppCompatActivity() {
 
     private fun actionLoadFromTxtFile() {
         if (
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
+            && ContextCompat.checkSelfPermission(
+                this,
+                WRITE_EXTERNAL_STORAGE
+            ) + ContextCompat.checkSelfPermission(
+                this,
+                READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestStoragePermission(arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE))
+        } else if (
             Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
             && ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestReadStoragePermission()
+            requestStoragePermission(arrayOf(READ_EXTERNAL_STORAGE))
         } else {
             loadFilesList()
         }
     }
 
-    // register a permissions activity launcher for a single permission:
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-        ::onRequestReadStoragePermissionResult
-    )
 
-    // callback:
-    private fun onRequestReadStoragePermissionResult(granted: Boolean) {
-        if (granted) {
+    private val requestStoragePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissionMap ->
+        if (permissionMap.all { it.value }) {
             loadFilesList()
         } else {
             Toast.makeText(
                 this,
-                "STORAGE permission denied,\nyou cannot save files",
+                "Storage permission denied,\nyou cannot load files",
                 Toast.LENGTH_LONG
             ).show()
         }
     }
 
-    private fun requestReadStoragePermission() {
+    private fun requestStoragePermission(permissions: Array<String>) {
 
-        if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+        if (permissions.any { shouldShowRequestPermissionRationale(it) }) {
             AlertDialog.Builder(this)
                 .setTitle("Storage Permission")
-                .setMessage("STORAGE permission is needed in order to load files")
+                .setMessage("Storage permission is needed in order to load a file")
                 .setNegativeButton("Cancel") { dialog, _ ->
                     Toast.makeText(
                         this,
-                        "STORAGE permission denied,\nyou cannot load files",
+                        "Storage permission denied,\nyou cannot load files",
                         Toast.LENGTH_LONG
                     ).show()
                     dialog.dismiss()
                 }
                 .setPositiveButton("OK") { _, _ ->
-                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    requestStoragePermissionsLauncher.launch(permissions)
                 }
                 .show()
         } else {
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestStoragePermissionsLauncher.launch(permissions)
         }
     }
 
