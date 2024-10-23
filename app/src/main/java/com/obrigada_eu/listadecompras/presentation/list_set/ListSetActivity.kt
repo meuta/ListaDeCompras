@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
@@ -17,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -48,7 +50,7 @@ class ListSetActivity : AppCompatActivity() {
                 handleIntent(it)
             }
         }
-
+        addMenuProvider(menuProvider)
         setupActionBar()
         setOnBackPressedCallback()
         observeViewModel()
@@ -233,27 +235,29 @@ class ListSetActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.list_set_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+    private val menuProvider = object : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.shop_list_menu, menu)
+        }
 
-            R.id.action_load_txt -> {
-                listSetViewModel.updateUiState(
-                    cardNewListVisibility = false,
-                    showCreateListForFile = false,
-                    oldFileName = null,
-                    uri = null
-                )
-                actionLoadFromTxtFile()
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            return when (menuItem.itemId) {
 
-                return true
+                R.id.action_load_txt -> {
+                    listSetViewModel.updateUiState(
+                        cardNewListVisibility = false,
+                        showCreateListForFile = false,
+                        oldFileName = null,
+                        uri = null
+                    )
+                    actionLoadFromTxtFile()
+                    true
+                }
+
+                else -> false
             }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun actionLoadFromTxtFile() {

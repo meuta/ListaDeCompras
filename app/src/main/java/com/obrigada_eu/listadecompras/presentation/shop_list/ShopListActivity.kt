@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
@@ -22,6 +23,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -51,6 +53,7 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         binding = ActivityShopListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        addMenuProvider(menuProvider)
         setupActionBar()
 
         observeViewModel()
@@ -237,29 +240,33 @@ class ShopListActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         onBackPressedDispatcher.addCallback(this, renameListAppearanceCallback)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.shop_list_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+    private val menuProvider = object : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.shop_list_menu, menu)
+        }
 
-            R.id.action_save_txt -> {
-                actionSaveTxt()
-                return true
-            }
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            return when (menuItem.itemId) {
 
-            R.id.action_share_file -> {
-                shareTxtList()
-            }
+                R.id.action_save_txt -> {
+                    actionSaveTxt()
+                    true
+                }
 
-            R.id.action_rename_list -> {
-                shopListViewModel.setRenameListAppearance(true)
-                return true
+                R.id.action_share_file -> {
+                    shareTxtList()
+                    true
+                }
+
+                R.id.action_rename_list -> {
+                    shopListViewModel.setRenameListAppearance(true)
+                    true
+                }
+
+                else -> false
             }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun actionSaveTxt() {
