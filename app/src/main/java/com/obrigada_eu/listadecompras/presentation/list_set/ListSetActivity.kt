@@ -238,7 +238,7 @@ class ListSetActivity : AppCompatActivity() {
 
     private val menuProvider = object : MenuProvider {
         override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            menuInflater.inflate(R.menu.shop_list_menu, menu)
+            menuInflater.inflate(R.menu.list_set_menu, menu)
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
