@@ -13,13 +13,13 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">?attr/colorPrimaryVariant</item>
-
-        <item name="android:textColorPrimary">@color/grayish</item>
+        <item name="android:itemBackground">@color/grayish</item>
+        <item name="android:windowBackground">@color/blackish</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/blackish</item>
     </style>
+
 
     <style name="Theme.ListaDeCompras.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

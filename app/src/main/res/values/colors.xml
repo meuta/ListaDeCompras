@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="almost_black">#C2141212</color>
     <color name="grayish">#A51F1B1B</color>
     <color name="grayish_opaque">#D0393532</color>
     <color name="blackish">#F4363635</color>
@@ -18,6 +19,8 @@
     <color name="background_light_gray_color">#17686868</color>
     <color name="whitish">#BCBCBC</color>
     <color name="whitish_transparent">#C2B4B4B4</color>
+    <color name="selection_light">#C2A4A2A2</color>
+    <color name="selection_dark">#DC738F80</color>
     <color name="item_background_color">#9776D0</color>
     <color name="shop_list_scroll_thumb_color">#E69776D0</color>
     <color name="shop_list_fab_color">#E66F569A</color>
