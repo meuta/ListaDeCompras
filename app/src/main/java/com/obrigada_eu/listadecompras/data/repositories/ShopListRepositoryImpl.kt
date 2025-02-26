@@ -144,7 +144,7 @@ class ShopListRepositoryImpl @Inject constructor(
         return try {
             val shopListWithItems = shopListDao.getShopListWithItems(listId)
             val nameAndContent = getContent(shopListWithItems)
-            saveFile(context, nameAndContent.first, nameAndContent.second)
+            saveFile(nameAndContent.first, nameAndContent.second)
         } catch (e: Exception) {
             ""
         }
@@ -197,7 +197,12 @@ class ShopListRepositoryImpl @Inject constructor(
     }
 
 
-    private fun saveFile(context: Context, fileName: String, text: String): String {
+    private fun saveFile(fileName: String, text: String): String {
+
+//        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
+//
+//        }
+
         val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val append = "$separator${context.resources.getString(R.string.app_name)}"
         val dirDocumentsApp = File("$dirDocuments$append")
@@ -209,7 +214,7 @@ class ShopListRepositoryImpl @Inject constructor(
         }
         val outputStream: OutputStream? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
-            val extVolumeUri: Uri = MediaStore.Files.getContentUri("external")
+            val extVolumeUri: Uri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL)
 
             val values = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)

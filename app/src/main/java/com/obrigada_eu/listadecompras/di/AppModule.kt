@@ -1,5 +1,6 @@
 package com.obrigada_eu.listadecompras.di
 
+import android.content.ContentResolver
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -83,5 +84,10 @@ object AppModule {
     fun provideMapper(): ShopListMapper {
         return ShopListMapper()
     }
+
+    @Singleton
+    @Provides
+    fun provideContentResolver(@ApplicationContext context: Context): ContentResolver =
+        context.contentResolver
 
 }

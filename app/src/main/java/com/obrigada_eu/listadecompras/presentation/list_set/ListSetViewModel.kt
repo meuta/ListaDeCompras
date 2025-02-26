@@ -1,10 +1,9 @@
 package com.obrigada_eu.listadecompras.presentation.list_set
 
-import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.R
 import com.obrigada_eu.listadecompras.domain.shop_list.AddShopListUseCase
@@ -36,10 +35,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class ListSetViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @ApplicationContext context: Context,
     getAllListsWithoutItemsFlowUseCase: GetAllListsWithoutItemsFlowUseCase,
     private val getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase,
@@ -52,12 +50,13 @@ class ListSetViewModel @Inject constructor(
     private val loadFilesListUseCase: LoadFilesListUseCase,
     private val saveListToDbUseCase: SaveListToDbUseCase,
     private val getListFromTxtFileUseCase: GetListFromTxtFileUseCase,
+    private val contentResolver: ContentResolver,
 ) : SwipeSwapViewModel() {
 
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-
+    private val getStringResource: (Int) -> String  = { id -> context.getString(id) }
 
     private val _shopListId = MutableStateFlow<Int>(ShopList.UNDEFINED_ID)
     val shopListId: StateFlow<Int> = _shopListId
@@ -277,7 +276,7 @@ class ListSetViewModel @Inject constructor(
 //        Log.d("validateInput", "name = $name")
 
         if (name.isBlank()) {
-            val errorText = context.getString(R.string.error_input_list_name_empty)
+            val errorText = getStringResource(R.string.error_input_list_name_empty)
             when (field) {
                 NAME_FROM_TITLE_FIELD -> _errorInputNameFromTitle.value = errorText
                 NAME_FROM_CONTENT_FIELD -> _errorInputNameFromContent.value = errorText
@@ -288,7 +287,7 @@ class ListSetViewModel @Inject constructor(
         val myNamesList = getAllListsWithoutItemsUseCase().map { it.name }
 //        Log.d("validateInput", "myNamesList = $myNamesList")
         if (myNamesList.contains(name)) {
-            val errorText = context.getString(R.string.error_input_list_name_duplicated)
+            val errorText = getStringResource(R.string.error_input_list_name_duplicated)
             when (field) {
                 NAME_FROM_TITLE_FIELD -> _errorInputNameFromTitle.value = errorText
                 NAME_FROM_CONTENT_FIELD -> _errorInputNameFromContent.value = errorText
@@ -303,7 +302,7 @@ class ListSetViewModel @Inject constructor(
 
         var fileName: String? = null
         if (uri.scheme == "content") {
-            context.contentResolver.query(
+            contentResolver.query(
                 uri,
                 arrayOf(OpenableColumns.DISPLAY_NAME),
                 null, null, null
