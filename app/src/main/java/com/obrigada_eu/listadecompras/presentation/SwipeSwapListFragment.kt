@@ -85,7 +85,8 @@ abstract class SwipeSwapListFragment<
 
         when (val b = binding) {
             is FragmentShopListBinding -> b.viewModel = fragmentListViewModel as ShopListViewModel
-            is FragmentListSetBinding -> b.viewModel = fragmentListViewModel as ListSetViewModel
+//            is FragmentListSetBinding -> b.viewModel = fragmentListViewModel as ListSetViewModel
+            is FragmentListSetBinding -> {}
 
             else -> throw RuntimeException("Unknown binding: $b")
         }

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -27,7 +28,6 @@ import com.obrigada_eu.listadecompras.databinding.ActivityListSetBinding
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.shop_list.ShopListActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -62,12 +62,9 @@ class ListSetActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
-            listSetViewModel.updateUiState(
-                cardNewListVisibility = false,
-                showCreateListForFile = false,
-                oldFileName = null,
-                uri = null
-            )
+
+            listSetViewModel.resetListFragmentUI()
+
             with(binding.filesList) {
                 if (visibility == View.VISIBLE) {
                     visibility = View.GONE
@@ -103,12 +100,6 @@ class ListSetActivity : AppCompatActivity() {
 
             Intent.ACTION_SEND -> {
 
-                listSetViewModel.updateUiState(
-                    cardNewListVisibility = false,
-                    showCreateListForFile = false,
-                    oldFileName = null,
-                    uri = null
-                )
                 listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
 
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -120,18 +111,13 @@ class ListSetActivity : AppCompatActivity() {
                 uri?.let {
 //                    Log.d(TAG, "handleIntent: myFilePath = ${it.path}")
                     val fileName = listSetViewModel.getFileName(it)
-                    listSetViewModel.addShopList(fileName, true, it)
+                    listSetViewModel.addShopList(fileName, it)
                 }
             }
 
             Intent.ACTION_VIEW -> {
 //                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
-                listSetViewModel.updateUiState(
-                    cardNewListVisibility = false,
-                    showCreateListForFile = false,
-                    oldFileName = null,
-                    uri = null
-                )
+
                 listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
 
                 when (intent.type) {
@@ -144,7 +130,7 @@ class ListSetActivity : AppCompatActivity() {
                         dataUri?.let {uri ->
 
                             val fileName = listSetViewModel.getFileName(uri)
-                            listSetViewModel.addShopList(fileName, true, uri)
+                            listSetViewModel.addShopList(fileName, uri)
                         }
                     }
                 }
@@ -178,12 +164,7 @@ class ListSetActivity : AppCompatActivity() {
                             Toast.LENGTH_LONG
                         ).show()
 
-                        listSetViewModel.updateUiState(
-                            cardNewListVisibility = false,
-                            showCreateListForFile = false,
-                            oldFileName = null,
-                            uri = null
-                        )
+                        listSetViewModel.resetListFragmentUI()
                     }
                 }
             }
@@ -192,11 +173,11 @@ class ListSetActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 listSetViewModel.listSaved.collect {
-//                    Log.d(TAG, "observeViewModel: fileWithoutErrors = $it")
+//                    Log.d(TAG, "observeViewModel: listSaved = $it")
                     it?.let {
                         Toast.makeText(
                             this@ListSetActivity,
-                            if (it) "New list loaded" else "List loading error",
+                            if (it) "New list added to collection" else "Error adding list",
                             Toast.LENGTH_LONG
                         ).show()
                         listSetViewModel.resetListSaved()
@@ -205,19 +186,13 @@ class ListSetActivity : AppCompatActivity() {
             }
         }
 
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
-                listSetViewModel.cardNewListVisibilityStateFlow.collect {isVisible ->
-//                    Log.d(TAG, "observeViewModel: cardNewListVisibilityStateFlow.collect = $isVisible")
-                    with(binding){
-                        if (!isVisible) {
-//                            Log.d(TAG, "observeViewModel: not visible")
-                            toolbarListSetActivity.menu.setGroupVisible(R.id.list_set_menu_group, true)
-                        } else {
-//                            Log.d(TAG, "observeViewModel: visible")
-                            delay(50)   // for change orientation
-                            toolbarListSetActivity.menu.setGroupVisible(R.id.list_set_menu_group, false)
-                        }
+                listSetViewModel.createListFragmentUI.collect { state ->
+//                    Log.d(TAG, "observeViewModel: createListFragmentUI.collect = $state")
+                    with(binding.toolbarListSetActivity){
+                        post { menu.setGroupVisible(R.id.list_set_menu_group, state == null) }
                     }
                 }
             }
@@ -245,12 +220,6 @@ class ListSetActivity : AppCompatActivity() {
             return when (menuItem.itemId) {
 
                 R.id.action_load_txt -> {
-                    listSetViewModel.updateUiState(
-                        cardNewListVisibility = false,
-                        showCreateListForFile = false,
-                        oldFileName = null,
-                        uri = null
-                    )
                     actionLoadFromTxtFile()
                     true
                 }
@@ -352,7 +321,7 @@ class ListSetActivity : AppCompatActivity() {
 
 
     private fun loadFromTxtFile(fileName: String) {
-        listSetViewModel.addShopList(fileName, true)
+        listSetViewModel.addShopList(fileName)
     }
 
     private val filesListBackPressedCallback = object : OnBackPressedCallback(

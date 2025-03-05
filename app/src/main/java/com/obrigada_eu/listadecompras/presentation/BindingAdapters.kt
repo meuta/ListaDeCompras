@@ -1,8 +1,8 @@
 package com.obrigada_eu.listadecompras.presentation
 
+import android.util.Log
 import android.view.View
 import android.widget.EditText
-import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
@@ -36,7 +36,7 @@ fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
 
 @BindingAdapter("setErrorInputListName")
 fun bindErrorInputListName(til: TextInputLayout, error: String?){
-//    Log.d("BindingAdapter", "error = $error ")
+    Log.d(TAG, "BindingAdapter: errorInputName = $error ")
     til.errorIconDrawable = null
     til.error = error
 }
@@ -84,9 +84,9 @@ fun bindUnits(editText: EditText, itemId: Int?, itemUnits: String?){
 }
 
 @BindingAdapter("alterNameVisibility")
-fun setAlterNameVisibility(view: View, name: String?){
-//    Log.d(TAG, "setAlterNameVisibility: name = $name")
-    view.visibility = if (name == null) View.GONE else View.VISIBLE
+fun setAlterNameVisibility(view: View, isAlternativeName: Boolean){
+//    Log.d(TAG, "setAlterNameVisibility: isAlternativeName = isAlternativeName")
+    if (isAlternativeName) view.visibility = View.VISIBLE
 }
 
 
@@ -104,31 +104,20 @@ fun bindEditTextName(editText: EditText, name: String?){
 }
 
 
-@BindingAdapter("radioGroupClearCheck", "radioGroupCheckTitle")
-fun bindRadioGroupClearCheck(radioGroup: RadioGroup, isNameFromTitle: Boolean?, nameFromContent: String?){
-    if (isNameFromTitle == null) radioGroup.clearCheck()
-    nameFromContent?.let { if (radioGroup.checkedRadioButtonId == -1) radioGroup.check(R.id.radio_tilte) }
-}
-
-
 @BindingAdapter("etListNameIsChecked")
-fun bindEditTextNameIsChecked(editText: EditText, isNameFromTitle: Boolean?) {
+fun bindEditTextNameIsChecked(editText: EditText, isNameFromTitle: Boolean) {
     with(editText) {
-        if (isNameFromTitle == null) {
+
+        if (editText.id == R.id.et_list_name_from_title && isNameFromTitle ||
+            editText.id == R.id.et_list_name_from_content && !isNameFromTitle
+        ) {
+            setBackgroundResource(R.color.whitish)
+            setTextColor(context.getColor(R.color.grayish))
+            requestFocus()
+            setSelection(text.length)
+        } else {
             setBackgroundResource(R.color.whitish_transparent)
             setTextColor(context.getColor(R.color.blackish_transparent))
-            clearFocus()
-        } else {
-            if (editText.id == R.id.et_list_name_from_title && isNameFromTitle ||
-                editText.id == R.id.et_list_name_from_content && !isNameFromTitle) {
-                setBackgroundResource(R.color.whitish)
-                setTextColor(context.getColor(R.color.grayish))
-                requestFocus()
-                setSelection(text.length)
-            } else {
-                setBackgroundResource(R.color.whitish_transparent)
-                setTextColor(context.getColor(R.color.blackish_transparent))
-            }
         }
     }
 }

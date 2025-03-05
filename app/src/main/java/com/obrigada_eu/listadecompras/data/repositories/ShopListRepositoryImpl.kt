@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -63,11 +64,15 @@ class ShopListRepositoryImpl @Inject constructor(
     private lateinit var listSet: MutableList<ShopListDbModel>
 
 
-    override suspend fun addShopList(shopListName: String, enabled: Boolean) {
-        val dbModel =
-            ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = enabled)
-        dbModel.position = (shopListDao.getLargestOrder() ?: -1) + 1
-        shopListDao.insertShopList(dbModel)
+    override suspend fun addShopList(shopListName: String, enabled: Boolean): Boolean {
+        return try {
+            val dbModel = ShopListDbModel(name = shopListName, id = ShopList.UNDEFINED_ID, enabled = enabled)
+            dbModel.position = (shopListDao.getLargestOrder() ?: -1) + 1
+            shopListDao.insertShopList(dbModel)
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
 
@@ -238,7 +243,7 @@ class ShopListRepositoryImpl @Inject constructor(
     override suspend fun saveListToDb(shopListWithItems: ShopListWithItems): Boolean {
 //        Log.d("loadTxtList", "listName = ${shopListWithItems.name}")
 
-        try {
+        return try {
             addShopList(shopListWithItems.name, shopListWithItems.enabled)
 
             shopListDao.getShopListId(shopListWithItems.name)?.let { listId ->
@@ -250,25 +255,25 @@ class ShopListRepositoryImpl @Inject constructor(
                     )
                 }
             }
+            true
         } catch (e: Exception) {
-            return false
+            false
         }
-        return true
     }
 
 
     override fun getListFromTxtFile(fileName: String, uri: Uri?): ShopListWithItems? {
 
-//        Log.d("loadTxtList", "fileName = $fileName, uri = $uri")
+//        Log.d(TAG, "addShopList loadTxtList fileName = $fileName, uri = $uri")
         if (uri == null) {
 
             val dirDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
             val append = "$separator${context.resources.getString(R.string.app_name)}"
 
             val file = File("$dirDocuments$append$separator$fileName.txt")
-//            Log.d(TAG, "getListFromTxtFile: file = $file")
+//            Log.d(TAG, "addShopList getListFromTxtFile: file = $file")
             if (file.exists()) {
-//                Log.d(TAG, "getListFromTxtFile: file.exists()")
+//                Log.d(TAG, "addShopList getListFromTxtFile: file.exists()")
                 return try {
                     val bufferedReader: BufferedReader = file.bufferedReader()
                     val contentString = bufferedReader.use { it.readText() }

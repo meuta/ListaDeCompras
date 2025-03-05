@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ShopListRepository {
 
-    suspend fun addShopList(shopListName: String, enabled: Boolean = true)
+    suspend fun addShopList(shopListName: String, enabled: Boolean = true): Boolean
 
     fun getAllListsWithoutItemsFlow(): Flow<List<ShopList>>
 

@@ -5,4 +5,5 @@ import javax.inject.Inject
 class GetAllListsWithoutItemsUseCase @Inject constructor(private val shopListRepository: ShopListRepository) {
 
     suspend operator fun invoke(): List<ShopList> = shopListRepository.getAllListsWithoutItems()
+//    operator fun invoke(): List<ShopList> = shopListRepository.getAllListsWithoutItems()
 }

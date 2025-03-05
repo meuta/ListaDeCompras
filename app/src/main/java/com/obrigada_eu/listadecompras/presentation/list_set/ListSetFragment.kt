@@ -3,31 +3,22 @@ package com.obrigada_eu.listadecompras.presentation.list_set
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
-import android.view.View.OnFocusChangeListener
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obrigada_eu.listadecompras.R
-import com.obrigada_eu.listadecompras.databinding.AreYouShureDialogLayoutBinding
 import com.obrigada_eu.listadecompras.databinding.FragmentListSetBinding
 import com.obrigada_eu.listadecompras.domain.shop_list.ShopList
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapAdapter
 import com.obrigada_eu.listadecompras.presentation.SwipeSwapListFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -54,8 +45,6 @@ class ListSetFragment(
         super.onViewCreated(view, savedInstanceState)
         onFabClickListener = this
         onListItemClickListener = this
-        addTextChangedListeners()
-        addEditTextFocusChangedListener()
     }
 
     override fun observeViewModel() {
@@ -63,143 +52,53 @@ class ListSetFragment(
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 fragmentListViewModel.allListsWithoutItemsStateFlow.collect {
                     fragmentListAdapter.submitList(it)
-//            Log.d(TAG, "listSet.observe = ${it.map { it.name}}")
                 }
             }
         }
 
+
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED){
-                fragmentListViewModel.cardNewListVisibilityStateFlow.collect {isVisible ->
-//                    Log.d(TAG, "observeViewModel: cardNewListVisibilityStateFlow.collect = $isVisible")
-                    with(binding){
-                        if (!isVisible) {
-
-                            etListNameFromTitle.setText("")
-                            cardNewList.visibility = GONE
-                            coverView.visibility = GONE
-                            val inputMethodManager =
-                                activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                            inputMethodManager.hideSoftInputFromWindow(cardNewList.windowToken, 0)
-
-
-                        } else {
-
-                            val orientation = requireActivity().resources.configuration.orientation
-                            binding.cardNewList.layoutParams.width =
-                                if (orientation == Configuration.ORIENTATION_LANDSCAPE) 1200
-                                else ViewGroup.LayoutParams.MATCH_PARENT
-
-                            coverView.visibility = VISIBLE
-                            cardNewList.visibility = VISIBLE
-
-                            val inputMethodManager =
-                                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                            inputMethodManager.showSoftInput(etListNameFromTitle, 0)
-
-                            // sometimes the keyboard is not displayed, so:
-                            delay(100)
-                            inputMethodManager.showSoftInput(etListNameFromTitle, 0)
-
-                            // for showing a scrollbar if the content is partially invisible:
-                            delay(500)
-                            binding.cardNewListScrollView.isScrollbarFadingEnabled = false
-                        }
-                    }
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                fragmentListViewModel.createListFragmentUI.collect { state ->
+                    if (state != null) showCreateListFragment(state) else hideCreateListFragment()
                 }
             }
         }
     }
 
+
+    private fun showCreateListFragment(state: CreateNewListFragmentState) {
+        val orientation = requireActivity().resources.configuration.orientation
+        binding.createNewListContainer.layoutParams.width =
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) 1200
+            else ViewGroup.LayoutParams.MATCH_PARENT
+
+        binding.coverView.visibility = VISIBLE
+
+        if (childFragmentManager.backStackEntryCount == 0) {
+            childFragmentManager.beginTransaction()
+                .replace(
+                    R.id.create_new_list_container,
+                    NewListCreationFragment.newInstance(state),
+                    NewListCreationFragment::class.simpleName
+                )
+                .addToBackStack(NewListCreationFragment::class.simpleName)
+                .commit()
+        }
+    }
+
+    private fun hideCreateListFragment() {
+        if (childFragmentManager.backStackEntryCount > 0) {
+            childFragmentManager.popBackStack()
+        }
+        binding.coverView.visibility = GONE
+    }
 
     override fun setupButtons() {
         with(binding) {
             buttonAddItem.setOnClickListener {
                 onFabClickListener?.onFabClick()
             }
-
-            buttonCreateList.setOnClickListener {
-                lifecycleScope.launch {
-                    val alterName = if (fragmentListViewModel.listNameFromFileContent.first() != null) {
-                        etListNameFromContent.trimmedText()
-                    } else null
-
-//                    Log.d(TAG, "setupButtons: alterName = $alterName")
-                    fragmentListViewModel.addShopList(
-                        etListNameFromTitle.trimmedText(),
-                        fragmentListViewModel.fromTxtFile.first(),
-                        alterName = alterName
-                    )
-                }
-            }
-
-            buttonCanselCreateList.setOnClickListener {
-                showAlertDialog()
-            }
-
-            radioGroupListName.setOnCheckedChangeListener { _, checkedId ->
-//                Log.d(TAG, "radioGroupListName: checkedId = $checkedId")
-                fragmentListViewModel.setIsNameFromTitle(isFromTitle = when (checkedId) {
-                    R.id.radio_tilte -> true
-                    R.id.radio_content -> false
-                    NO_RADIO_BUTTON_CHECKED_ID -> null
-                    else -> throw RuntimeException("unknown radio button ID")
-                })
-            }
-        }
-    }
-
-    private fun EditText.trimmedText() = this.text.toString().let { content ->
-        content.trim().let { trimmedContent ->
-            if (trimmedContent != content) {
-                this.setText(trimmedContent)
-                this.setSelection(trimmedContent.length)
-                trimmedContent
-            } else {
-                content
-            }
-        }
-    }
-
-    private fun addEditTextFocusChangedListener(){
-        with(binding){
-            val editTextFocusChangedListener = OnFocusChangeListener { view, hasFocus ->
-                if (view == etListNameFromTitle && hasFocus) {
-                    radioTilte.isChecked = true
-                    fragmentListViewModel.setIsNameFromTitle(true)
-                }
-                if (view == etListNameFromContent && hasFocus) {
-                    radioContent.isChecked = true
-                    fragmentListViewModel.setIsNameFromTitle(false)
-                }
-            }
-            etListNameFromTitle.onFocusChangeListener = editTextFocusChangedListener
-            etListNameFromContent.onFocusChangeListener = editTextFocusChangedListener
-        }
-    }
-
-
-    private fun resetErrorInputName(editText: EditText, text: CharSequence?) {
-//        Log.d(TAG, "resetErrorInputName: ")
-        with(binding) {
-            if (editText.text == text) {
-//                Log.d(TAG, "onTextChanged: tag = ${editText.tag}")
-                if (editText.tag == null) {
-                    // Value changed by user
-                    when(editText) {
-                        etListNameFromTitle -> fragmentListViewModel.resetErrorInputName(NAME_FROM_TITLE_FIELD)
-                        etListNameFromContent -> fragmentListViewModel.resetErrorInputName(NAME_FROM_CONTENT_FIELD)
-                    }
-//                    Log.d(TAG, "onTextChanged: ${editText.id}")
-                }
-            }
-        }
-    }
-
-    private fun addTextChangedListeners() {
-        with(binding) {
-            etListNameFromTitle.doOnTextChanged { text, _, _, _ -> resetErrorInputName(etListNameFromTitle, text) }
-            etListNameFromContent.doOnTextChanged { text, _, _, _ -> resetErrorInputName(etListNameFromContent, text) }
         }
     }
 
@@ -231,90 +130,30 @@ class ListSetFragment(
         ) {
             override fun handleOnBackPressed() {
                 lifecycleScope.launch {
-                    val isVisible = fragmentListViewModel.cardNewListVisibilityStateFlow.first()
 
-                    if (isVisible) {
-
-                        showAlertDialog()
-
-                    } else {
+                    if (childFragmentManager.backStackEntryCount == 0) {
                         isEnabled = false
                         requireActivity().finish()
                     }
                 }
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            this,
-            callback
-        )
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    private fun showAlertDialog() {
-        val alertDialog = AlertDialog.Builder(requireActivity()).create()
-        val dialogBinding = AreYouShureDialogLayoutBinding.inflate(layoutInflater)
-        with(dialogBinding) {
-            noButton.setOnClickListener {
-                alertDialog.dismiss()
-            }
-            yesButton.setOnClickListener {
-                fragmentListViewModel.updateUiState(
-                    cardNewListVisibility = false,
-                    showCreateListForFile = false,
-                    oldFileName = null,
-                    uri = null
-                )
-                alertDialog.dismiss()
-            }
-            alertDialog.setView(root)
-        }
-        alertDialog.setCanceledOnTouchOutside(false)
-        alertDialog.show()
-    }
 
     override fun onListItemClick(itemId: Int) {
         fragmentListViewModel.setCurrentListId(itemId)
-        fragmentListViewModel.updateUiState(
-            cardNewListVisibility = false,
-            showCreateListForFile = false,
-            oldFileName = null,
-            uri = null
-        )
     }
 
     override fun onFabClick() {
-        lifecycleScope.launch {
-
-            fragmentListViewModel.updateUiState(
-                cardNewListVisibility = true,
-                showCreateListForFile = false,
-                oldFileName = null,
-                uri = null
-            )
-
-            binding.cardNewList.visibility = VISIBLE
-
-            with(binding.etListNameFromTitle) {
-                tag = TAG_ERROR_INPUT_NAME
-                setText(requireContext().resources.getString(R.string.new_list))
-                tag = null
-                requestFocus()
-                delay(10)
-                val inputMethodManager =
-                    activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.showSoftInput(this, 0)
-                selectAll()
-            }
-        }
+        fragmentListViewModel.setListFragmentUI()
     }
+
 
     companion object {
 
         private const val TAG = "ListSetFragment"
-        private const val TAG_ERROR_INPUT_NAME = 101
-        private const val NO_RADIO_BUTTON_CHECKED_ID = -1
-        const val NAME_FROM_TITLE_FIELD = "title"
-        const val NAME_FROM_CONTENT_FIELD = "content"
 
         fun newInstance() = ListSetFragment()
     }
