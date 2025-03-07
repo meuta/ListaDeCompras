@@ -32,8 +32,8 @@ class NewListCreationFragment : Fragment() {
     private var nameFromTitle: String = ""
     private var shopList: ShopListWithItems? = null
 
-    private val fragmentCreateNewListViewModel: FragmentNewListViewModel by viewModels()
-    private val activityCreateNewListViewModel: ListSetViewModel by activityViewModels()
+    private val fragmentViewModel: NewListCreationViewModel by viewModels()
+    private val activityViewModel: ListSetViewModel by activityViewModels()
 
 
     private var _binding: FragmentNewListCreationBinding? = null
@@ -63,7 +63,8 @@ class NewListCreationFragment : Fragment() {
         } else {
             @Suppress("DEPRECATION") args.getParcelable(SHOP_ITEMS)
         }
-        fragmentCreateNewListViewModel.updateUiState(fromTxtFile, nameFromTitle, shopList?.name)
+
+        fragmentViewModel.updateUiState(fromTxtFile, nameFromTitle, shopList?.name)
     }
 
     override fun onCreateView(
@@ -77,11 +78,11 @@ class NewListCreationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.viewModel = fragmentCreateNewListViewModel
+        binding.viewModel = fragmentViewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        with(binding.etListNameFromTitle) {
-            if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
+            with(binding.etListNameFromTitle) {
                 requestFocus()
                 tag = TAG_ERROR_INPUT_NAME
                 if (fromTxtFile) {
@@ -97,10 +98,10 @@ class NewListCreationFragment : Fragment() {
                         .getInsetsController(requireActivity().window, binding.root)
                         .show(WindowInsetsCompat.Type.ime())
                 }
+
+                shopList?.name?.let { binding.etListNameFromContent.setText(it) }
             }
         }
-
-        shopList?.name?.let { binding.etListNameFromContent.setText(it) }
 
         addTextChangedListeners()
         addEditTextFocusChangedListener()
@@ -114,18 +115,18 @@ class NewListCreationFragment : Fragment() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
-                fragmentCreateNewListViewModel.resetListFragmentUI.collect {
-                    activityCreateNewListViewModel.resetListFragmentUI()
+                fragmentViewModel.closeFragment.collect {
+//                    Log.d(TAG, "observeViewModel: resetListFragmentUI = $it")
+                    it?.let { parentFragmentManager.popBackStack() }
                 }
             }
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                fragmentCreateNewListViewModel.listSaved.collect {
-                    it?.let {
-                        activityCreateNewListViewModel.setListSaved(true)
-                    }
+                fragmentViewModel.listSaved.collect {
+//                    Log.d(TAG, "observeViewModel: listSaved = $it")
+                    it?.let { activityViewModel.setListSaved(it) }
                 }
             }
         }
@@ -136,20 +137,22 @@ class NewListCreationFragment : Fragment() {
             if (editText.text == text) {
                 if (editText.tag == null) {
                     // Value changed by user
-                    when(editText) {
-                        etListNameFromTitle -> fragmentCreateNewListViewModel.resetErrorInputName(NAME_FROM_TITLE_FIELD)
-                        etListNameFromContent -> fragmentCreateNewListViewModel.resetErrorInputName(NAME_FROM_CONTENT_FIELD)
-                    }
+                    fragmentViewModel.resetErrorInputName(
+                        when(editText) {
+                            etListNameFromTitle -> NAME_FROM_TITLE_FIELD
+                            etListNameFromContent -> NAME_FROM_CONTENT_FIELD
+                            else -> ""
+                        }
+                    )
                 }
             }
         }
     }
 
     private fun addTextChangedListeners() {
-        with(binding) {
-            etListNameFromTitle.doOnTextChanged { text, _, _, _ -> resetErrorInputName(etListNameFromTitle, text) }
-            etListNameFromContent.doOnTextChanged { text, _, _, _ -> resetErrorInputName(etListNameFromContent, text) }
-        }
+        with(binding) { listOf(etListNameFromTitle, etListNameFromContent).forEach {
+            it.doOnTextChanged { text, _, _, _ -> resetErrorInputName(it, text) }
+        } }
     }
 
     private fun addEditTextFocusChangedListener(){
@@ -157,15 +160,17 @@ class NewListCreationFragment : Fragment() {
             val editTextFocusChangedListener = View.OnFocusChangeListener { view, hasFocus ->
                 if (view == etListNameFromTitle && hasFocus) {
                     radioTilte.isChecked = true
-                    fragmentCreateNewListViewModel.setIsNameFromTitle(true)
+                    fragmentViewModel.setIsNameFromTitle(true)
                 }
                 if (view == etListNameFromContent && hasFocus) {
                     radioContent.isChecked = true
-                    fragmentCreateNewListViewModel.setIsNameFromTitle(false)
+                    fragmentViewModel.setIsNameFromTitle(false)
                 }
             }
-            etListNameFromTitle.onFocusChangeListener = editTextFocusChangedListener
-            etListNameFromContent.onFocusChangeListener = editTextFocusChangedListener
+
+            listOf(etListNameFromTitle, etListNameFromContent).forEach {
+                it.onFocusChangeListener  = editTextFocusChangedListener
+            }
         }
     }
 
@@ -176,7 +181,7 @@ class NewListCreationFragment : Fragment() {
             buttonCreateList.setOnClickListener {
                 lifecycleScope.launch {
                     val alterName = shopList?.let { etListNameFromContent.trimmedText() }
-                    fragmentCreateNewListViewModel.addShopList(
+                    fragmentViewModel.addShopList(
                         etListNameFromTitle.trimmedText(),
                         shopList,
                         alterName
@@ -189,7 +194,7 @@ class NewListCreationFragment : Fragment() {
             }
 
             radioGroupListName.setOnCheckedChangeListener { _, checkedId ->
-                fragmentCreateNewListViewModel.setIsNameFromTitle(isFromTitle = when (checkedId) {
+                fragmentViewModel.setIsNameFromTitle(isFromTitle = when (checkedId) {
                     R.id.radio_tilte -> true
                     R.id.radio_content -> false
                     else -> throw RuntimeException("unknown radio button ID")
@@ -207,7 +212,7 @@ class NewListCreationFragment : Fragment() {
                 alertDialog.dismiss()
             }
             yesButton.setOnClickListener {
-                activityCreateNewListViewModel.resetListFragmentUI()
+                parentFragmentManager.popBackStack()
                 alertDialog.dismiss()
             }
             alertDialog.setView(root)
@@ -257,7 +262,7 @@ class NewListCreationFragment : Fragment() {
         private const val SHOP_ITEMS = "shopItems"
 
         @JvmStatic
-        fun newInstance(state: CreateNewListFragmentState) =
+        fun newInstance(state: NewListCreationFragmentState) =
             NewListCreationFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(FROM_TXT_FILE, state.fromTxtFile)
@@ -269,7 +274,7 @@ class NewListCreationFragment : Fragment() {
 }
 
 
-data class CreateNewListFragmentState(
+data class NewListCreationFragmentState(
     val fromTxtFile: Boolean = false,
     val nameFromTitle: String? = null,
     val shopList: ShopListWithItems? = null

@@ -3,6 +3,7 @@ package com.obrigada_eu.listadecompras.presentation.list_set
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -41,13 +42,26 @@ class ListSetFragment(
 
     override lateinit var listLayoutManager: LinearLayoutManager
 
+    private var createListFragment = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onFabClickListener = this
         onListItemClickListener = this
+
+        childFragmentManager.addOnBackStackChangedListener {
+//            Log.d(TAG, "onViewCreated: backStackEntryCount = ${childFragmentManager.backStackEntryCount}")
+            if (childFragmentManager.backStackEntryCount == 0) {
+                fragmentListViewModel.showMenuGroup()
+            } else {
+                fragmentListViewModel.hideMenuGroup()
+            }
+        }
     }
 
-    override fun observeViewModel() {
+
+    override fun observeViewModel(savedInstanceState: Bundle?) {
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 fragmentListViewModel.allListsWithoutItemsStateFlow.collect {
@@ -58,24 +72,43 @@ class ListSetFragment(
 
 
         lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                fragmentListViewModel.fragmentState.collect { state ->
+                    if (savedInstanceState == null) {
+                        createListFragment = true
+                        showCreateListFragment(state)
+                    } else {
+                        if (!createListFragment) createListFragment = true else showCreateListFragment(state)
+                    }
+                }
+            }
+        }
+
+
+
+        lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
-                fragmentListViewModel.createListFragmentUI.collect { state ->
-                    if (state != null) showCreateListFragment(state) else hideCreateListFragment()
+                fragmentListViewModel.menuGroupVisibility.collect {
+//                    Log.d(TAG, "observeViewModel: menuGroupVisibility.collect = $it")
+                    with(binding.coverView){
+                        post { visibility = if (it) GONE else VISIBLE }
+                    }
                 }
             }
         }
     }
 
 
-    private fun showCreateListFragment(state: CreateNewListFragmentState) {
-        val orientation = requireActivity().resources.configuration.orientation
-        binding.createNewListContainer.layoutParams.width =
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) 1200
-            else ViewGroup.LayoutParams.MATCH_PARENT
+    private fun showCreateListFragment(state: NewListCreationFragmentState?) {
+//        Log.d(TAG, "showCreateListFragment: ListFragmentUI state = $state")
+        if (childFragmentManager.backStackEntryCount > 0) childFragmentManager.popBackStack()
 
-        binding.coverView.visibility = VISIBLE
+        if (state != null) {
+            val orientation = requireActivity().resources.configuration.orientation
+            binding.createNewListContainer.layoutParams.width =
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) 1200
+                else ViewGroup.LayoutParams.MATCH_PARENT
 
-        if (childFragmentManager.backStackEntryCount == 0) {
             childFragmentManager.beginTransaction()
                 .replace(
                     R.id.create_new_list_container,
@@ -87,12 +120,6 @@ class ListSetFragment(
         }
     }
 
-    private fun hideCreateListFragment() {
-        if (childFragmentManager.backStackEntryCount > 0) {
-            childFragmentManager.popBackStack()
-        }
-        binding.coverView.visibility = GONE
-    }
 
     override fun setupButtons() {
         with(binding) {
@@ -147,7 +174,7 @@ class ListSetFragment(
     }
 
     override fun onFabClick() {
-        fragmentListViewModel.setListFragmentUI()
+        showCreateListFragment(NewListCreationFragmentState())
     }
 
 

@@ -94,12 +94,12 @@ abstract class SwipeSwapListFragment<
         fragmentListAdapter = createAdapter(requireContext())
         setupRecyclerView()
         setupButtons()
-        observeViewModel()
+        observeViewModel(savedInstanceState)
     }
 
     abstract fun setupButtons()
 
-    abstract fun observeViewModel()
+    abstract fun observeViewModel(savedInstanceState: Bundle?)
 
     private fun setupRecyclerView() {
         val recyclerView = when (val b = binding) {

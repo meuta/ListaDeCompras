@@ -14,15 +14,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FragmentNewListViewModel @Inject constructor(
+class NewListCreationViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val getAllListsWithoutItemsUseCase: GetAllListsWithoutItemsUseCase,
     private val addShopListUseCase: AddShopListUseCase,
@@ -35,11 +33,11 @@ class FragmentNewListViewModel @Inject constructor(
 
     private var fromTxtFile = false
 
-    private var _resetListFragmentUI = MutableSharedFlow<Unit>()
-    val resetListFragmentUI: SharedFlow<Unit> = _resetListFragmentUI
+    private val _closeFragment = MutableStateFlow<Unit?>(null)
+    val closeFragment: StateFlow<Unit?> = _closeFragment
 
-    private fun resetListFragmentUI() {
-        scope.launch { _resetListFragmentUI.emit(Unit) }
+    private fun finishFragment() {
+        _closeFragment.value = Unit
     }
 
     private var oldListName: String? = null
@@ -87,7 +85,7 @@ class FragmentNewListViewModel @Inject constructor(
 
                 if (fieldIsValid) {
                     _listSaved.value = addShopListUseCase(name)
-                    resetListFragmentUI()
+                    finishFragment()
                 }
             } else {
                 // new list from txt file:
@@ -99,7 +97,7 @@ class FragmentNewListViewModel @Inject constructor(
                             // names from title and content are equals, name is valid:
 
                             _listSaved.value = saveListToDbUseCase(list.copy(name = name))
-                            resetListFragmentUI()
+                            finishFragment()
                         }
 
                     } else {
@@ -111,11 +109,11 @@ class FragmentNewListViewModel @Inject constructor(
                         if (fieldIsValidContent && !isNameFromTitle.value) {
                             // name is from title and is valid:
                             _listSaved.value = saveListToDbUseCase(list.copy(name = listNameFromContent))
-                            resetListFragmentUI()
+                            finishFragment()
                         } else if (fieldIsValid && isNameFromTitle.value) {
                             // name is from content and is valid:
                             _listSaved.value = saveListToDbUseCase(list.copy(name = name))
-                            resetListFragmentUI()
+                            finishFragment()
                         }
                     }
                 }

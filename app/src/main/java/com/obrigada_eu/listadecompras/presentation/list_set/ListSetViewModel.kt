@@ -3,7 +3,6 @@ package com.obrigada_eu.listadecompras.presentation.list_set
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.obrigada_eu.listadecompras.domain.shop_list.DeleteShopListUseCase
 import com.obrigada_eu.listadecompras.domain.shop_list.DragShopListUseCase
@@ -57,21 +56,34 @@ class ListSetViewModel @Inject constructor(
     )
 
 
+    private val _fragmentState = MutableStateFlow<NewListCreationFragmentState?>(null)
+    val fragmentState: StateFlow<NewListCreationFragmentState?> = _fragmentState
 
-    private val _createListFragmentUI = MutableStateFlow<CreateNewListFragmentState?>(null)
-    val createListFragmentUI: StateFlow<CreateNewListFragmentState?> = _createListFragmentUI
-
-    fun setListFragmentUI(state: CreateNewListFragmentState? = null) {
-        _createListFragmentUI.value = state ?: CreateNewListFragmentState()
+    private fun showCreateListFragment(state: NewListCreationFragmentState) {
+        _fragmentState.value = state
+    }
+    fun hideCreateListFragment() {
+        _fragmentState.value = null
     }
 
-    fun resetListFragmentUI() {
-        _createListFragmentUI.value = null
+    private val _menuGroupVisibility = MutableStateFlow<Boolean>(true)
+    val menuGroupVisibility: StateFlow<Boolean> = _menuGroupVisibility
+
+    fun hideMenuGroup() {
+        _menuGroupVisibility.value = false
+    }
+    fun showMenuGroup() {
+        _menuGroupVisibility.value = true
     }
 
+    private val _fileReadingError = MutableStateFlow<Unit?>(null)
+    val fileReadingError: StateFlow<Unit?> = _fileReadingError
 
-    private val _fileReadingError = MutableStateFlow(false)
-    val fileReadingError: StateFlow<Boolean> = _fileReadingError
+    private fun setFileReadingError() {
+        _fileReadingError.value = Unit
+        _fileReadingError.value = null
+    }
+
 
     private val _listSaved: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val listSaved: StateFlow<Boolean?> = _listSaved
@@ -107,7 +119,7 @@ class ListSetViewModel @Inject constructor(
 
             // getting list from text file:
             val listWithItemsToLoad = getListFromTxtFileUseCase(name, uri)
-            _fileReadingError.value = listWithItemsToLoad == null
+            if (listWithItemsToLoad == null) setFileReadingError()
 
             listWithItemsToLoad?.let { listWithItems ->
                 val listNameFromText = listWithItems.name
@@ -115,9 +127,9 @@ class ListSetViewModel @Inject constructor(
                 if (listNameFromText == name && fieldIsValid) {
                     // names from title and content are equals, name is valid:
 
-                    _listSaved.value = saveListToDbUseCase(listWithItems)
+                    setListSaved(saveListToDbUseCase(listWithItems))
                 } else {
-                    setListFragmentUI(CreateNewListFragmentState(
+                    showCreateListFragment(NewListCreationFragmentState(
                             fromTxtFile = true,
                             nameFromTitle = name,
                             shopList = listWithItemsToLoad
@@ -127,6 +139,12 @@ class ListSetViewModel @Inject constructor(
         }
     }
 
+    fun addShopList(uri: Uri? = null) {
+        uri?.let {
+            val fileName = getFileName(it)
+            addShopList(fileName, it)
+        }
+    }
 
     fun setListSaved(saved: Boolean) {
         _listSaved.value = saved
@@ -142,7 +160,7 @@ class ListSetViewModel @Inject constructor(
     }
 
 
-    fun getFileName(uri: Uri): String? {
+    private fun getFileName(uri: Uri): String? {
 
         var fileName: String? = null
         if (uri.scheme == "content") {

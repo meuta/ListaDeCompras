@@ -1,6 +1,7 @@
 package com.obrigada_eu.listadecompras.presentation.shop_list
 
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
@@ -43,7 +44,7 @@ class ShopListFragment : SwipeSwapListFragment<
         }
     }
 
-    override fun observeViewModel() {
+    override fun observeViewModel(savedInstanceState: Bundle?) {
 
         lifecycleScope.launch{
             repeatOnLifecycle(Lifecycle.State.CREATED){
@@ -62,6 +63,8 @@ class ShopListFragment : SwipeSwapListFragment<
             }
         }
     }
+
+
 
 
     override fun createAdapter(context: Context?): SwipeSwapAdapter<ShopItem> {

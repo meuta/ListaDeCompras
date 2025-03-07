@@ -63,12 +63,10 @@ class ListSetActivity : AppCompatActivity() {
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
 
-            listSetViewModel.resetListFragmentUI()
+            listSetViewModel.hideCreateListFragment()
 
             with(binding.filesList) {
-                if (visibility == View.VISIBLE) {
-                    visibility = View.GONE
-                }
+                if (visibility == View.VISIBLE) visibility = View.GONE
             }
             handleIntent(it)
         }
@@ -99,39 +97,21 @@ class ListSetActivity : AppCompatActivity() {
             }
 
             Intent.ACTION_SEND -> {
-
                 listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
-
                 val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
                 } else {
                     @Suppress("DEPRECATION") intent.getParcelableExtra(Intent.EXTRA_STREAM)
                 }
-
-                uri?.let {
-//                    Log.d(TAG, "handleIntent: myFilePath = ${it.path}")
-                    val fileName = listSetViewModel.getFileName(it)
-                    listSetViewModel.addShopList(fileName, it)
-                }
+                listSetViewModel.addShopList(uri)
             }
 
             Intent.ACTION_VIEW -> {
 //                Log.d(TAG, "handleIntent: intent.type = ${intent.type}")
-
                 listSetViewModel.setCurrentListId(ShopList.UNDEFINED_ID)
-
                 when (intent.type) {
-
                     "text/plain" -> {
-
-                        val dataUri: Uri? = intent.data
-//                        Log.d(TAG, "handleIntent: data = $dataUri")
-//                        Log.d(TAG, "handleIntent: myFilePath = ${dataUri?.path}")
-                        dataUri?.let {uri ->
-
-                            val fileName = listSetViewModel.getFileName(uri)
-                            listSetViewModel.addShopList(fileName, uri)
-                        }
+                        listSetViewModel.addShopList(intent.data)
                     }
                 }
             }
@@ -157,14 +137,12 @@ class ListSetActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 listSetViewModel.fileReadingError.collect {
 //                    Log.d(TAG, "observeViewModel: fileWithoutErrors = $it")
-                    if (it) {
+                    it?.let {
                         Toast.makeText(
                             this@ListSetActivity,
                             "File reading error",
                             Toast.LENGTH_LONG
                         ).show()
-
-                        listSetViewModel.resetListFragmentUI()
                     }
                 }
             }
@@ -189,15 +167,16 @@ class ListSetActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
-                listSetViewModel.createListFragmentUI.collect { state ->
-//                    Log.d(TAG, "observeViewModel: createListFragmentUI.collect = $state")
+                listSetViewModel.menuGroupVisibility.collect {
+//                    Log.d(TAG, "observeViewModel: menuGroupVisibility.collect = $it")
                     with(binding.toolbarListSetActivity){
-                        post { menu.setGroupVisible(R.id.list_set_menu_group, state == null) }
+                        post { menu.setGroupVisible(R.id.list_set_menu_group, it) }
                     }
                 }
             }
         }
     }
+
 
     private fun setupActionBar() {
         with(binding) {
