@@ -117,7 +117,7 @@ class NewListCreationFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 fragmentViewModel.closeFragment.collect {
 //                    Log.d(TAG, "observeViewModel: resetListFragmentUI = $it")
-                    it?.let { parentFragmentManager.popBackStack() }
+                    it?.let { closeMyself() }
                 }
             }
         }
@@ -212,13 +212,18 @@ class NewListCreationFragment : Fragment() {
                 alertDialog.dismiss()
             }
             yesButton.setOnClickListener {
-                parentFragmentManager.popBackStack()
+                closeMyself()
                 alertDialog.dismiss()
             }
             alertDialog.setView(root)
         }
         alertDialog.setCanceledOnTouchOutside(false)
         alertDialog.show()
+    }
+
+    private fun closeMyself() {
+        parentFragmentManager.popBackStack()
+        activityViewModel.resetCreateListFragmentState()
     }
 
 

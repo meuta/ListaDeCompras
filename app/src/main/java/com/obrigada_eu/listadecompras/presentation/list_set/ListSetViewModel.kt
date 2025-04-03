@@ -62,7 +62,7 @@ class ListSetViewModel @Inject constructor(
     private fun showCreateListFragment(state: NewListCreationFragmentState) {
         _fragmentState.value = state
     }
-    fun hideCreateListFragment() {
+    fun resetCreateListFragmentState() {
         _fragmentState.value = null
     }
 

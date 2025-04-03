@@ -63,8 +63,6 @@ class ListSetActivity : AppCompatActivity() {
         intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent?.let {
 
-            listSetViewModel.hideCreateListFragment()
-
             with(binding.filesList) {
                 if (visibility == View.VISIBLE) visibility = View.GONE
             }
