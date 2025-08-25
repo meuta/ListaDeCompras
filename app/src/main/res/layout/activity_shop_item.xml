@@ -8,6 +8,7 @@
         android:layout_height="match_parent"
         android:background="@color/blackish"
         android:orientation="vertical"
+        android:fitsSystemWindows="true"
         tools:context=".presentation.shop_item.ShopItemActivity"
         android:windowBackground="@color/background_dark_gray_color">
 

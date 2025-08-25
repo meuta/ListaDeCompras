@@ -1,6 +1,5 @@
 package com.obrigada_eu.listadecompras.presentation
 
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -36,7 +35,7 @@ fun bindErrorInputCount(til: TextInputLayout, isError: Boolean){
 
 @BindingAdapter("setErrorInputListName")
 fun bindErrorInputListName(til: TextInputLayout, error: String?){
-    Log.d(TAG, "BindingAdapter: errorInputName = $error ")
+//    Log.d(TAG, "BindingAdapter: errorInputName = $error ")
     til.errorIconDrawable = null
     til.error = error
 }
